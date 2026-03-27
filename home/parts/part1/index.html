@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MR BOARD - Part 1 (Intro)</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="video-frame">
+        <div class="progress-bar"></div>
+        <div class="magic-cursor"></div>
+
+        <div class="scene-container">
+            <div class="badge">Part 01</div>
+            <i data-lucide="layers" size="100" class="logo-icon"></i>
+            <h1 class="title">MR <span style="color: var(--brand)">BOARD</span></h1>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        setTimeout(() => {
+            window.parent.postMessage('next', '*');
+        }, 2500);
+    </script>
+</body>
+</html>
