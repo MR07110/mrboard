@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>MR BOARD - Part 7 (Chat Oynasi)</title>
+    <title>MR BOARD - Part 8 (Chatga Xabar Yuborish)</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
@@ -68,15 +68,15 @@
             left: 0;
             height: 6px;
             background: var(--brand-primary);
-            width: 60%;
+            width: 65%;
             animation: progressFill var(--dur) linear forwards;
             z-index: 1000;
             border-radius: 0 3px 0 0;
         }
 
         @keyframes progressFill {
-            from { width: 60%; }
-            to { width: 65%; }
+            from { width: 65%; }
+            to { width: 70%; }
         }
 
         .header-overlay {
@@ -128,6 +128,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            transform: translateX(-320px);
             transition: transform 0.6s var(--ease-spring);
         }
 
@@ -216,15 +217,15 @@
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>') no-repeat;
             pointer-events: none;
             filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
-            animation: moveCursor7 var(--dur) var(--ease-smooth) forwards;
+            animation: moveCursor8 var(--dur) var(--ease-smooth) forwards;
         }
 
-        @keyframes moveCursor7 {
-            0% { transform: translate(820px, 540px) scale(1); }
-            25% { transform: translate(850px, 680px) scale(1); }
-            30% { transform: translate(850px, 680px) scale(0.7); }
-            35% { transform: translate(850px, 680px) scale(1); }
-            65%, 100% { transform: translate(1050px, 620px) scale(1); }
+        @keyframes moveCursor8 {
+            0%, 40% { transform: translate(1050px, 620px) scale(1); }
+            50% { transform: translate(1300px, 620px) scale(1); }
+            55% { transform: translate(1300px, 620px) scale(0.8); }
+            58% { transform: translate(1300px, 620px) scale(1); }
+            100% { transform: translate(1150px, 550px) scale(1); }
         }
 
         .drawer {
@@ -241,12 +242,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            transition: transform 0.6s var(--ease-spring);
             right: 16px;
-            transform: translateX(120%);
-        }
-
-        .drawer.is-open {
             transform: translateX(0);
         }
 
@@ -293,7 +289,6 @@
             border: 1px solid var(--border-strong);
             font-size: 13px;
             color: var(--text-muted);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
             max-width: 85%;
         }
 
@@ -343,6 +338,21 @@
             justify-content: center;
             border: none;
             cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .chat-submit.clicked {
+            transform: scale(0.85);
+            background: #0056b3;
+        }
+
+        @keyframes popMessage {
+            0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .msg-bubble.new-msg {
+            animation: popMessage 0.4s var(--ease-spring) forwards;
         }
 
         .dock-container {
@@ -509,17 +519,10 @@
             .drawer {
                 width: 90vw;
                 right: 5vw;
-                top: 60px;
-                bottom: 70px;
             }
 
             .chat-messages {
                 padding: 12px;
-            }
-
-            .msg-bubble {
-                padding: 8px 12px;
-                font-size: 12px;
             }
         }
 
@@ -572,7 +575,7 @@
                     <i data-lucide="message-square" style="color:var(--brand-primary)"></i>
                     <span>Umumiy Chat</span>
                 </div>
-                <button class="btn-close" id="btn-close-chat"><i data-lucide="x" size="18"></i></button>
+                <button class="btn-close"><i data-lucide="x" size="18"></i></button>
             </div>
             <div class="chat-layout">
                 <div class="chat-messages" id="chat-messages">
@@ -582,7 +585,7 @@
                     </div>
                 </div>
                 <div class="chat-composer">
-                    <input type="text" class="chat-input" id="chat-input" placeholder="Xabar yozing..." readonly>
+                    <input type="text" id="chat-input" class="chat-input" placeholder="Xabar yozing..." readonly>
                     <button class="chat-submit" id="chat-send"><i data-lucide="send" size="16"></i></button>
                 </div>
             </div>
@@ -596,7 +599,7 @@
                 
                 <div class="action-btn"><i data-lucide="pencil"></i></div>
                 <div class="action-btn"><i data-lucide="wand-2" style="color: var(--state-danger);"></i></div>
-                <div class="action-btn is-active"><i data-lucide="shapes"></i></div>
+                <div class="action-btn"><i data-lucide="shapes"></i></div>
                 <div class="action-btn"><i data-lucide="eraser"></i></div>
                 <div class="action-btn"><i data-lucide="hand"></i></div>
                 <div class="action-btn"><i data-lucide="type"></i></div>
@@ -625,19 +628,36 @@
     <script>
         lucide.createIcons();
 
-        const drawerChat = document.getElementById('drawer-chat');
-        const btnOpenChat = document.getElementById('btn-open-chat');
-        const btnCloseChat = document.getElementById('btn-close-chat');
-        const minimap = document.getElementById('minimap-widget');
+        const inputField = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('chat-send');
+        const chatMessages = document.getElementById('chat-messages');
+        const textToType = "Ajoyib! O'rganish oson ekan";
+        
+        let typeInterval = [300, 400, 450, 520, 600, 680, 750];
+        
+        typeInterval.forEach(function(time, index) {
+            setTimeout(function() {
+                inputField.value = textToType.substring(0, index + 1);
+            }, time);
+        });
 
         setTimeout(function() {
-            btnOpenChat.classList.add('is-active');
-            drawerChat.classList.add('is-open');
-            minimap.style.transform = 'translateX(-320px)';
-        }, 900);
+            sendBtn.classList.add('clicked');
+            setTimeout(function() {
+                sendBtn.classList.remove('clicked');
+                inputField.value = "";
+                
+                const newMsg = document.createElement('div');
+                newMsg.className = 'msg-bubble mine new-msg';
+                newMsg.innerHTML = '<div class="msg-info">Siz (Host) <i data-lucide="crown" size="14" style="color:var(--state-warning)"></i></div><div>Ajoyib!</div>';
+                chatMessages.appendChild(newMsg);
+                lucide.createIcons();
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 100);
+        }, 1650);
 
         setTimeout(function() {
-            window.location.href = 'part8.html';
+            window.location.href = 'part9.html';
         }, 3000);
     </script>
 </body>
