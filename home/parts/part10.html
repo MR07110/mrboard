@@ -19,10 +19,7 @@
             --brand-primary: #007aff;
             --brand-alpha: rgba(0,122,255,0.1);
             --state-danger: #ff3b30;
-            --state-success: #34c759;
-            --state-warning: #ffcc00;
             --shadow-float: 0 24px 48px -12px rgba(0,0,0,0.08);
-            --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
             --dur: 3s;
         }
 
@@ -41,7 +38,6 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            color: var(--text-main);
             touch-action: pan-y pinch-zoom;
         }
 
@@ -92,7 +88,6 @@
             gap: 6px;
             box-shadow: var(--shadow-float);
             z-index: 100;
-            white-space: nowrap;
         }
 
         .minimap-container {
@@ -122,7 +117,6 @@
             font-size: 10px;
             font-weight: 700;
             color: var(--text-muted);
-            gap: 6px;
             justify-content: space-between;
         }
 
@@ -173,24 +167,6 @@
             100% { opacity: 0; filter: blur(15px); transform: scale(1.05); }
         }
 
-        .eraser-circle {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            border: 2px solid var(--text-muted);
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            backdrop-filter: blur(2px);
-            opacity: 0;
-            pointer-events: none;
-            animation: eraserVisible 1s linear 1.2s;
-        }
-
-        @keyframes eraserVisible {
-            0%, 100% { opacity: 0; }
-            10%, 90% { opacity: 1; }
-        }
-
         .magic-cursor {
             position: absolute;
             width: 36px;
@@ -211,21 +187,6 @@
             60% { transform: translate(350px, 500px); }
             70% { transform: translate(750px, 500px); }
             100% { transform: translate(900px, 400px); }
-        }
-
-        .eraser-circle {
-            animation: moveEraserCircle var(--dur) linear forwards, eraserVisible 1s linear 1.2s;
-        }
-
-        @keyframes moveEraserCircle {
-            0% { left: 650px; top: 350px; }
-            20% { left: 350px; top: 250px; }
-            30% { left: 750px; top: 280px; }
-            40% { left: 350px; top: 350px; }
-            50% { left: 750px; top: 420px; }
-            60% { left: 350px; top: 500px; }
-            70% { left: 750px; top: 500px; }
-            100% { left: 900px; top: 400px; }
         }
 
         .dock-container {
@@ -318,43 +279,32 @@
                 border-radius: 24px;
                 border-width: 5px;
             }
-
             .status-pill {
                 top: 12px;
                 left: 12px;
                 padding: 5px 12px;
                 font-size: 10px;
             }
-
             .action-btn {
                 width: 38px;
                 height: 38px;
             }
-
             .audio-wave {
                 height: 38px;
                 padding: 0 8px;
             }
-
             .dock-sep {
                 height: 26px;
             }
-
             .minimap-container {
                 bottom: 80px;
                 right: 12px;
                 width: min(150px, 26vw);
                 height: min(90px, 16vh);
             }
-
             .magic-cursor {
                 display: none;
             }
-
-            .eraser-circle {
-                display: none;
-            }
-
             @keyframes moveCursor10 {
                 0% { transform: translate(300px, 200px); }
                 20% { transform: translate(180px, 150px); }
@@ -373,15 +323,73 @@
                 height: 94vh;
                 border-radius: 20px;
             }
-
             .action-btn {
                 width: 34px;
                 height: 34px;
             }
-
             .action-btn i {
                 width: 16px;
                 height: 16px;
             }
+            .color-indicator {
+                width: 22px;
+                height: 22px;
+            }
+            .dock {
+                padding: 6px 8px;
+            }
+        }
 
-            .color
+        @media (hover: none) and (pointer: coarse) {
+            .magic-cursor {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-frame">
+        <div class="progress-bar"></div>
+
+        <div class="status-pill"><i data-lucide="hash"></i> <span>MR-2364</span></div>
+
+        <div class="draw-layer">
+            <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet">
+                <path class="static-path" d="M 200 500 C 400 100, 800 650, 1100 200" />
+                <rect class="target-shape" x="350" y="250" width="400" height="250"></rect>
+            </svg>
+            <div class="magic-cursor"></div>
+        </div>
+
+        <div class="minimap-container">
+            <div class="minimap-header">
+                <span><i data-lucide="map" size="12"></i> Kuzatuv</span>
+                <i data-lucide="x" size="12"></i>
+            </div>
+            <div class="minimap-content">
+                <svg class="mini-svg" viewBox="0 0 1200 700" preserveAspectRatio="none">
+                    <path class="static-path" d="M 200 500 C 400 100, 800 650, 1100 200" stroke-width="14" />
+                    <rect class="target-shape" x="350" y="250" width="400" height="250" stroke-width="14" rx="30"></rect>
+                </svg>
+            </div>
+        </div>
+
+        <div class="dock-container">
+            <div class="dock">
+                <div class="action-btn"><i data-lucide="pencil"></i></div>
+                <div class="action-btn"><i data-lucide="wand-2" style="color: var(--state-danger);"></i></div>
+                <div class="action-btn"><i data-lucide="shapes"></i></div>
+                <div class="action-btn is-active"><i data-lucide="eraser"></i></div>
+                <div class="action-btn"><i data-lucide="message-square"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        setTimeout(function() {
+            window.location.href = 'part11.html';
+        }, 3000);
+    </script>
+</body>
+</html>
