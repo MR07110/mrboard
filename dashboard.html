@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MR BOARD | Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .dashboard-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 800;
+            text-decoration: none;
+            color: #0f172a;
+        }
+
+        .logo svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .logo span {
+            color: #007aff;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #007aff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+        .btn-logout {
+            background: rgba(255, 59, 48, 0.1);
+            border: none;
+            border-radius: 40px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ff3b30;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 59, 48, 0.2);
+            transform: scale(1.02);
+        }
+
+        .dashboard-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 5%;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+            border-radius: 32px;
+            padding: 32px;
+            color: white;
+            margin-bottom: 32px;
+        }
+
+        .welcome-section h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 40px;
+            padding: 12px 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .room-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .room-card:hover {
+            transform: translateY(-4px);
+            border-color: #007aff;
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.15);
+        }
+
+        .room-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .room-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .room-badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            background: rgba(0,122,255,0.1);
+            color: #007aff;
+        }
+
+        .room-badge.private {
+            background: rgba(255, 59, 48, 0.1);
+            color: #ff3b30;
+        }
+
+        .room-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 16px;
+        }
+
+        .room-actions {
+            margin-top: 16px;
+        }
+
+        .room-join-btn {
+            width: 100%;
+            background: #007aff;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .room-join-btn:hover {
+            background: #0056b3;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #64748b;
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .join-room-form {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 32px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            display: none;
+            border: 1px solid #e2e8f0;
+        }
+
+        .join-room-input {
+            flex: 1;
+            padding: 14px 18px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+
+        .join-room-input:focus {
+            border-color: #007aff;
+            outline: none;
+        }
+
+        .join-room-btn {
+            background: #007aff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 14px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .json-import-btn {
+            background: #f1f5f9;
+            color: #0f172a;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 14px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: auto;
+            color: #64748b;
+            padding: 8px;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .modal-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: white;
+            border-radius: 28px;
+            padding: 28px;
+            width: 90%;
+            max-width: 400px;
+            z-index: 300;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-box.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .modal-box h3 {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 15px;
+        }
+
+        .form-input:focus {
+            border-color: #007aff;
+            outline: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #007aff;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-ghost {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #0f172a;
+        }
+
+        .btn-ghost:hover {
+            background: #e2e8f0;
+        }
+
+        .room-type-selector {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .room-type-selector.active {
+            background: rgba(0,122,255,0.15) !important;
+            border-color: #007aff !important;
+            color: #007aff !important;
+        }
+
+        .form-info {
+            background: rgba(0,122,255,0.05);
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #007aff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .backdrop.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @media (max-width: 768px) {
+            .rooms-grid {
+                grid-template-columns: 1fr;
+            }
+            .join-room-form {
+                flex-direction: column;
+            }
+            .join-room-input, .join-room-btn, .json-import-btn {
+                width: 100%;
+            }
+            .quick-actions {
+                flex-direction: column;
+            }
+            .quick-action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .dashboard-header {
+                padding: 12px 5%;
+            }
+            .user-info span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="toast-wrapper" class="toast-wrapper"></div>
+    
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <a href="dashboard.html" class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="1.5">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>MR <span style="color: #007aff;">BOARD</span></span>
+            </a>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar"></div>
+                <span id="user-name" style="font-weight: 600;"></span>
+                <button class="btn-logout" id="btn-logout">
+                    <i data-lucide="log-out"></i>
+                    <span>Chiqish</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="dashboard-main">
+            <div class="welcome-section">
+                <h1 id="welcome-message">Assalomu alaykum!</h1>
+                <p>Birgalikda ishlashni boshlang. Yangi xona yarating yoki mavjud xonaga qo'shiling.</p>
+                <div class="quick-actions">
+                    <button class="quick-action-btn" id="quick-create-room">
+                        <i data-lucide="plus-circle"></i> Yangi xona
+                    </button>
+                    <button class="quick-action-btn" id="quick-join-room">
+                        <i data-lucide="log-in"></i> Xona kod bilan kirish
+                    </button>
+                    <button class="quick-action-btn" id="quick-json-import">
+                        <i data-lucide="file-json"></i> JSON import
+                    </button>
+                </div>
+            </div>
+            
+            <div class="join-room-form" id="join-room-form">
+                <input type="text" id="join-room-code-input" class="join-room-input" placeholder="Xona kodini kiriting" maxlength="6" style="text-transform: uppercase;">
+                <input type="password" id="join-room-password-input" class="join-room-input" placeholder="Parol (agar kerak bo'lsa)" style="display: none;">
+                <button class="join-room-btn" id="submit-join-room">
+                    <i data-lucide="log-in"></i> Kirish
+                </button>
+                <button class="json-import-btn" id="cancel-join-form">
+                    Bekor
+                </button>
+            </div>
+            
+            <div class="section-title">
+                <i data-lucide="globe"></i>
+                <span>🌍 Ochiq xonalar</span>
+                <button id="refresh-rooms" class="refresh-btn" title="Yangilash">
+                    <i data-lucide="refresh-cw"></i>
+                </button>
+            </div>
+            <div id="public-rooms-list" class="rooms-grid">
+                <div class="empty-state">
+                    <i data-lucide="loader" class="spin"></i>
+                    <p style="margin-top: 12px;">Xonalar yuklanmoqda...</p>
+                </div>
+            </div>
+            
+            <div class="section-title">
+                <i data-lucide="star"></i>
+                <span>⭐ Mening xonalarim</span>
+            </div>
+            <div id="my-rooms-list" class="rooms-grid">
+                <div class="empty-state">
+                    <i data-lucide="folder-open"></i>
+                    <p style="margin-top: 12px;">Hali xona yaratmagansiz</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-box" id="modal-create-room">
+        <h3>✨ Yangi xona yaratish</h3>
+        <div class="form-group">
+            <label><i data-lucide="tag"></i> Xona nomi</label>
+            <input type="text" id="new-room-name" class="form-input" placeholder="Masalan: Matematika 7-sinf">
+        </div>
+        <div class="form-group">
+            <label><i data-lucide="globe"></i> Xona turi</label>
+            <div style="display: flex; gap: 12px;">
+                <button type="button" class="room-type-selector active" data-type="public" style="flex:1; padding:12px; border-radius:16px; background:rgba(0,122,255,0.1); border:1px solid #007aff; cursor:pointer;">🌍 Public</button>
+                <button type="button" class="room-type-selector" data-type="private" style="flex:1; padding:12px; border-radius:16px; background:#f1f5f9; border:1px solid #e2e8f0; cursor:pointer;">🔒 Private</button>
+            </div>
+        </div>
+        <div class="form-group" id="new-room-password-group" style="display: none;">
+            <label><i data-lucide="key"></i> Xona paroli (ixtiyoriy)</label>
+            <input type="password" id="new-room-password" class="form-input" placeholder="Parol qo'yish">
+            <small style="font-size: 11px; color: #64748b; display: block; margin-top: 4px;">Private xonalar uchun tavsiya etiladi</small>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" id="btn-cancel-create-room">Bekor</button>
+            <button class="btn btn-primary" id="btn-confirm-create-room">Yaratish</button>
+        </div>
+    </div>
+    
+    <div class="modal-box" id="modal-json-import">
+        <h3>📁 JSON import</h3>
+        <div class="form-group">
+            <label><i data-lucide="file-json"></i> JSON fayl tanlang</label>
+            <input type="file" id="json-import-file" accept=".json" class="form-input" style="padding: 12px;">
+        </div>
+        <div class="form-info">
+            <i data-lucide="info"></i>
+            <span>Fayl ichida xona kodi bo'lishi kerak. Xona faol bo'lsa, avtomatik ulanadi.</span>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" id="btn-cancel-json-import">Bekor</button>
+            <button class="btn btn-primary" id="btn-confirm-json-import">Import qilish</button>
+        </div>
+    </div>
+    
+    <div class="backdrop" id="drawer-backdrop"></div>
+    
+    <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
