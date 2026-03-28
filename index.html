@@ -163,7 +163,7 @@
         <div class="donate-modal-overlay" id="donateModalClose"></div>
         <div class="donate-modal-container">
             <div class="donate-modal-header">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5">
                     <path d="M20 12H4M12 4v16"/>
                     <circle cx="12" cy="12" r="10"/>
                     <path d="M4.93 4.93l14.14 14.14"/>
@@ -228,10 +228,8 @@
     </div>
 
     <script>
-        // Ikonkalarni yuklash
         lucide.createIcons();
 
-        // Scroll Reveal Animatsiyasi
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
             for (var i = 0; i < reveals.length; i++) {
@@ -246,7 +244,6 @@
         window.addEventListener("scroll", reveal);
         reveal();
 
-        // IFRAME CYCLING
         const partCount = 20;
         let currentPart = 1;
         let isWaiting = false;
@@ -267,14 +264,13 @@
             }
         });
 
-        // Donate modal functionality
+        // Donate modal
         const floatingBtn = document.getElementById('floatingDonateBtn');
         const donateModal = document.getElementById('donateModal');
         const closeModal = document.getElementById('donateModalClose');
         const closeBtn = document.getElementById('closeDonateModal');
         const copyBtn = document.getElementById('copyCardNumber');
         const amountBtns = document.querySelectorAll('.donate-amount');
-        let selectedAmount = null;
 
         if (floatingBtn) {
             floatingBtn.addEventListener('click', function() {
@@ -302,15 +298,13 @@
                 btn.addEventListener('click', function() {
                     amountBtns.forEach(function(b) { b.classList.remove('active'); });
                     btn.classList.add('active');
-                    selectedAmount = btn.getAttribute('data-amount');
+                    var selectedAmount = btn.getAttribute('data-amount');
                     if (selectedAmount === 'other') {
                         var customAmount = prompt('Summani kiriting (so\'m):', '50000');
                         if (customAmount && !isNaN(customAmount)) {
-                            selectedAmount = customAmount;
                             btn.textContent = customAmount + ' so\'m';
                         } else {
                             btn.classList.remove('active');
-                            selectedAmount = null;
                         }
                     }
                 });
