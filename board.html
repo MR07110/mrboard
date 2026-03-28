@@ -1,445 +1,396 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>MR BOARD | Whiteboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a" id="theme-color">
+    <title>MR BOARD</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-            background: #e2e8f0;
-            overflow: hidden;
-            height: 100vh;
-            touch-action: none;
-        }
-        
-        /* Auth Gateway */
-        #auth-gateway {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .auth-container {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 48px;
-            padding: 40px;
-            width: 90%;
-            max-width: 450px;
-            box-shadow: 0 24px 48px rgba(0,0,0,0.2);
-        }
-        .auth-container h2 { text-align: center; margin-bottom: 24px; color: #0f172a; }
-        .auth-container input {
-            width: 100%; padding: 14px 18px; margin-bottom: 16px;
-            border: 2px solid #e2e8f0; border-radius: 20px;
-            font-size: 15px; outline: none;
-        }
-        .auth-container input:focus { border-color: #007aff; }
-        .auth-container button {
-            width: 100%; padding: 14px; background: #007aff; color: white;
-            border: none; border-radius: 20px; font-weight: 600;
-            cursor: pointer; margin-top: 8px;
-        }
-        .auth-tabs {
-            display: flex; gap: 8px; margin-bottom: 24px;
-        }
-        .auth-tab {
-            flex: 1; padding: 10px; background: #f1f5f9;
-            border: none; border-radius: 40px; font-weight: 600; cursor: pointer;
-        }
-        .auth-tab.active { background: #007aff; color: white; }
-        .auth-panel { display: none; }
-        .auth-panel.active { display: block; }
-        .error-message {
-            color: #dc2626; font-size: 13px; text-align: center;
-            margin-top: 8px; display: none;
-        }
-        
-        /* Whiteboard */
-        #app-container {
-            position: absolute; inset: 0;
-            background: #e2e8f0; display: none;
-        }
-        canvas {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-        }
-        #layer-base { z-index: 1; pointer-events: auto; }
-        #layer-live { z-index: 2; }
-        
-        /* UI */
-        .top-bar {
-            position: absolute; top: 16px; left: 16px; right: 16px;
-            display: flex; justify-content: space-between; z-index: 100;
-        }
-        .status-pill {
-            background: rgba(255,255,255,0.8); backdrop-filter: blur(20px);
-            padding: 8px 16px; border-radius: 40px;
-            font-size: 13px; font-weight: 600;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .bottom-dock {
-            position: absolute; bottom: 20px; left: 0; right: 0;
-            display: flex; justify-content: center; z-index: 100;
-        }
-        .dock {
-            background: rgba(255,255,255,0.8); backdrop-filter: blur(20px);
-            padding: 8px 16px; border-radius: 40px;
-            display: flex; gap: 8px;
-        }
-        .action-btn {
-            width: 44px; height: 44px; border-radius: 30px;
-            background: transparent; border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            color: #475569; transition: 0.2s;
-        }
-        .action-btn.is-active { background: #007aff; color: white; }
-        .toast-wrapper {
-            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
-            z-index: 1000; display: flex; flex-direction: column; gap: 8px;
-        }
-        .toast-item {
-            background: white; padding: 10px 20px; border-radius: 40px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-size: 13px;
-        }
-    </style>
 </head>
 <body>
 
-<div id="auth-gateway">
-    <div class="auth-container">
-        <div class="auth-tabs">
-            <button class="auth-tab active" data-tab="login">Kirish</button>
-            <button class="auth-tab" data-tab="register">Ro'yxatdan o'tish</button>
-        </div>
-        
-        <div id="login-panel" class="auth-panel active">
-            <h2>Kirish</h2>
-            <input type="email" id="login-email" placeholder="Email">
-            <input type="password" id="login-password" placeholder="Parol">
-            <div id="login-error" class="error-message"></div>
-            <button id="btn-login">Kirish</button>
-        </div>
-        
-        <div id="register-panel" class="auth-panel">
-            <h2>Ro'yxatdan o'tish</h2>
-            <input type="text" id="reg-name" placeholder="Ismingiz">
-            <input type="email" id="reg-email" placeholder="Email">
-            <input type="password" id="reg-password" placeholder="Parol">
-            <input type="password" id="reg-confirm" placeholder="Parolni tasdiqlang">
-            <div id="register-error" class="error-message"></div>
-            <div id="register-success" class="error-message" style="color:#10b981;"></div>
-            <button id="btn-register">Ro'yxatdan o'tish</button>
+    <div id="toast-wrapper" class="toast-wrapper"></div>
+    <button class="zen-exit-btn" id="btn-exit-zen"><i data-lucide="maximize-2"></i></button>
+
+    <!-- ==================== LOGIN/REGISTER PANEL ==================== -->
+    <div id="auth-gateway">
+        <div class="auth-gateway-container">
+            <!-- Chap tomondagi ma'lumot -->
+            <div class="auth-info">
+                <div class="auth-info-content">
+                    <div class="auth-logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        <h2>MR <span>BOARD</span></h2>
+                    </div>
+                    <h1>Jamoaviy ishlashning<br>yangi davri</h1>
+                    <p>Real-time whiteboard. Ovozli muloqot. Cheksiz doska. Barchasi bir joyda.</p>
+                    <div class="auth-stats">
+                        <div class="stat"><span class="stat-number">0ms</span><span class="stat-label">Kechikish</span></div>
+                        <div class="stat"><span class="stat-number">∞</span><span class="stat-label">Cheksiz doska</span></div>
+                        <div class="stat"><span class="stat-number">🎤</span><span class="stat-label">Audio chat</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- O'ng tomondagi forma (Login/Register) -->
+            <div class="auth-form-container">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Kirish</button>
+                    <button class="auth-tab" data-tab="register">Ro'yxatdan o'tish</button>
+                </div>
+                
+                <!-- Login Form -->
+                <div class="auth-panel active" id="login-panel">
+                    <div class="auth-form">
+                        <div class="form-group">
+                            <label><i data-lucide="mail"></i> Email</label>
+                            <input type="email" id="login-email" class="form-input" placeholder="email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label><i data-lucide="lock"></i> Parol</label>
+                            <input type="password" id="login-password" class="form-input" placeholder="••••••••">
+                        </div>
+                        <div class="error-message" id="login-error"></div>
+                        <button class="btn-primary" id="btn-login">
+                            <i data-lucide="log-in"></i>
+                            <span>Kirish</span>
+                        </button>
+                        <div class="form-info">
+                            <i data-lucide="info"></i>
+                            <span>Hisobingiz bo'lmasa, ro'yxatdan o'ting</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Register Form -->
+                <div class="auth-panel" id="register-panel">
+                    <div class="auth-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i data-lucide="user"></i> Ism</label>
+                                <input type="text" id="reg-firstname" class="form-input" placeholder="Ismingiz">
+                            </div>
+                            <div class="form-group">
+                                <label><i data-lucide="user"></i> Familiya</label>
+                                <input type="text" id="reg-lastname" class="form-input" placeholder="Familiyangiz">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i data-lucide="at-sign"></i> Username</label>
+                            <input type="text" id="reg-username" class="form-input" placeholder="username">
+                        </div>
+                        <div class="form-group">
+                            <label><i data-lucide="mail"></i> Email</label>
+                            <input type="email" id="reg-email" class="form-input" placeholder="email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label><i data-lucide="lock"></i> Parol</label>
+                            <input type="password" id="reg-password" class="form-input" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label><i数据-lucide="lock"></i> Parolni tasdiqlang</label>
+                            <input type="password" id="reg-confirm" class="form-input" placeholder="••••••••">
+                        </div>
+                        <div class="error-message" id="register-error"></div>
+                        <div class="success-message" id="register-success"></div>
+                        <button class="btn-primary" id="btn-register">
+                            <i data-lucide="user-plus"></i>
+                            <span>Ro'yxatdan o'tish</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<div id="app-container">
-    <canvas id="layer-base"></canvas>
-    <canvas id="layer-live"></canvas>
-    
-    <div class="top-bar">
-        <div class="status-pill"><i data-lucide="hash"></i> <span id="room-code">---</span></div>
-        <div class="status-pill"><i data-lucide="crown"></i> <span id="user-role">Kuzatuvchi</span></div>
-    </div>
-    
-    <div class="bottom-dock">
-        <div class="dock">
-            <button class="action-btn is-active" data-tool="draw"><i data-lucide="pencil"></i></button>
-            <button class="action-btn" data-tool="erase"><i data-lucide="eraser"></i></button>
-            <button class="action-btn" data-tool="pan"><i data-lucide="hand"></i></button>
-            <button class="action-btn" id="undo-btn"><i data-lucide="undo-2"></i></button>
-            <button class="action-btn" id="clear-btn"><i data-lucide="trash-2"></i></button>
+    <!-- ==================== XONA YARATISH MODAL ==================== -->
+    <div class="modal-box" id="modal-create-room" style="max-width: 400px;">
+        <h3 style="text-align: center; font-size: 20px; margin-bottom: 20px;">✨ Yangi xona yaratish</h3>
+        <div class="form-group">
+            <label><i data-lucide="tag"></i> Xona nomi</label>
+            <input type="text" id="new-room-name" class="form-input" placeholder="Masalan: Matematika 7-sinf">
+        </div>
+        <div class="form-group">
+            <label><i data-lucide="globe"></i> Xona turi</label>
+            <div style="display: flex; gap: 12px; margin-top: 8px;">
+                <button class="room-type-selector active" data-type="public" style="flex: 1; padding: 12px; border-radius: 16px; background: var(--brand-alpha); border: 1px solid var(--brand-primary); cursor: pointer;">
+                    🌍 Public
+                </button>
+                <button class="room-type-selector" data-type="private" style="flex: 1; padding: 12px; border-radius: 16px; background: var(--bg-base); border: 1px solid var(--border-strong); cursor: pointer;">
+                    🔒 Private
+                </button>
+            </div>
+        </div>
+        <div class="form-group" id="new-room-password-group" style="display: none;">
+            <label><i data-lucide="key"></i> Xona paroli (ixtiyoriy)</label>
+            <input type="password" id="new-room-password" class="form-input" placeholder="Parol qo'yish">
+            <small style="font-size: 11px; color: var(--text-muted);">Private xonalar uchun tavsiya etiladi</small>
+        </div>
+        <div class="modal-actions" style="margin-top: 24px;">
+            <button class="btn btn-ghost" id="btn-cancel-create-room">Bekor</button>
+            <button class="btn btn-primary" id="btn-confirm-create-room">Yaratish</button>
         </div>
     </div>
-</div>
 
-<div id="toast-wrapper" class="toast-wrapper"></div>
+    <!-- ==================== XONAGA KIRISH MODAL (PAROL UCHUN) ==================== -->
+    <div class="modal-box" id="modal-join-room" style="max-width: 360px;">
+        <h3 style="text-align: center; font-size: 20px; margin-bottom: 20px;">🔐 Xonaga kirish</h3>
+        <div id="join-room-info" style="margin-bottom: 16px; text-align: center;">
+            <p id="join-room-name" style="font-weight: 700;"></p>
+            <p id="join-room-code" style="font-size: 12px; color: var(--text-muted);"></p>
+        </div>
+        <div class="form-group" id="join-room-password-group">
+            <label><i data-lucide="key"></i> Xona paroli</label>
+            <input type="password" id="join-room-password" class="form-input" placeholder="Parolni kiriting">
+        </div>
+        <div class="error-message" id="join-room-error" style="display: none;"></div>
+        <div class="modal-actions" style="margin-top: 24px;">
+            <button class="btn btn-ghost" id="btn-cancel-join-room">Bekor</button>
+            <button class="btn btn-primary" id="btn-confirm-join-room">Kirish</button>
+        </div>
+    </div>
 
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0",
-        authDomain: "basic-formula-484419-k8.firebaseapp.com",
-        databaseURL: "https://basic-formula-484419-k8-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "basic-formula-484419-k8",
-        storageBucket: "basic-formula-484419-k8.firebasestorage.app",
-        messagingSenderId: "629679926764",
-        appId: "1:629679926764:web:0cff483e9c4752fbd024c9"
-    };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    
-    const auth = firebase.auth();
-    const db = firebase.database();
-    
-    let currentUser = null;
-    let currentRoomId = null;
-    let isTeacher = false;
-    let currentTool = 'draw';
-    let drawing = false;
-    let lastPoint = null;
-    let currentPath = [];
-    let uid = Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomIdFromUrl = urlParams.get('room');
-    
-    // UI elements
-    const baseCanvas = document.getElementById('layer-base');
-    const liveCanvas = document.getElementById('layer-live');
-    let baseCtx, liveCtx;
-    
-    function showToast(msg) {
-        const toast = document.createElement('div');
-        toast.className = 'toast-item';
-        toast.innerHTML = msg;
-        document.getElementById('toast-wrapper').appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
-    
-    function initCanvas() {
-        baseCtx = baseCanvas.getContext('2d');
-        liveCtx = liveCanvas.getContext('2d');
+    <!-- ==================== JSON IMPORT MODAL ==================== -->
+    <div class="modal-box" id="modal-json-import" style="max-width: 400px;">
+        <h3 style="text-align: center; font-size: 20px; margin-bottom: 20px;">📁 JSON orqali xonaga kirish</h3>
+        <div class="form-group">
+            <label><i data-lucide="file-json"></i> JSON fayl tanlang</label>
+            <input type="file" id="json-import-file" accept=".json" class="form-input" style="padding: 12px;">
+        </div>
+        <div class="form-info" style="margin: 16px 0;">
+            <i data-lucide="info"></i>
+            <span>Fayl ichida xona kodi bo'lishi kerak. Xona faol bo'lsa, avtomatik ulanadi.</span>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" id="btn-cancel-json-import">Bekor</button>
+            <button class="btn btn-primary" id="btn-confirm-json-import">Import qilish</button>
+        </div>
+    </div>
+
+    <!-- ==================== WHITEBOARD APP ==================== -->
+    <div id="app-container" class="grid-pattern" style="display: none;">
+        <!-- User Info Bar -->
+        <div class="user-info-bar">
+            <div class="user-info-left">
+                <div class="user-avatar" id="user-avatar"></div>
+                <div class="user-details">
+                    <span class="user-name" id="user-name-display"></span>
+                    <span class="user-role" id="user-role-display"></span>
+                </div>
+            </div>
+            <div class="user-info-right">
+                <button class="btn-logout" id="btn-logout">
+                    <i data-lucide="log-out"></i>
+                    <span>Chiqish</span>
+                </button>
+            </div>
+        </div>
         
-        function resize() {
-            baseCanvas.width = window.innerWidth;
-            baseCanvas.height = window.innerHeight;
-            liveCanvas.width = window.innerWidth;
-            liveCanvas.height = window.innerHeight;
-            drawBase();
-        }
-        window.addEventListener('resize', resize);
-        resize();
-    }
-    
-    function drawBase() {
-        if (!baseCtx) return;
-        baseCtx.clearRect(0, 0, baseCanvas.width, baseCanvas.height);
-        db.ref(`rooms/${currentRoomId}/elements`).once('value', snap => {
-            const elements = snap.val() || {};
-            Object.values(elements).forEach(el => {
-                if (el.type === 'path' && el.points) {
-                    baseCtx.beginPath();
-                    baseCtx.strokeStyle = el.color;
-                    baseCtx.lineWidth = el.size;
-                    baseCtx.lineCap = 'round';
-                    baseCtx.lineJoin = 'round';
-                    baseCtx.moveTo(el.points[0].x, el.points[0].y);
-                    for (let i = 1; i < el.points.length; i++) {
-                        baseCtx.lineTo(el.points[i].x, el.points[i].y);
-                    }
-                    baseCtx.stroke();
-                }
-            });
-        });
-    }
-    
-    function savePath() {
-        if (currentPath.length < 2) return;
-        const color = currentTool === 'erase' ? '#e2e8f0' : '#007aff';
-        const size = currentTool === 'erase' ? 20 : 4;
-        db.ref(`rooms/${currentRoomId}/elements`).push({
-            type: 'path',
-            points: currentPath,
-            color: color,
-            size: size,
-            u: uid,
-            t: Date.now()
-        });
-    }
-    
-    function setupDrawing() {
-        const canvas = baseCanvas;
-        
-        canvas.addEventListener('pointerdown', (e) => {
-            if (currentTool === 'pan') return;
-            drawing = true;
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-            lastPoint = { x, y };
-            currentPath = [{ x, y }];
+        <canvas id="layer-base" class="engine-layer"></canvas>
+        <canvas id="layer-live" class="engine-layer"></canvas>
+        <canvas id="layer-laser" class="engine-layer"></canvas>
+
+        <div class="minimap-widget" id="minimap-widget">
+            <div class="minimap-header" id="minimap-header">
+                <i data-lucide="map" size="12"></i>
+                <span>Kuzatuv</span>
+                <button class="minimap-close-btn" id="btn-close-minimap"><i data-lucide="x" size="12"></i></button>
+            </div>
+            <div class="minimap-body">
+                <canvas id="minimap-cvs"></canvas>
+                <div id="minimap-view"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ui-overlay" style="display: none;">
+        <div class="top-bar">
+            <div class="status-pill">
+                <i data-lucide="hash"></i>
+                <span id="ui-room-code">---</span>
+            </div>
+            <div class="status-pill">
+                <i data-lucide="zoom-in"></i>
+                <span id="ui-zoom-level">100%</span>
+            </div>
+            <div class="status-pill" id="ui-user-role">
+                <i data-lucide="eye"></i> Kuzatuvchi
+            </div>
+        </div>
+
+        <div class="bottom-dock">
+            <div class="dock-content">
+                <button class="action-btn" id="btn-open-settings"><i data-lucide="settings"></i></button>
+                <button class="action-btn" id="btn-open-colors"><div class="color-indicator" id="ui-current-color" style="background: #007aff;"></div></button>
+                <div class="dock-sep"></div>
+                <button class="action-btn is-active" data-tool="draw"><i data-lucide="pencil"></i></button>
+                <button class="action-btn" data-tool="laser"><i data-lucide="wand-2"></i></button>
+                <button class="action-btn" id="btn-toggle-shapes"><i data-lucide="shapes"></i></button>
+                <button class="action-btn" data-tool="erase"><i data-lucide="eraser"></i></button>
+                <button class="action-btn" data-tool="pan"><i data-lucide="hand"></i></button>
+                <button class="action-btn" data-tool="text"><i data-lucide="type"></i></button>
+                <button class="action-btn" id="btn-action-undo"><i data-lucide="undo-2"></i></button>
+                <div class="dock-sep"></div>
+                
+                <div class="audio-module">
+                    <i data-lucide="activity" size="14"></i>
+                    <div class="viz-container" id="eq-container">
+                        <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
+                        <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
+                    </div>
+                </div>
+                
+                <button class="action-btn mic-off" id="btn-action-mic"><i data-lucide="mic-off"></i></button>
+                <button class="action-btn" id="btn-open-chat"><i data-lucide="message-square"></i><div class="badge-counter" id="badge-chat-count" style="display: none;">0</div></button>
+                <button class="action-btn" id="btn-open-users"><i data-lucide="users"></i><div class="badge-counter" id="badge-users-count">0</div></button>
+                <div class="dock-sep"></div>
+                <button class="action-btn" id="btn-action-fullscreen"><i data-lucide="maximize"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="backdrop" id="drawer-backdrop"></div>
+
+    <!-- Settings Drawer -->
+    <div class="drawer" id="drawer-settings">
+        <div class="drawer-header">
+            <div class="drawer-title"><i data-lucide="settings"></i> Sozlamalar</div>
+            <button class="btn-close" data-close><i data-lucide="x"></i></button>
+        </div>
+        <div class="drawer-content">
+            <div class="section-label" style="font-size:12px; font-weight:800; margin-bottom:12px;">Asbob qalinligi</div>
+            <div class="slider-group">
+                <i data-lucide="pen-tool"></i>
+                <input type="range" id="inp-tool-size" min="1" max="50" value="4">
+                <span id="val-tool-size" style="font-weight:700;">4px</span>
+            </div>
             
-            liveCtx.clearRect(0, 0, liveCanvas.width, liveCanvas.height);
-            if (currentTool === 'erase') {
-                liveCtx.globalCompositeOperation = 'destination-out';
-                liveCtx.lineWidth = 20;
-            } else {
-                liveCtx.globalCompositeOperation = 'source-over';
-                liveCtx.strokeStyle = '#007aff';
-                liveCtx.lineWidth = 4;
-            }
-        });
-        
-        canvas.addEventListener('pointermove', (e) => {
-            if (!drawing) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-            const point = { x, y };
+            <div class="section-label" style="font-size:12px; font-weight:800; margin-bottom:12px;">Ko'rinish</div>
+            <div class="settings-grid">
+                <button class="setting-card" id="act-toggle-minimap"><i data-lucide="map"></i>Minimap</button>
+                <button class="setting-card" id="act-center"><i data-lucide="target"></i>Markaz</button>
+            </div>
+
+            <div class="section-label" style="font-size:12px; font-weight:800; margin-bottom:12px;">Asosiy amallar</div>
+            <div class="settings-grid">
+                <button class="setting-card" id="act-undo"><i data-lucide="undo-2"></i>Bekor</button>
+                <button class="setting-card" id="act-image"><i data-lucide="image"></i>Rasm</button>
+                <button class="setting-card" id="act-export"><i data-lucide="download"></i>PNG</button>
+                <button class="setting-card" id="act-save-json"><i数据-lucide="save"></i>Saqlash</button>
+                <button class="setting-card" id="act-load-json"><i data-lucide="folder-open"></i>Yuklash</button>
+            </div>
             
-            liveCtx.beginPath();
-            liveCtx.moveTo(lastPoint.x, lastPoint.y);
-            liveCtx.lineTo(point.x, point.y);
-            liveCtx.stroke();
-            
-            currentPath.push(point);
-            lastPoint = point;
-        });
+            <div id="panel-host-controls" style="display: none;">
+                <div class="section-label" style="font-size:12px; font-weight:800; margin:16px 0 12px; color: var(--state-danger);">O'qituvchi Paneli</div>
+                <div class="settings-grid" style="grid-template-columns: 1fr;">
+                    <button class="setting-card danger" id="act-clear-board"><i data-lucide="trash-2"></i>Doskani tozalash</button>
+                    <button class="setting-card danger" id="act-disable-laser"><i data-lucide="wand-2"></i>Lazer o'chirish</button>
+                </div>
+                
+                <div class="section-label" style="font-size:12px; font-weight:800; margin:16px 0 12px;">Xona linklari</div>
+                <div class="link-box" id="teacher-link-box" style="display: none;">
+                    <span id="teacher-link-text" style="font-size:10px;"></span>
+                    <button class="copy-btn" data-copy="teacher">Nusxa</button>
+                </div>
+                <div class="link-box" id="student-link-box" style="display: none;">
+                    <span id="student-link-text" style="font-size:10px;"></span>
+                    <button class="copy-btn" data-copy="student">Nusxa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Colors Drawer -->
+    <div class="drawer" id="drawer-colors">
+        <div class="drawer-header">
+            <div class="drawer-title"><i data-lucide="palette"></i> Ranglar</div>
+            <button class="btn-close" data-close><i data-lucide="x"></i></button>
+        </div>
+        <div class="drawer-content">
+            <div class="color-wheel-wrapper"><canvas id="cvs-color-picker" width="260" height="260"></canvas></div>
+            <div class="slider-group"><i data-lucide="sun"></i><input type="range" id="inp-color-bright" min="0" max="100" value="100"></div>
+            <div class="palette-grid" id="ui-quick-palette"></div>
+        </div>
+    </div>
+
+    <!-- Users Drawer -->
+    <div class="drawer right" id="drawer-users">
+        <div class="drawer-header">
+            <div class="drawer-title"><i data-lucide="users"></i> Qatnashchilar</div>
+            <button class="btn-close" data-close><i data-lucide="x"></i></button>
+        </div>
+        <div class="drawer-content">
+            <div class="user-list" id="ui-participants-list"></div>
+        </div>
+    </div>
+
+    <!-- Chat Drawer -->
+    <div class="drawer right" id="drawer-chat">
+        <div class="drawer-header">
+            <div class="drawer-title"><i data-lucide="message-square"></i> Chat</div>
+            <button class="btn-close" data-close><i data-lucide="x"></i></button>
+        </div>
+        <div class="chat-messages" id="ui-chat-messages"></div>
+        <div class="chat-composer">
+            <input type="text" id="inp-chat-text" class="chat-input" placeholder="Xabar yozing..." maxlength="250">
+            <button class="chat-submit" id="btn-submit-chat"><i data-lucide="send"></i></button>
+        </div>
+    </div>
+
+    <!-- Shapes Drawer -->
+    <div class="drawer" id="drawer-shapes">
+        <div class="drawer-header">
+            <div class="drawer-title"><i data-lucide="shapes"></i> Shakllar</div>
+            <button class="btn-close" data-close><i data-lucide="x"></i></button>
+        </div>
+        <div class="drawer-content">
+            <div class="settings-grid">
+                <button class="setting-card" data-tool="rect"><i data-lucide="square"></i>To'rtburchak</button>
+                <button class="setting-card" data-tool="circle"><i data-lucide="circle"></i>Aylana</button>
+                <button class="setting-card" data-tool="line"><i data-lucide="minus"></i>Chiziq</button>
+                <button class="setting-card" data-tool="arrow"><i data-lucide="arrow-up-right"></i>O'q</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Modal -->
+    <div class="modal-box" id="modal-text-input">
+        <h3 style="text-align: center; font-size: 20px;">Matn kiritish</h3>
+        <textarea id="inp-text-area" placeholder="Matnni yozing..." maxlength="300"></textarea>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" id="btn-cancel-text">Bekor</button>
+            <button class="btn btn-primary" id="btn-add-text">Qo'shish</button>
+        </div>
+    </div>
+
+    <input type="file" id="sys-file-img" accept="image/*" style="display: none;">
+    <input type="file" id="sys-file-json" accept=".json" style="display: none;">
+
+    <!-- External JavaScript Files -->
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/main.js"></script>
+    
+    <script>
+        // URL dan xona ID sini olish
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomIdFromUrl = urlParams.get('room');
         
-        canvas.addEventListener('pointerup', () => {
-            if (!drawing) return;
-            drawing = false;
-            savePath();
-            liveCtx.clearRect(0, 0, liveCanvas.width, liveCanvas.height);
-            drawBase();
-        });
-    }
-    
-    function setTool(tool) {
-        currentTool = tool;
-        document.querySelectorAll('.action-btn[data-tool]').forEach(btn => {
-            btn.classList.remove('is-active');
-        });
-        const activeBtn = document.querySelector(`.action-btn[data-tool="${tool}"]`);
-        if (activeBtn) activeBtn.classList.add('is-active');
-    }
-    
-    function startWhiteboard(roomIdParam) {
-        currentRoomId = roomIdParam;
-        document.getElementById('auth-gateway').style.display = 'none';
-        document.getElementById('app-container').style.display = 'block';
-        document.getElementById('room-code').innerText = roomIdParam;
-        document.getElementById('user-role').innerHTML = isTeacher ? 'O\'qituvchi' : 'Kuzatuvchi';
-        
-        initCanvas();
-        setupDrawing();
-        
-        // Listen for new elements
-        db.ref(`rooms/${currentRoomId}/elements`).on('child_added', () => drawBase());
-        
-        // Add user to room
-        db.ref(`rooms/${currentRoomId}/users/${uid}`).set({
-            name: currentUser.displayName || currentUser.email.split('@')[0],
-            joinedAt: Date.now(),
-            isTeacher: isTeacher
-        });
-        
-        showToast(`Xonaga kirdingiz: ${roomIdParam}`);
-    }
-    
-    // Auth
-    auth.onAuthStateChanged(async (user) => {
-        if (user) {
-            currentUser = user;
-            if (roomIdFromUrl) {
-                // Check if user is teacher
-                const roomSnap = await db.ref(`rooms/${roomIdFromUrl}/meta/teacherUid`).once('value');
-                isTeacher = roomSnap.val() === user.uid;
-                startWhiteboard(roomIdFromUrl);
-            } else {
-                // Create new room
-                const newRoomId = Math.random().toString(36).substr(2, 6).toUpperCase();
-                isTeacher = true;
-                await db.ref(`rooms/${newRoomId}/meta`).set({
-                    teacherUid: user.uid,
-                    createdAt: Date.now()
-                });
-                startWhiteboard(newRoomId);
-            }
-        } else {
-            document.getElementById('auth-gateway').style.display = 'flex';
+        if (roomIdFromUrl) {
+            localStorage.setItem('pendingRoomId', roomIdFromUrl);
         }
-    });
-    
-    // Login
-    document.getElementById('btn-login').addEventListener('click', async () => {
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-        const errorDiv = document.getElementById('login-error');
-        try {
-            await auth.signInWithEmailAndPassword(email, password);
-        } catch(e) {
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = e.message;
-        }
-    });
-    
-    // Register
-    document.getElementById('btn-register').addEventListener('click', async () => {
-        const name = document.getElementById('reg-name').value;
-        const email = document.getElementById('reg-email').value;
-        const password = document.getElementById('reg-password').value;
-        const confirm = document.getElementById('reg-confirm').value;
-        const errorDiv = document.getElementById('register-error');
-        const successDiv = document.getElementById('register-success');
-        
-        if (password !== confirm) {
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = 'Parollar mos kelmadi!';
-            return;
-        }
-        try {
-            const cred = await auth.createUserWithEmailAndPassword(email, password);
-            await cred.user.updateProfile({ displayName: name });
-            successDiv.style.display = 'block';
-            successDiv.textContent = '✅ Ro\'yxatdan o\'tdingiz!';
-            setTimeout(() => window.location.reload(), 1500);
-        } catch(e) {
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = e.message;
-        }
-    });
-    
-    // Tab switching
-    document.querySelectorAll('.auth-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            const tabId = tab.dataset.tab;
-            document.getElementById('login-panel').classList.toggle('active', tabId === 'login');
-            document.getElementById('register-panel').classList.toggle('active', tabId === 'register');
-        });
-    });
-    
-    // Tool buttons
-    document.querySelectorAll('.action-btn[data-tool]').forEach(btn => {
-        btn.addEventListener('click', () => setTool(btn.dataset.tool));
-    });
-    
-    // Undo
-    document.getElementById('undo-btn').addEventListener('click', async () => {
-        const snap = await db.ref(`rooms/${currentRoomId}/elements`).once('value');
-        const elements = snap.val();
-        if (elements) {
-            const keys = Object.keys(elements);
-            if (keys.length > 0) {
-                await db.ref(`rooms/${currentRoomId}/elements/${keys[keys.length-1]}`).remove();
-                drawBase();
-                showToast('Bekor qilindi');
-            }
-        }
-    });
-    
-    // Clear
-    document.getElementById('clear-btn').addEventListener('click', async () => {
-        if (confirm('Doskani tozalansinmi?')) {
-            await db.ref(`rooms/${currentRoomId}/elements`).remove();
-            drawBase();
-            showToast('Doska tozalandi');
-        }
-    });
-    
-    lucide.createIcons();
-</script>
+    </script>
 </body>
-</html>
+</html> 
