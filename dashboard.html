@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>MR BOARD | Dashboard</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -41,12 +41,26 @@
         .logo span { color: #007aff; }
         .user-info { display: flex; align-items: center; gap: 16px; }
         .user-avatar {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: #007aff;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 700; font-size: 18px; text-transform: uppercase;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            background-color: #007aff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            text-transform: uppercase;
             cursor: pointer;
             transition: 0.2s;
+            overflow: hidden;
+        }
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .user-avatar:hover { transform: scale(1.05); box-shadow: 0 0 0 3px rgba(0,122,255,0.3); }
         .btn-logout {
@@ -74,7 +88,7 @@
         }
         .quick-action-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
 
-        /* ========== CATEGORY TABS ========== */
+        /* Category Tabs */
         .category-tabs {
             display: flex;
             gap: 8px;
@@ -173,16 +187,32 @@
         }
         .refresh-btn:hover { background: #f1f5f9; }
 
-        /* Profile Section */
+        /* Profile Section with Avatar */
         .profile-container {
             background: white; border-radius: 32px; padding: 32px;
             max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0;
         }
         .profile-avatar-large {
-            width: 100px; height: 100px; background: #007aff; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 40px; font-weight: 800;
-            margin: 0 auto 20px; cursor: pointer; transition: 0.2s;
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            background-color: #007aff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: 800;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            overflow: hidden;
+        }
+        .profile-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .profile-avatar-large:hover { transform: scale(1.05); box-shadow: 0 0 0 3px rgba(0,122,255,0.3); }
         .profile-field { margin-bottom: 20px; }
@@ -257,7 +287,7 @@
         @keyframes floatPulse { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-8px); } }
         @keyframes heartbeat { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.2); } }
 
-        /* Donate Modal (karta) */
+        /* Donate Modal */
         .donate-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1001; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
         .donate-modal.is-visible { visibility: visible; opacity: 1; }
         .donate-modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); cursor: pointer; }
@@ -358,7 +388,7 @@
             </div>
         </div>
 
-        <!-- Boards Section (Barcha doskalar) -->
+        <!-- Boards Section -->
         <div class="content-section" id="boards-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2>📋 Barcha doskalar</h2>
@@ -380,10 +410,12 @@
             </div>
         </div>
 
-        <!-- Profile Section -->
+        <!-- Profile Section with Avatar -->
         <div class="content-section" id="profile-section">
             <div class="profile-container">
-                <div class="profile-avatar-large" id="profile-avatar-large" onclick="document.getElementById('avatar-input').click()">U</div>
+                <div class="profile-avatar-large" id="profile-avatar-large" onclick="document.getElementById('avatar-input').click()">
+                    <span id="avatar-placeholder">U</span>
+                </div>
                 <input type="file" id="avatar-input" style="display: none;" accept="image/*">
                 
                 <div class="profile-field">
@@ -493,7 +525,6 @@
         </div>
     </div>
 
-    <script type="module" src="js/dashboard.js"></script>
     <script>
         // Firebase config
         const firebaseConfig = {
@@ -510,6 +541,7 @@
         const db = firebase.database();
 
         let currentUser = null;
+        let currentAvatarBase64 = null;
 
         // ========== CATEGORY TABS ==========
         function initTabs() {
@@ -596,7 +628,45 @@
             localStorage.setItem('mr_recent_boards', JSON.stringify(recent));
         }
 
-        // ========== PROFILE ==========
+        // ========== PROFILE WITH AVATAR (BASE64) ==========
+        function updateAvatarUI(avatarBase64, name) {
+            const avatarLarge = document.getElementById('profile-avatar-large');
+            const userAvatar = document.getElementById('user-avatar');
+            const placeholderSpan = document.getElementById('avatar-placeholder');
+            const letter = (name || currentUser?.displayName || currentUser?.email || 'U').charAt(0).toUpperCase();
+            
+            if (avatarBase64 && avatarBase64.startsWith('data:image')) {
+                // Show image
+                if (avatarLarge) {
+                    avatarLarge.style.backgroundImage = `url(${avatarBase64})`;
+                    avatarLarge.style.backgroundSize = 'cover';
+                    avatarLarge.style.backgroundPosition = 'center';
+                    if (placeholderSpan) placeholderSpan.style.display = 'none';
+                }
+                if (userAvatar) {
+                    userAvatar.style.backgroundImage = `url(${avatarBase64})`;
+                    userAvatar.style.backgroundSize = 'cover';
+                    userAvatar.style.backgroundColor = 'transparent';
+                    userAvatar.innerHTML = '';
+                }
+            } else {
+                // Show text placeholder
+                if (avatarLarge) {
+                    avatarLarge.style.backgroundImage = 'none';
+                    avatarLarge.style.backgroundColor = '#007aff';
+                    if (placeholderSpan) {
+                        placeholderSpan.style.display = 'flex';
+                        placeholderSpan.textContent = letter;
+                    }
+                }
+                if (userAvatar) {
+                    userAvatar.style.backgroundImage = 'none';
+                    userAvatar.style.backgroundColor = '#007aff';
+                    userAvatar.innerHTML = letter;
+                }
+            }
+        }
+
         function loadProfileData() {
             if (!currentUser) return;
             const userRef = db.ref(`users/${currentUser.uid}`);
@@ -606,11 +676,14 @@
                 document.getElementById('profile-username').value = data.username || currentUser.email?.split('@')[0] || '';
                 document.getElementById('profile-email').value = currentUser.email || '';
                 document.getElementById('profile-bio').value = data.bio || '';
-                const avatarLetter = (data.fullName || currentUser.displayName || currentUser.email || 'U').charAt(0).toUpperCase();
-                document.getElementById('profile-avatar-large').textContent = avatarLetter;
-                document.getElementById('user-avatar').textContent = avatarLetter;
-                document.getElementById('user-name').textContent = data.fullName || currentUser.displayName || currentUser.email?.split('@')[0] || 'User';
-                document.getElementById('welcome-message').textContent = `Assalomu alaykum, ${data.fullName || currentUser.displayName || 'Foydalanuvchi'}!`;
+                
+                // Load avatar from base64
+                currentAvatarBase64 = data.avatarBase64 || null;
+                const displayName = data.fullName || currentUser.displayName || currentUser.email?.split('@')[0] || 'User';
+                updateAvatarUI(currentAvatarBase64, displayName);
+                
+                document.getElementById('user-name').textContent = displayName;
+                document.getElementById('welcome-message').textContent = `Assalomu alaykum, ${displayName}!`;
             });
         }
 
@@ -619,12 +692,19 @@
             const fullName = document.getElementById('profile-fullname').value.trim();
             const username = document.getElementById('profile-username').value.trim();
             const bio = document.getElementById('profile-bio').value.trim();
-            await db.ref(`users/${currentUser.uid}`).update({
+            
+            const updateData = {
                 fullName: fullName,
                 username: username,
                 bio: bio,
                 updatedAt: Date.now()
-            });
+            };
+            
+            if (currentAvatarBase64) {
+                updateData.avatarBase64 = currentAvatarBase64;
+            }
+            
+            await db.ref(`users/${currentUser.uid}`).update(updateData);
             if (fullName) await currentUser.updateProfile({ displayName: fullName });
             loadProfileData();
             showToast('✅ Profil saqlandi!', 'success');
@@ -632,6 +712,29 @@
 
         function openProfileTab() {
             document.querySelector('.category-tab[data-tab="profile"]').click();
+        }
+
+        // Avatar upload handler
+        function handleAvatarUpload(file) {
+            if (!file) return;
+            if (!file.type.match('image.*')) {
+                showToast('Faqat rasm fayllari qabul qilinadi!', 'error');
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Rasm hajmi 2MB dan kichik bo\'lishi kerak!', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentAvatarBase64 = e.target.result;
+                const displayName = document.getElementById('profile-fullname').value.trim() || 
+                                    currentUser?.displayName || 
+                                    currentUser?.email?.split('@')[0] || 'User';
+                updateAvatarUI(currentAvatarBase64, displayName);
+                showToast('Avatar yangilandi. Saqlash tugmasini bosing!', 'success');
+            };
+            reader.readAsDataURL(file);
         }
 
         // ========== CREATE ROOM ==========
@@ -743,6 +846,13 @@
                 lucide.createIcons();
             } else {
                 window.location.href = 'board.html';
+            }
+        });
+
+        // Avatar input event
+        document.getElementById('avatar-input').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                handleAvatarUpload(e.target.files[0]);
             }
         });
 
