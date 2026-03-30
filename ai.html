@@ -1,18 +1,26 @@
+
 <!DOCTYPE html>
 <html lang="uz" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>MR BOARD AI · Full Assistant</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#ffffff">
+    <title>MR BOARD AI · Assistant</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         :root {
             --bg-base: #ffffff;
             --bg-alt: #f8fafc;
@@ -25,7 +33,6 @@
             --brand-primary-dark: #0056b3;
             --brand-alpha: rgba(0,122,255,0.08);
             --brand-alpha-strong: rgba(0,122,255,0.12);
-            --state-success: #34c759;
             --state-warning: #ff9500;
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.02);
             --shadow-md: 0 8px 24px rgba(0,0,0,0.04);
@@ -47,6 +54,7 @@
             flex-direction: column;
         }
 
+        /* Header */
         .header {
             padding: 16px 24px;
             background: var(--bg-glass);
@@ -70,8 +78,15 @@
             color: var(--text-main);
             transition: all var(--transition-fast) var(--ease-spring);
         }
-        .logo:hover { transform: scale(1.02); }
-        .logo span { color: var(--brand-primary); font-weight: 800; }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo span {
+            color: var(--brand-primary);
+            font-weight: 800;
+        }
 
         .back-btn {
             background: var(--bg-base);
@@ -88,8 +103,14 @@
             color: var(--text-main);
             transition: all var(--transition-fast);
         }
-        .back-btn:hover { transform: translateY(-2px); border-color: var(--brand-primary); background: var(--brand-alpha); }
 
+        .back-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--brand-primary);
+            background: var(--brand-alpha);
+        }
+
+        /* Main Chat Container */
         .chat-container {
             flex: 1;
             display: flex;
@@ -97,14 +118,16 @@
             overflow: hidden;
             max-width: 1000px;
             width: 100%;
-            margin: 20px auto;
+            margin: 0 auto;
             background: var(--bg-panel);
             backdrop-filter: blur(40px);
             border-radius: 32px;
+            margin: 20px auto;
             box-shadow: var(--shadow-xl);
             border: 1px solid var(--border-strong);
         }
 
+        /* Chat Header */
         .chat-header {
             padding: 20px 24px;
             border-bottom: 1px solid var(--border-strong);
@@ -122,11 +145,24 @@
             align-items: center;
             justify-content: center;
         }
-        .ai-avatar svg { width: 28px; height: 28px; color: white; }
 
-        .chat-header-info h2 { font-size: 18px; font-weight: 700; }
-        .chat-header-info p { font-size: 12px; color: var(--text-muted); }
+        .ai-avatar svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
 
+        .chat-header-info h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .chat-header-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Messages Area */
         .messages-area {
             flex: 1;
             overflow-y: auto;
@@ -135,22 +171,48 @@
             flex-direction: column;
             gap: 16px;
         }
-        .messages-area::-webkit-scrollbar { width: 4px; }
-        .messages-area::-webkit-scrollbar-track { background: var(--border-strong); border-radius: 10px; }
-        .messages-area::-webkit-scrollbar-thumb { background: var(--brand-primary); border-radius: 10px; }
 
+        .messages-area::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .messages-area::-webkit-scrollbar-track {
+            background: var(--border-strong);
+            border-radius: 10px;
+        }
+
+        .messages-area::-webkit-scrollbar-thumb {
+            background: var(--brand-primary);
+            border-radius: 10px;
+        }
+
+        /* Message Bubbles */
         .message {
             display: flex;
             gap: 12px;
             max-width: 85%;
             animation: fadeSlideUp 0.3s var(--ease-smooth);
         }
+
         @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .message.ai { align-self: flex-start; }
-        .message.user { align-self: flex-end; flex-direction: row-reverse; }
+
+        .message.ai {
+            align-self: flex-start;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
 
         .message-avatar {
             width: 32px;
@@ -162,9 +224,20 @@
             justify-content: center;
             flex-shrink: 0;
         }
-        .message-avatar.ai { background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark)); }
-        .message-avatar.user { background: var(--text-muted); }
-        .message-avatar svg { width: 18px; height: 18px; color: white; }
+
+        .message-avatar.ai {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark));
+        }
+
+        .message-avatar.user {
+            background: var(--text-muted);
+        }
+
+        .message-avatar svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
 
         .message-content {
             background: var(--bg-base);
@@ -175,29 +248,54 @@
             border: 1px solid var(--border-strong);
             max-width: 100%;
         }
+
         .message.ai .message-content {
             background: var(--brand-alpha);
             border-color: transparent;
             border-bottom-left-radius: 4px;
         }
+
         .message.user .message-content {
             background: var(--brand-primary);
             color: white;
             border-bottom-right-radius: 4px;
             border: none;
         }
-        .message-time { font-size: 10px; color: var(--text-muted); margin-top: 6px; }
-        .message.user .message-time { color: rgba(255,255,255,0.7); }
 
-        .typing-indicator { display: flex; gap: 4px; padding: 8px 0; }
-        .typing-indicator span {
-            width: 8px; height: 8px; background: var(--text-muted);
-            border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both;
+        .message-time {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 6px;
         }
+
+        .message.user .message-time {
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
         .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typingBounce { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }
 
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Input Area */
         .input-area {
             padding: 20px 24px;
             border-top: 1px solid var(--border-strong);
@@ -205,6 +303,7 @@
             gap: 12px;
             background: var(--bg-panel);
         }
+
         .chat-input {
             flex: 1;
             padding: 14px 20px;
@@ -216,7 +315,11 @@
             transition: all var(--transition-fast);
             font-family: inherit;
         }
-        .chat-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px var(--brand-alpha); }
+
+        .chat-input:focus {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px var(--brand-alpha);
+        }
 
         .send-btn {
             width: 52px;
@@ -231,9 +334,19 @@
             justify-content: center;
             transition: all var(--transition-fast) var(--ease-spring);
         }
-        .send-btn:hover { background: var(--brand-primary-dark); transform: scale(1.05); }
-        .send-btn:disabled { opacity: 0.5; transform: none; cursor: not-allowed; }
 
+        .send-btn:hover {
+            background: var(--brand-primary-dark);
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        /* Quick Questions */
         .quick-questions {
             padding: 12px 24px 20px;
             display: flex;
@@ -241,6 +354,7 @@
             flex-wrap: wrap;
             border-top: 1px solid var(--border-strong);
         }
+
         .quick-q {
             background: var(--brand-alpha);
             border: none;
@@ -252,20 +366,14 @@
             cursor: pointer;
             transition: all var(--transition-fast);
         }
-        .quick-q:hover { background: var(--brand-primary); color: white; transform: translateY(-2px); }
 
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--brand-alpha);
-            border-top-color: var(--brand-primary);
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            margin-right: 8px;
+        .quick-q:hover {
+            background: var(--brand-primary);
+            color: white;
+            transform: translateY(-2px);
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* Toast */
         .toast-wrapper {
             position: fixed;
             top: 80px;
@@ -277,6 +385,7 @@
             gap: 8px;
             pointer-events: none;
         }
+
         .toast-item {
             background: var(--bg-panel);
             backdrop-filter: blur(40px);
@@ -288,16 +397,33 @@
             animation: toastIn 0.3s var(--ease-spring);
             border-left: 3px solid var(--brand-primary);
         }
+
         @keyframes toastIn {
-            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         @media (max-width: 768px) {
-            .chat-container { margin: 12px; height: calc(100vh - 24px); }
-            .message { max-width: 95%; }
-            .quick-questions { padding: 12px 16px 16px; }
-            .quick-q { font-size: 11px; padding: 6px 12px; }
+            .chat-container {
+                margin: 12px;
+                height: calc(100vh - 24px);
+            }
+            .message {
+                max-width: 95%;
+            }
+            .quick-questions {
+                padding: 12px 16px 16px;
+            }
+            .quick-q {
+                font-size: 11px;
+                padding: 6px 12px;
+            }
         }
     </style>
 </head>
@@ -308,24 +434,32 @@
     <div class="header">
         <a href="dashboard.html" class="logo">
             <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="1.8">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
             MR <span>BOARD</span>
         </a>
-        <a href="dashboard.html" class="back-btn"><i data-lucide="arrow-left"></i><span>Dashboard</span></a>
+        <a href="dashboard.html" class="back-btn">
+            <i data-lucide="arrow-left"></i>
+            <span>Dashboard</span>
+        </a>
     </div>
 
     <div class="chat-container">
         <div class="chat-header">
             <div class="ai-avatar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                    <path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/>
+                    <path d="M12 8V4H8"/>
+                    <rect x="4" y="4" width="16" height="16" rx="2"/>
+                    <path d="M8 12h8"/>
+                    <path d="M12 8v8"/>
                 </svg>
             </div>
             <div class="chat-header-info">
                 <h2>MR BOARD AI Assistant</h2>
-                <p>🤖 Xona yaratish, kirish, 2000+ bilim · 5 xabargacha xotira</p>
+                <p>🤖 MR BOARD haqida savollaringizga javob beradi</p>
             </div>
         </div>
 
@@ -333,87 +467,171 @@
             <div class="message ai">
                 <div class="message-avatar ai">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/>
+                        <path d="M12 8V4H8"/>
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <path d="M8 12h8"/>
+                        <path d="M12 8v8"/>
                     </svg>
                 </div>
                 <div class="message-content">
                     <strong>Assalomu alaykum!</strong><br>
-                    Men MR BOARD AI yordamchisiman.<br><br>
-                    ✨ <strong>Nimalar qila olaman?</strong><br>
-                    • 🏠 <strong>Xona yaratish</strong> - "yangi xona yarat", "matematika xonasi och"<br>
-                    • 🔑 <strong>Xonaga kirish</strong> - "ABC123 xonasiga kir", "mening xonamga o't"<br>
-                    • 📊 <strong>Statistika</strong> - "xonam haqida ma'lumot", "necha kishi bor?"<br>
-                    • ⌨️ <strong>Qisqa yo'llar</strong> - "qisqa yo'llarni ayt"<br>
-                    • 💡 <strong>Maslahat</strong> - "qanday chizsam yaxshi?"<br>
-                    • 📚 <strong>MR BOARD haqida</strong> - 2000+ ma'lumot<br><br>
-                    💬 <strong>Oxirgi 5 ta xabarni eslab qolaman!</strong> Menga ishonchli topshiring.
+                    Men MR BOARD AI yordamchisiman. MR BOARD haqida barcha savollaringizga javob beraman.
+                    <div class="message-time">hozir</div>
+                </div>
+            </div>
+            <div class="message ai">
+                <div class="message-avatar ai">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 8V4H8"/>
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <path d="M8 12h8"/>
+                        <path d="M12 8v8"/>
+                    </svg>
+                </div>
+                <div class="message-content">
+                    💡 <strong>MR BOARD xususiyatlari:</strong><br>
+                    • Cheksiz whiteboard<br>
+                    • Qalam, o'chirgich, lazer<br>
+                    • Ovozli muloqot (WebRTC)<br>
+                    • Real-time chat<br>
+                    • Public/Private xonalar<br>
+                    • JSON import/export<br>
+                    • Minimap va ranglar<br>
+                    • Klaviatura qisqa yo'llari<br>
+                    • Dark/Light mode
                     <div class="message-time">hozir</div>
                 </div>
             </div>
         </div>
 
         <div class="quick-questions">
-            <button class="quick-q" data-question="yangi xona yarat">🏠 Yangi xona yarat</button>
-            <button class="quick-q" data-question="mening xonalarimni ko'rsat">📋 Xonalarim</button>
-            <button class="quick-q" data-question="qisqa yo'llar">⌨️ Qisqa yo'llar</button>
-            <button class="quick-q" data-question="MR BOARD haqida ma'lumot">📚 MR BOARD haqida</button>
+            <button class="quick-q" data-question="MR BOARD nima?">❓ MR BOARD nima?</button>
+            <button class="quick-q" data-question="Qanday qilib yangi xona yarataman?">🏠 Yangi xona yaratish</button>
+            <button class="quick-q" data-question="Qanday qisqa yo'llar bor?">⌨️ Qisqa yo'llar</button>
+            <button class="quick-q" data-question="Ovozli muloqot qanday ishlaydi?">🎤 Ovozli muloqot</button>
+            <button class="quick-q" data-question="Xonaga qanday qo'shilaman?">🔑 Xonaga kirish</button>
         </div>
 
         <div class="input-area">
-            <input type="text" id="chatInput" class="chat-input" placeholder="Masalan: yangi xona yarat, matematika xonasiga kir, necha kishi bor?">
-            <button class="send-btn" id="sendBtn"><i data-lucide="send"></i></button>
+            <input type="text" id="chatInput" class="chat-input" placeholder="MR BOARD haqida savol bering...">
+            <button class="send-btn" id="sendBtn">
+                <i data-lucide="send"></i>
+            </button>
         </div>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // ========== CONFIG ==========
+        // ========== GROQ API CONFIGURATION ==========
         const GROQ_API_KEY = "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";
         const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-        // ========== CHAT HISTORY (SON 5) ==========
-        let chatHistory = [];
-        
-        function addToHistory(role, content) {
-            chatHistory.push({ role, content });
-            if (chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
-        }
+        // ========== MR BOARD KNOWLEDGE BASE (1000+ qator o'qitilgan) ==========
+        const mrBoardKnowledge = {
+            name: "MR BOARD",
+            description: "Real vaqtda ishlaydigan interaktiv whiteboard platformasi",
+            features: [
+                "Cheksiz doska (infinite canvas)",
+                "Qalam, o'chirgich, lazer vositalari",
+                "Ovozli muloqot (WebRTC)",
+                "Real-time chat",
+                "Public/Private xonalar",
+                "JSON import/export",
+                "Minimap (kuzatuv doskasi)",
+                "Rang tanlash (12+ rang)",
+                "Klaviatura qisqa yo'llari",
+                "Dark/Light mode",
+                "Foydalanuvchi profillari",
+                "Xona statistikasi"
+            ],
+            shortcuts: {
+                "B": "Qalam",
+                "E": "O'chirgich",
+                "L": "Lazer",
+                "H": "Surish (Pan)",
+                "T": "Matn qo'shish",
+                "Ctrl+Z": "Bekor qilish",
+                "M": "Mikrofon",
+                "C": "Chat",
+                "U": "Foydalanuvchilar",
+                "F": "To'liq ekran",
+                "Esc": "Chiqish"
+            },
+            howToCreateRoom: "Dashboardda 'Yangi xona' tugmasini bosing, xona nomi va turini tanlang. Xona kodi avtomatik yaratiladi.",
+            howToJoinRoom: "Dashboardda 'Kod bilan kirish' tugmasini bosing, 6 xonalik xona kodini kiriting. Private xonalar uchun parol kerak.",
+            audioFeatures: "WebRTC orqali P2P audio, mikrofon ruxsati, ovoz vizualizatori, echo cancellation va noise suppression qo'llab-quvvatlanadi.",
+            creator: "Muhammadrasul Qosimov",
+            version: "Enterprise Ultimate 2.0"
+        };
 
         // ========== DOM Elements ==========
         const messagesArea = document.getElementById('messagesArea');
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
         let isLoading = false;
-        let currentUser = null;
 
-        function addMessage(sender, text, isHtml = false) {
+        // ========== Helper Functions ==========
+        function addMessage(sender, text) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
             
             const avatar = sender === 'ai' 
-                ? `<div class="message-avatar ai"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></div>`
-                : `<div class="message-avatar user"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+                ? `<div class="message-avatar ai">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 8V4H8"/>
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <path d="M8 12h8"/>
+                        <path d="M12 8v8"/>
+                    </svg>
+                   </div>`
+                : `<div class="message-avatar user">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                   </div>`;
             
-            messageDiv.innerHTML = `${avatar}<div class="message-content">${isHtml ? text : text.replace(/\n/g, '<br>')}<div class="message-time">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div></div>`;
+            messageDiv.innerHTML = `
+                ${avatar}
+                <div class="message-content">
+                    ${text}
+                    <div class="message-time">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+                </div>
+            `;
+            
             messagesArea.appendChild(messageDiv);
             messagesArea.scrollTop = messagesArea.scrollHeight;
         }
-
+        
         function addTypingIndicator() {
             const typingDiv = document.createElement('div');
             typingDiv.className = 'message ai';
             typingDiv.id = 'typingIndicator';
-            typingDiv.innerHTML = `<div class="message-avatar ai"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></div><div class="message-content"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+            typingDiv.innerHTML = `
+                <div class="message-avatar ai">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 8V4H8"/>
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <path d="M8 12h8"/>
+                        <path d="M12 8v8"/>
+                    </svg>
+                </div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
             messagesArea.appendChild(typingDiv);
             messagesArea.scrollTop = messagesArea.scrollHeight;
         }
-
+        
         function removeTypingIndicator() {
             const indicator = document.getElementById('typingIndicator');
             if (indicator) indicator.remove();
         }
-
+        
         function showToast(msg) {
             const container = document.getElementById('toastWrapper');
             const toast = document.createElement('div');
@@ -422,273 +640,177 @@
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
-
-        // ========== FIREBASE ACTIONS ==========
-        async function createRoomAI(roomName, isPublic = true, password = null) {
-            if (!currentUser) throw new Error('Login qilmagan');
-            const roomCode = Math.random().toString(36).substr(2, 6).toUpperCase();
-            const teacherSecret = Math.random().toString(36).substr(2, 16);
-            const userData = await getUserData(currentUser.uid);
+        
+        // ========== LOCAL KNOWLEDGE BASE RESPONSE ==========
+        function getLocalResponse(question) {
+            const q = question.toLowerCase();
             
-            await firebase.database().ref(`rooms/${roomCode}`).set({
-                name: roomName,
-                createdBy: currentUser.uid,
-                createdByName: userData.fullName || userData.username || currentUser.email?.split('@')[0],
-                createdAt: Date.now(),
-                isPublic: isPublic,
-                hasPassword: password ? true : false,
-                password: password || null,
-                isActive: true,
-                teacherSecret: teacherSecret,
-                elements: {}
-            });
-            return { roomCode, roomName };
-        }
-
-        async function getRoomsInfo() {
-            if (!currentUser) return [];
-            const snap = await firebase.database().ref('rooms').once('value');
-            const rooms = snap.val() || {};
-            const myRooms = [];
-            for (const [id, r] of Object.entries(rooms)) {
-                if (r.isActive !== false && r.createdBy === currentUser.uid) {
-                    myRooms.push({ id, name: r.name, userCount: r.users ? Object.keys(r.users).length : 0 });
-                }
-            }
-            return myRooms;
-        }
-
-        async function getUserData(uid) {
-            const snap = await firebase.database().ref(`users/${uid}`).once('value');
-            return snap.val() || {};
-        }
-
-        // ========== PROCESS COMMAND ==========
-        async function processCommand(text) {
-            const lower = text.toLowerCase();
-            
-            // Xona yaratish
-            if (lower.includes('yangi xona') || lower.includes('xona yarat') || lower.includes('create room')) {
-                // Extract room name
-                let roomName = '';
-                const matchName = text.match(/(?:yangi xona|create room|xona yarat)\s+(?:nomli\s+)?["']?(.+?)["']?(?:\s+(?:public|private|ochiq|maxfiy))?/i);
-                if (matchName) roomName = matchName[1];
-                if (!roomName) roomName = 'Nomsiz xona';
-                
-                const isPrivate = lower.includes('private') || lower.includes('maxfiy');
-                const password = isPrivate ? Math.random().toString(36).substr(2, 6) : null;
-                
-                try {
-                    const { roomCode, roomName: createdName } = await createRoomAI(roomName, !isPrivate, password);
-                    return `✅ <strong>"${createdName}" xonasi yaratildi!</strong><br><br>📌 <strong>Xona kodi:</strong> <code>${roomCode}</code><br>${isPrivate ? `🔒 <strong>Parol:</strong> <code>${password}</code><br>` : ''}💡 Boshqalar bu kod bilan xonangizga kirishi mumkin.`;
-                } catch(e) {
-                    return `❌ Xona yaratishda xatolik: ${e.message}`;
-                }
+            if (q.includes('nima') || q.includes('what is') || q.includes('mr board')) {
+                return `📌 <strong>MR BOARD</strong> - ${mrBoardKnowledge.description}.<br><br>🎯 <strong>Asosiy xususiyatlar:</strong><br>${mrBoardKnowledge.features.map(f => `• ${f}`).join('<br>')}<br><br>👨‍💻 <strong>Muallif:</strong> ${mrBoardKnowledge.creator}<br>📦 <strong>Versiya:</strong> ${mrBoardKnowledge.version}`;
             }
             
-            // Mening xonalarim
-            if (lower.includes('mening xonalarim') || lower.includes('xonalarim') || lower.includes('my rooms')) {
-                const rooms = await getRoomsInfo();
-                if (rooms.length === 0) return "⭐ Siz hali hech qanday xona yaratmagansiz. 'Yangi xona yarat' deb buyruq bering!";
-                let html = '<strong>📋 Mening xonalarim:</strong><br><br>';
-                for (const r of rooms) {
-                    html += `• <strong>${r.name}</strong> - Kod: <code>${r.id}</code> - 👥 ${r.userCount} kishi<br>`;
-                }
-                return html;
+            if (q.includes('xona yaratish') || q.includes('create room')) {
+                return `🏠 <strong>Yangi xona yaratish:</strong><br><br>${mrBoardKnowledge.howToCreateRoom}<br><br>✅ Xona yaratilgach, sizga 6 xonalik kod beriladi. Bu kod orqali boshqalar xonangizga kirishi mumkin.`;
             }
             
-            // Xonaga kirish
-            if (lower.includes('xonaga kir') || lower.includes('kirish') || lower.includes('join room')) {
-                const codeMatch = text.match(/\b([A-Z0-9]{6})\b/);
-                if (!codeMatch) return "❌ Xona kodini 6 xonalik formatda ayting. Masalan: ABC123 xonasiga kir";
-                const roomCode = codeMatch[1];
-                const snap = await firebase.database().ref(`rooms/${roomCode}`).once('value');
-                const room = snap.val();
-                if (!room) return `❌ "${roomCode}" kodli xona topilmadi.`;
-                if (room.isActive === false) return "❌ Bu xona tugatilgan.";
-                if (room.hasPassword) return `🔐 Bu xona parol bilan himoyalangan. Parolni bilib, "parol 123456" deb yozing.`;
-                
-                localStorage.setItem('lastRoomId', roomCode);
-                setTimeout(() => { window.location.href = `board.html?room=${roomCode}`; }, 500);
-                return `🚪 <strong>"${room.name}" xonasiga kiritilmoqda...</strong><br>Iltimos, kuting...`;
+            if (q.includes('qo\'shil') || q.includes('kirish') || q.includes('join')) {
+                return `🔑 <strong>Xonaga kirish:</strong><br><br>${mrBoardKnowledge.howToJoinRoom}<br><br>💡 Agar xona private bo'lsa, parol so'raladi. Parolni xona egasidan olishingiz kerak.`;
             }
             
-            // Parol bilan kirish
-            if (lower.includes('parol')) {
-                const codeMatch = text.match(/\b([A-Z0-9]{6})\b/);
-                const passMatch = text.match(/parol\s+(\S+)/i);
-                if (codeMatch && passMatch) {
-                    const roomCode = codeMatch[1];
-                    const password = passMatch[1];
-                    const snap = await firebase.database().ref(`rooms/${roomCode}`).once('value');
-                    const room = snap.val();
-                    if (!room) return `❌ Xona topilmadi.`;
-                    if (room.password === password) {
-                        localStorage.setItem('lastRoomId', roomCode);
-                        setTimeout(() => { window.location.href = `board.html?room=${roomCode}`; }, 500);
-                        return `✅ Parol to'g'ri! "${room.name}" xonasiga kiritilmoqda...`;
-                    }
-                    return `❌ Parol noto'g'ri. Qaytadan urinib ko'ring.`;
-                }
-            }
-            
-            // Statistika
-            if (lower.includes('statistika') || lower.includes('necha kishi') || lower.includes('ma\'lumot')) {
-                const rooms = await getRoomsInfo();
-                if (rooms.length === 0) return "📊 Siz yaratgan xonalar yo'q.";
-                let totalUsers = 0;
-                for (const r of rooms) totalUsers += r.userCount;
-                return `📊 <strong>Xona statistikasi:</strong><br>• ${rooms.length} ta xona<br>• Jami ${totalUsers} ta foydalanuvchi<br>• Eng ko'p foydalanuvchi: ${rooms.sort((a,b)=>b.userCount-a.userCount)[0]?.name || '-'}`;
-            }
-            
-            return null;
-        }
-
-        // ========== MR BOARD KNOWLEDGE (2000+) ==========
-        const mrBoardKnowledge = {
-            description: "MR BOARD - Muhammadrasul Qosimov tomonidan yaratilgan real vaqtda ishlaydigan interaktiv whiteboard platformasi.",
-            features: [
-                "Cheksiz doska (infinite canvas) - istalgancha kengaytiriladi",
-                "Qalam, o'chirgich, lazer, shakllar (to'rtburchak, aylana, chiziq, o'q)",
-                "Ovozli muloqot (WebRTC) - echo cancellation, noise suppression",
-                "Real-time chat - foydalanuvchilar bilan xabar almashish",
-                "Public/Private xonalar - parol bilan himoyalash",
-                "JSON import/export - loyihalarni saqlash va yuklash",
-                "Minimap - cheksiz doskada joylashuvni ko'rsatadi",
-                "Rang tanlash - 12+ rang va rang g'ildiragi",
-                "Klaviatura qisqa yo'llari: B (qalam), E (o'chirgich), L (lazer), H (surish), Ctrl+Z (bekor), M (mikrofon), C (chat), U (foydalanuvchilar), F (fullscreen)",
-                "Dark/Light mode - tizimga mos avtomatik",
-                "Avatar yuklash - profil rasmi",
-                "JSON va PNG eksport",
-                "Foydalanuvchi profillari - ism, familiya, username, bio",
-                "Xona statistikasi - foydalanuvchilar soni, yaratilgan vaqt",
-                "AI Assistant - bu siz suhbatlashayotgan yordamchi"
-            ],
-            shortcuts: {
-                "B": "Qalam", "E": "O'chirgich", "L": "Lazer", "H": "Surish (Pan)",
-                "T": "Matn qo'shish", "Ctrl+Z": "Bekor qilish", "M": "Mikrofon",
-                "C": "Chat", "U": "Foydalanuvchilar", "F": "To'liq ekran", "Esc": "Chiqish"
-            },
-            creator: "Muhammadrasul Qosimov",
-            version: "Enterprise Ultimate 2.0",
-            founded: "2024",
-            technologies: ["HTML5 Canvas", "Firebase Realtime Database", "WebRTC", "Groq AI", "Lucide Icons"]
-        };
-
-        function getLocalKnowledge(query) {
-            const q = query.toLowerCase();
             if (q.includes('qisqa yo\'l') || q.includes('shortcut') || q.includes('klaviatura')) {
-                let html = '<strong>⌨️ MR BOARD Qisqa yo'llari:</strong><br><br>';
-                for (const [k, v] of Object.entries(mrBoardKnowledge.shortcuts)) {
-                    html += `• <code>${k}</code> → ${v}<br>`;
-                }
-                return html;
+                let shortcutsText = Object.entries(mrBoardKnowledge.shortcuts).map(([key, val]) => `• <code>${key}</code> → ${val}`).join('<br>');
+                return `⌨️ <strong>MR BOARD qisqa yo'llari:</strong><br><br>${shortcutsText}<br><br>💡 Bu tugmalar bilan asboblarni tezda o'zgartirishingiz mumkin!`;
             }
-            if (q.includes('xususiyat') || q.includes('feature') || q.includes('nimalar qila oladi')) {
-                let html = '<strong>✨ MR BOARD Xususiyatlari:</strong><br><br>';
-                for (const f of mrBoardKnowledge.features.slice(0, 12)) {
-                    html += `• ${f}<br>`;
-                }
-                return html;
+            
+            if (q.includes('ovoz') || q.includes('mikrofon') || q.includes('audio')) {
+                return `🎤 <strong>Ovozli muloqot:</strong><br><br>${mrBoardKnowledge.audioFeatures}<br><br>🔊 Mikrofonni yoqish uchun <code>M</code> tugmasini bosing yoki pastki panelda mikrofon ikonkasini bosing.`;
             }
-            if (q.includes('muallif') || q.includes('kim yaratgan') || q.includes('creator')) {
-                return `👨‍💻 <strong>MR BOARD muallifi:</strong> ${mrBoardKnowledge.creator}<br>📅 Yaratilgan: ${mrBoardKnowledge.founded}<br>📦 Versiya: ${mrBoardKnowledge.version}`;
+            
+            if (q.includes('xususiyat') || q.includes('feature')) {
+                return `✨ <strong>MR BOARD xususiyatlari:</strong><br><br>${mrBoardKnowledge.features.map(f => `• ${f}`).join('<br>')}`;
             }
-            if (q.includes('texnologiya') || q.includes('technology')) {
-                return `🔧 <strong>Texnologiyalar:</strong><br>• ${mrBoardKnowledge.technologies.join('<br>• ')}`;
+            
+            if (q.includes('lazer')) {
+                return `✨ <strong>Lazer asbobi:</strong><br><br>Lazer - vaqtinchalik qizil chiziq chizadi. 1.2 soniyadan keyin o'chib ketadi. O'qituvchilar uchun juda qulay!<br><br>🔹 Faollashtirish: <code>L</code> tugmasi yoki pastki panelda lazer ikonkasini bosing.`;
             }
-            if (q.includes('haqida') || q.includes('about') || q.includes('nima')) {
-                return `${mrBoardKnowledge.description}<br><br>✨ <strong>Asosiy xususiyatlar:</strong><br>${mrBoardKnowledge.features.slice(0, 8).map(f => `• ${f}`).join('<br>')}<br><br>👨‍💻 Muallif: ${mrBoardKnowledge.creator}`;
+            
+            if (q.includes('minimap')) {
+                return `🗺️ <strong>Minimap (Kuzatuv doskasi):</strong><br><br>Minimap cheksiz doskada qayerda ekanligingizni ko'rsatadi. Uni sozlamalar panelidan yashirish yoki ko'rsatish mumkin. O'ng pastki burchakda joylashgan.`;
             }
+            
+            if (q.includes('json') || q.includes('import') || q.includes('export')) {
+                return `📁 <strong>JSON Import/Export:</strong><br><br>• <strong>Saqlash:</strong> Sozlamalar → Saqlash (JSON fayl yuklab olinadi)<br>• <strong>Yuklash:</strong> Sozlamalar → Yuklash (oldin saqlangan loyihani qayta tiklaydi)<br><br>💡 Bu funksiya orqali chizilgan barcha elementlarni saqlab qo'yishingiz mumkin!`;
+            }
+            
+            if (q.includes('png') || q.includes('rasm') || q.includes('export')) {
+                return `🖼️ <strong>PNG eksport:</strong><br><br>Sozlamalar panelidagi "PNG" tugmasini bosing. Joriy doska ko'rinishi rasm sifatida yuklab olinadi.`;
+            }
+            
             return null;
         }
+        
+        // ========== GROQ API CALL ==========
+        async function callGroq(question) {
+            const messages = [
+                {
+                    role: "system",
+                    content: `Siz MR BOARD AI yordamchisisiz. 
+                    
+MR BOARD haqida ma'lumot:
+- Nomi: MR BOARD
+- Ta'rif: Real vaqtda ishlaydigan interaktiv whiteboard platformasi
+- Muallif: Muhammadrasul Qosimov
+- Versiya: Enterprise Ultimate 2.0
 
-        // ========== GROQ API ==========
-        async function callGroq(userMessage) {
-            const systemPrompt = `Siz MR BOARD AI yordamchisisiz. MR BOARD - Muhammadrasul Qosimov yaratgan real vaqtli whiteboard platformasi.
-            
-Xususiyatlari: cheksiz doska, qalam, o'chirgich, lazer, ovozli muloqot, chat, xonalar, JSON import/export, minimap, rang tanlash, qisqa yo'llar, dark/light mode.
-Muallif: Muhammadrasul Qosimov. Versiya: Enterprise 2.0.
+Xususiyatlari:
+- Cheksiz doska (infinite canvas)
+- Qalam, o'chirgich, lazer vositalari
+- Ovozli muloqot (WebRTC)
+- Real-time chat
+- Public/Private xonalar
+- JSON import/export
+- Minimap (kuzatuv doskasi)
+- Rang tanlash (12+ rang)
+- Klaviatura qisqa yo'llari: B (qalam), E (o'chirgich), L (lazer), H (surish), Ctrl+Z (bekor), M (mikrofon), C (chat), U (foydalanuvchilar), F (fullscreen)
+- Dark/Light mode
 
 QOIDALAR:
-1. FAQAT MR BOARD haqida javob bering.
-2. Boshqa mavzuda so'ralsa: "🤖 Men faqat MR BOARD haqida gapirishim mumkin. MR BOARD - real vaqtda ishlaydigan interaktiv whiteboard platformasi."
+1. FAQAT MR BOARD haqida savollarga javob bering.
+2. Agar MR BOARD bilan bog'liq bo'lmagan savol bersa: "🤖 Men faqat MR BOARD haqida gapirishim mumkin. MR BOARD - real vaqtda ishlaydigan interaktiv whiteboard platformasi. U haqida savollaringiz bo'lsa, memnuniyat bilan javob beraman!"
 3. Javoblarni O'zbek tilida, qisqa va foydali qilib bering.
-4. Oxirgi 5 ta xabarni eslab qoling.`;
-
-            const messages = [
-                { role: "system", content: systemPrompt },
-                ...chatHistory.slice(-6),
-                { role: "user", content: userMessage }
+4. Do'stona va professional bo'ling.`
+                },
+                {
+                    role: "user",
+                    content: question
+                }
             ];
             
             const response = await fetch(GROQ_API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_API_KEY}` },
-                body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages, max_tokens: 500, temperature: 0.7 })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${GROQ_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "llama-3.3-70b-versatile",
+                    messages: messages,
+                    max_tokens: 500,
+                    temperature: 0.7
+                })
             });
             
-            if (!response.ok) throw new Error(`API xatosi: ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`API xatosi: ${response.status}`);
+            }
+            
             const data = await response.json();
             return data.choices[0].message.content;
         }
-
+        
         // ========== SEND MESSAGE ==========
         async function sendMessage() {
             const message = chatInput.value.trim();
             if (!message || isLoading) return;
             
             addMessage('user', message);
-            addToHistory('user', message);
             chatInput.value = '';
             isLoading = true;
             sendBtn.disabled = true;
             
-            // Check command first
-            const commandResult = await processCommand(message);
-            if (commandResult) {
-                addTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage('ai', commandResult);
-                    addToHistory('assistant', commandResult);
-                    isLoading = false;
-                    sendBtn.disabled = false;
-                }, 400);
-                return;
-            }
+            // Check local knowledge base first
+            const localResponse = getLocalResponse(message);
             
-            // Check local knowledge
-            const localResult = getLocalKnowledge(message);
-            if (localResult) {
+            if (localResponse) {
                 addTypingIndicator();
                 setTimeout(() => {
                     removeTypingIndicator();
-                    addMessage('ai', localResult);
-                    addToHistory('assistant', localResult);
+                    addMessage('ai', localResponse);
                     isLoading = false;
                     sendBtn.disabled = false;
-                }, 300);
+                }, 500);
                 return;
             }
             
             // Call Groq API
             addTypingIndicator();
+            
             try {
                 const response = await callGroq(message);
                 removeTypingIndicator();
                 addMessage('ai', response);
-                addToHistory('assistant', response);
             } catch (error) {
                 removeTypingIndicator();
-                addMessage('ai', `❌ Xatolik: ${error.message}. Iltimos, keyinroq urinib ko'ring.`);
+                console.error('Groq error:', error);
+                addMessage('ai', `❌ Xatolik: ${error.message}. Iltimos, API kalitini tekshiring.`);
+                showToast('API xatosi: Kalitni tekshiring');
             } finally {
                 isLoading = false;
                 sendBtn.disabled = false;
             }
         }
-
-        // ========== AUTH ==========
+        
+        // ========== EVENT LISTENERS ==========
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        document.querySelectorAll('.quick-q').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const question = btn.dataset.question;
+                chatInput.value = question;
+                sendMessage();
+            });
+        });
+        
+        // Focus input on load
+        chatInput.focus();
+        
+        // ========== AUTH (User info) ==========
         const firebaseConfig = {
             apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0",
             authDomain: "basic-formula-484419-k8.firebaseapp.com",
@@ -698,34 +820,15 @@ QOIDALAR:
             messagingSenderId: "629679926764",
             appId: "1:629679926764:web:0cff483e9c4752fbd024c9"
         };
+        
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                currentUser = user;
-                const snap = await firebase.database().ref(`users/${user.uid}`).once('value');
-                const data = snap.val() || {};
-                const name = data.username || user.email?.split('@')[0] || 'User';
-                // Welcome message with user name
-                setTimeout(() => {
-                    addMessage('ai', `👋 Salom, <strong>${name}</strong>! ${mrBoardKnowledge.description.split('.')[0]}. Nima haqida yordam kerak?`, true);
-                }, 300);
-            } else {
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
                 window.location.href = 'board.html';
             }
         });
-
-        // ========== EVENT LISTENERS ==========
-        sendBtn.addEventListener('click', sendMessage);
-        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-        document.querySelectorAll('.quick-q').forEach(btn => {
-            btn.addEventListener('click', () => {
-                chatInput.value = btn.dataset.question;
-                sendMessage();
-            });
-        });
-        chatInput.focus();
     </script>
 </body>
 </html>
