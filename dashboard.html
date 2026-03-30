@@ -122,6 +122,42 @@
         .tab-item i { font-size: 24px; transition: transform var(--transition-fast); }
         .tab-item.active { color: var(--brand-primary); background: var(--brand-alpha); }
         
+        /* ========== FLOATING AI BUTTON (BLUE CIRCLE) ========== */
+        .floating-ai-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark));
+            box-shadow: 0 8px 24px rgba(0,122,255,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s var(--ease-spring);
+            border: none;
+            animation: floatPulse 2s ease-in-out infinite;
+        }
+        
+        .floating-ai-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(0,122,255,0.6);
+        }
+        
+        .floating-ai-btn svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+        
+        @keyframes floatPulse {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        
         /* My Rooms Modal */
         .myrooms-modal {
             position: fixed;
@@ -357,6 +393,13 @@
             .user-name { display: none; }
             .myrooms-modal-content { width: 95%; max-height: 85vh; }
             .myroom-info { gap: 8px; }
+            .floating-ai-btn {
+                bottom: 80px;
+                right: 16px;
+                width: 48px;
+                height: 48px;
+            }
+            .floating-ai-btn svg { width: 24px; height: 24px; }
         }
     </style>
 </head>
@@ -422,6 +465,16 @@
         <button class="tab-item" data-tab="profile"><i data-lucide="user"></i><span>Profil</span></button>
     </div>
 
+    <!-- ========== FLOATING AI BUTTON ========== -->
+    <a href="ai.html" class="floating-ai-btn" id="floatingAiBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 8V4H8"/>
+            <rect x="4" y="4" width="16" height="16" rx="2"/>
+            <path d="M8 12h8"/>
+            <path d="M12 8v8"/>
+        </svg>
+    </a>
+
     <!-- My Rooms Modal -->
     <div class="myrooms-modal" id="myRoomsModal">
         <div class="myrooms-modal-content">
@@ -478,7 +531,7 @@
         <div class="modal-header"><i data-lucide="plus-circle"></i> Yangi xona yaratish</div>
         <div class="form-group"><label><i data-lucide="tag"></i> Xona nomi</label><input type="text" id="roomNameInput" class="form-input" placeholder="Masalan: Matematika 7-sinf"></div>
         <div class="form-group"><label><i data-lucide="globe"></i> Xona turi</label><div class="room-type-selector"><button class="type-btn active" data-type="public"><i data-lucide="globe"></i> Public</button><button class="type-btn" data-type="private"><i data-lucide="lock"></i> Private</button></div></div>
-        <div class="form-group" id="passwordGroup" style="display: none;"><label><i data-lucide="key"></i> Parol</label><input type="password" id="roomPassword" class="form-input" placeholder="Parol qo'yish"></div>
+        <div class="form-group" id="passwordGroup" style="display: none;"><label><i数据-lucide="key"></i> Parol</label><input type="password" id="roomPassword" class="form-input" placeholder="Parol qo'yish"></div>
         <div class="modal-actions"><button class="btn btn-ghost" id="cancelCreateBtn"><i data-lucide="x"></i> Bekor</button><button class="btn btn-primary" id="confirmCreateBtn"><i data-lucide="check"></i> Yaratish</button></div>
     </div>
 
@@ -662,7 +715,6 @@
             currentProfileUser = await getUserData(uid);
             const modal = document.getElementById('userProfileModal');
             const avatarDiv = document.getElementById('userProfileAvatar');
-            const avatarText = document.getElementById('userProfileAvatarText');
             
             if (currentProfileUser.avatarBase64) {
                 avatarDiv.style.backgroundImage = `url(${currentProfileUser.avatarBase64})`;
