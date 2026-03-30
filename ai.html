@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="mobile-web-app-capable" content="yes">
     <title>MR BOARD AI · Do'stona Yordamchi</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -24,7 +23,6 @@
             --brand-primary: #007aff;
             --brand-primary-dark: #0056b3;
             --brand-alpha: rgba(0,122,255,0.08);
-            --state-success: #34c759;
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.02);
             --shadow-md: 0 8px 24px rgba(0,0,0,0.04);
             --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.08);
@@ -37,7 +35,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui;
-            background: var(--bg-alt);
+            background: transparent;
             color: var(--text-main);
             height: 100vh;
             overflow: hidden;
@@ -45,8 +43,9 @@
             flex-direction: column;
         }
 
-        .header {
-            padding: 16px 24px;
+        /* Modal ichida header ko'rinishi */
+        .modal-header-bar {
+            padding: 12px 20px;
             background: var(--bg-glass);
             backdrop-filter: blur(24px);
             border-bottom: 1px solid var(--border-strong);
@@ -58,79 +57,44 @@
             z-index: 100;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 24px;
-            font-weight: 700;
-            text-decoration: none;
-            color: var(--text-main);
-            transition: all var(--transition-fast) var(--ease-spring);
-        }
-        .logo:hover { transform: scale(1.02); }
-        .logo span { color: var(--brand-primary); font-weight: 800; }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .new-chat-btn {
-            background: var(--brand-alpha);
-            border: 1px solid var(--border-strong);
-            border-radius: 40px;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--brand-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all var(--transition-fast);
-        }
-        .new-chat-btn:hover {
-            background: var(--brand-primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .back-btn {
-            background: var(--bg-base);
-            border: 1px solid var(--border-strong);
-            border-radius: 40px;
-            padding: 8px 20px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
+        .logo-small {
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 18px;
+            font-weight: 700;
             text-decoration: none;
             color: var(--text-main);
+        }
+        .logo-small span { color: var(--brand-primary); }
+
+        .modal-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-base);
+            border: 1px solid var(--border-strong);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
             transition: all var(--transition-fast);
         }
-        .back-btn:hover { transform: translateY(-2px); border-color: var(--brand-primary); background: var(--brand-alpha); }
+        .modal-close-btn:hover {
+            background: var(--brand-alpha);
+            transform: rotate(90deg);
+        }
 
         .chat-container {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            max-width: 1000px;
-            width: 100%;
-            margin: 20px auto;
             background: var(--bg-panel);
-            backdrop-filter: blur(40px);
-            border-radius: 32px;
-            box-shadow: var(--shadow-xl);
-            border: 1px solid var(--border-strong);
         }
 
         .chat-header {
-            padding: 20px 24px;
+            padding: 16px 20px;
             border-bottom: 1px solid var(--border-strong);
             display: flex;
             align-items: center;
@@ -138,26 +102,26 @@
         }
 
         .ai-avatar {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark));
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .ai-avatar svg { width: 28px; height: 28px; color: white; }
+        .ai-avatar svg { width: 22px; height: 22px; color: white; }
 
-        .chat-header-info h2 { font-size: 18px; font-weight: 700; }
-        .chat-header-info p { font-size: 12px; color: var(--text-muted); }
+        .chat-header-info h3 { font-size: 16px; font-weight: 700; }
+        .chat-header-info p { font-size: 11px; color: var(--text-muted); }
 
         .messages-area {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
         .messages-area::-webkit-scrollbar { width: 4px; }
         .messages-area::-webkit-scrollbar-track { background: var(--border-strong); border-radius: 10px; }
@@ -165,20 +129,20 @@
 
         .message {
             display: flex;
-            gap: 12px;
-            max-width: 85%;
+            gap: 10px;
+            max-width: 90%;
             animation: fadeSlideUp 0.3s var(--ease-smooth);
         }
         @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .message.ai { align-self: flex-start; }
         .message.user { align-self: flex-end; flex-direction: row-reverse; }
 
         .message-avatar {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             background: var(--brand-primary);
             display: flex;
@@ -188,14 +152,14 @@
         }
         .message-avatar.ai { background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark)); }
         .message-avatar.user { background: var(--text-muted); }
-        .message-avatar svg { width: 18px; height: 18px; color: white; }
+        .message-avatar svg { width: 14px; height: 14px; color: white; }
 
         .message-content {
             background: var(--bg-base);
-            padding: 12px 18px;
-            border-radius: 20px;
-            font-size: 14px;
-            line-height: 1.5;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 13px;
+            line-height: 1.45;
             border: 1px solid var(--border-strong);
             max-width: 100%;
         }
@@ -210,39 +174,36 @@
             border-bottom-right-radius: 4px;
             border: none;
         }
-        .message-time { font-size: 10px; color: var(--text-muted); margin-top: 6px; }
-        .message.user .message-time { color: rgba(255,255,255,0.7); }
+        .message-time { font-size: 9px; color: var(--text-muted); margin-top: 4px; }
 
-        .typing-indicator { display: flex; gap: 4px; padding: 8px 0; }
+        .typing-indicator { display: flex; gap: 4px; padding: 6px 0; }
         .typing-indicator span {
-            width: 8px; height: 8px; background: var(--text-muted);
+            width: 6px; height: 6px; background: var(--text-muted);
             border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both;
         }
         @keyframes typingBounce { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }
 
         .input-area {
-            padding: 20px 24px;
+            padding: 12px 16px;
             border-top: 1px solid var(--border-strong);
             display: flex;
-            gap: 12px;
+            gap: 10px;
             background: var(--bg-panel);
         }
         .chat-input {
             flex: 1;
-            padding: 14px 20px;
-            border-radius: 44px;
+            padding: 10px 16px;
+            border-radius: 40px;
             border: 1px solid var(--border-strong);
             background: var(--bg-base);
-            font-size: 14px;
+            font-size: 13px;
             outline: none;
-            transition: all var(--transition-fast);
-            font-family: inherit;
         }
-        .chat-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px var(--brand-alpha); }
+        .chat-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 2px var(--brand-alpha); }
 
         .send-btn {
-            width: 52px;
-            height: 52px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: var(--brand-primary);
             color: white;
@@ -251,114 +212,96 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all var(--transition-fast) var(--ease-spring);
+            transition: all var(--transition-fast);
         }
-        .send-btn:hover { background: var(--brand-primary-dark); transform: scale(1.05); }
-        .send-btn:disabled { opacity: 0.5; transform: none; cursor: not-allowed; }
+        .send-btn:hover { background: var(--brand-primary-dark); transform: scale(1.03); }
 
         .quick-questions {
-            padding: 12px 24px 20px;
+            padding: 10px 16px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             border-top: 1px solid var(--border-strong);
         }
         .quick-q {
             background: var(--brand-alpha);
             border: none;
-            border-radius: 40px;
-            padding: 8px 16px;
-            font-size: 12px;
+            border-radius: 30px;
+            padding: 6px 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--brand-primary);
             cursor: pointer;
             transition: all var(--transition-fast);
         }
-        .quick-q:hover { background: var(--brand-primary); color: white; transform: translateY(-2px); }
+        .quick-q:hover { background: var(--brand-primary); color: white; }
 
-        .toast-wrapper {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            pointer-events: none;
-        }
-        .toast-item {
-            background: var(--bg-panel);
-            backdrop-filter: blur(40px);
-            padding: 12px 24px;
-            border-radius: 60px;
+        .new-chat-btn-sm {
+            background: var(--brand-alpha);
+            border: none;
+            border-radius: 30px;
+            padding: 6px 12px;
+            font-size: 11px;
             font-weight: 600;
-            font-size: 13px;
-            box-shadow: var(--shadow-lg);
-            animation: toastIn 0.3s var(--ease-spring);
-            border-left: 3px solid var(--brand-primary);
-        }
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            color: var(--brand-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         @media (max-width: 768px) {
-            .chat-container { margin: 12px; height: calc(100vh - 24px); }
             .message { max-width: 95%; }
-            .quick-questions { padding: 12px 16px 16px; }
-            .quick-q { font-size: 11px; padding: 6px 12px; }
-            .new-chat-btn span { display: none; }
-            .new-chat-btn { padding: 8px 12px; }
+            .quick-questions { gap: 6px; }
+            .quick-q { font-size: 10px; padding: 5px 10px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="toast-wrapper" id="toastWrapper"></div>
-
-    <div class="header">
-        <a href="dashboard.html" class="logo">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="1.8">
+    <div class="modal-header-bar">
+        <div class="logo-small">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="1.8">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
                 <path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
-            MR <span>BOARD</span>
-        </a>
-        <div class="header-actions">
-            <button class="new-chat-btn" id="newChatBtn">
-                <i data-lucide="plus"></i>
-                <span>Yangi suhbat</span>
-            </button>
-            <a href="dashboard.html" class="back-btn"><i data-lucide="arrow-left"></i><span>Dashboard</span></a>
+            MR <span>BOARD AI</span>
         </div>
+        <button class="modal-close-btn" id="closeModalBtn">
+            <i data-lucide="x" size="16"></i>
+        </button>
     </div>
 
     <div class="chat-container">
         <div class="chat-header">
             <div class="ai-avatar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
                     <path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/>
                 </svg>
             </div>
             <div class="chat-header-info">
-                <h2>MR BOARD AI</h2>
-                <p>💬 Do'stona · Savol-javob · Xotira saqlanadi</p>
+                <h3>AI Yordamchi</h3>
+                <p>💬 Do'stona · Xona yaratish · Savol-javob</p>
+            </div>
+            <div style="margin-left: auto;">
+                <button class="new-chat-btn-sm" id="newChatBtnSm">
+                    <i data-lucide="plus" size="12"></i> Yangi
+                </button>
             </div>
         </div>
 
         <div class="messages-area" id="messagesArea"></div>
 
         <div class="quick-questions">
-            <button class="quick-q" data-question="xona yarat">🏠 Xona yaratmoqchiman</button>
-            <button class="quick-q" data-question="mening xonalarim">📋 Xonalarimni ko'rsat</button>
+            <button class="quick-q" data-question="xona yarat">🏠 Xona yarat</button>
+            <button class="quick-q" data-question="mening xonalarim">📋 Xonalarim</button>
             <button class="quick-q" data-question="qisqa yo'llar">⌨️ Qisqa yo'llar</button>
-            <button class="quick-q" data-question="MR BOARD haqida">📚 MR BOARD haqida</button>
+            <button class="quick-q" data-question="MR BOARD haqida">📚 Haqida</button>
         </div>
 
         <div class="input-area">
             <input type="text" id="chatInput" class="chat-input" placeholder="Salom! Xona yaratmoqchiman...">
-            <button class="send-btn" id="sendBtn"><i data-lucide="send"></i></button>
+            <button class="send-btn" id="sendBtn"><i data-lucide="send" size="16"></i></button>
         </div>
     </div>
 
@@ -369,21 +312,17 @@
         const GROQ_API_KEY = "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";
         const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-        // ========== LOCAL STORAGE (Xotira saqlash) ==========
         let currentUser = null;
-        let currentChatId = null;
         let chatHistory = [];
-        let pendingAction = null; // Xona yaratish jarayoni uchun
-        let waitingFor = null; // "name", "type" yoki null
+        let pendingAction = null;
+        let waitingFor = null;
 
-        // Chatni yuklash
         function loadChat() {
             const saved = localStorage.getItem(`mrboard_ai_chat_${currentUser?.uid || 'guest'}`);
             if (saved) {
                 try {
                     const data = JSON.parse(saved);
                     chatHistory = data.history || [];
-                    currentChatId = data.chatId || Date.now().toString();
                     renderMessages();
                 } catch(e) { startNewChat(); }
             } else {
@@ -391,16 +330,14 @@
             }
         }
 
-        // Yangi suhbat
         function startNewChat() {
             chatHistory = [];
-            currentChatId = Date.now().toString();
             pendingAction = null;
             waitingFor = null;
             
             const welcomeMsg = {
                 role: 'assistant',
-                content: `👋 **Salom!** Men MR BOARD AI yordamchisiman.\n\n🤗 **Do'stona suhbat** qilamiz, savol-javob orqali ishlaymiz.\n\n🔹 **Misol:** "xona yarat" desangiz, men sizga nomini, turini so'rayman.\n🔹 **Random nom** ham berishim mumkin, sizga yoqqanini tanlaysiz.\n🔹 **Barcha suhbatlar** avtomatik saqlanadi.\n🔹 **"Yangi suhbat"** tugmasi bilan tozalashingiz mumkin.\n\n✨ **Nima qilamiz?** Xona yaratmoqchimisiz yoki MR BOARD haqida bilmoqchimisiz?`
+                content: `👋 **Salom!** Men MR BOARD AI yordamchisiman.\n\n🤗 "xona yarat" deb yozing, men sizga nomini, turini so'rayman.\n🔹 "random" desangiz, o'zim chiroyli nom tanlayman.\n🔹 Barcha suhbatlar avtomatik saqlanadi.\n\n✨ Nima qilamiz? Xona yaratmoqchimisiz?`
             };
             chatHistory.push(welcomeMsg);
             saveChat();
@@ -410,7 +347,6 @@
         function saveChat() {
             if (!currentUser) return;
             localStorage.setItem(`mrboard_ai_chat_${currentUser.uid}`, JSON.stringify({
-                chatId: currentChatId,
                 history: chatHistory,
                 updatedAt: Date.now()
             }));
@@ -426,8 +362,8 @@
                 messageDiv.className = `message ${msg.role}`;
                 
                 const avatar = msg.role === 'assistant' 
-                    ? `<div class="message-avatar ai"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></div>`
-                    : `<div class="message-avatar user"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+                    ? `<div class="message-avatar ai"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></div>`
+                    : `<div class="message-avatar user"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
                 
                 messageDiv.innerHTML = `${avatar}<div class="message-content">${msg.content.replace(/\n/g, '<br>')}<div class="message-time">${msg.time || 'hozir'}</div></div>`;
                 container.appendChild(messageDiv);
@@ -476,7 +412,7 @@
             const myRooms = [];
             for (const [id, r] of Object.entries(rooms)) {
                 if (r.isActive !== false && r.createdBy === currentUser.uid) {
-                    myRooms.push({ id, name: r.name, userCount: r.users ? Object.keys(r.users).length : 0, createdAt: r.createdAt });
+                    myRooms.push({ id, name: r.name, userCount: r.users ? Object.keys(r.users).length : 0 });
                 }
             }
             return myRooms.sort((a,b) => b.createdAt - a.createdAt);
@@ -498,7 +434,7 @@
                     return;
                 }
                 if (roomName.length < 2) {
-                    addMessage('assistant', `😊 Nom juda qisqa bo'lib qoldi. Iltimos, kamida 2 harfli nom yozing yoki "random" deb ayting, men o'zim tanlayman.`);
+                    addMessage('assistant', `😊 Nom juda qisqa. Kamida 2 harfli nom yozing yoki "random" deb ayting, men o'zim tanlayman.`);
                     return;
                 }
                 addMessage('assistant', `✅ **"${roomName}"** nomli xona bo'ladi. Endi xona turini tanlang:\n\n🔓 **Public** - hamma kirishi mumkin\n🔒 **Private** - parol bilan himoyalanadi\n\nQaysi birini tanlaysiz?`);
@@ -512,7 +448,7 @@
                 const isPublic = lower.includes('public') || lower.includes('ochiq') || lower.includes('hamma');
                 
                 if (!isPrivate && !isPublic) {
-                    addMessage('assistant', `🤔 Kechirasiz, tushunmadim. Xona turi: **Public** (hamma kirishi mumkin) yoki **Private** (parol bilan)?`);
+                    addMessage('assistant', `🤔 Tushunmadim. Xona turi: **Public** (hamma kirishi mumkin) yoki **Private** (parol bilan)?`);
                     return;
                 }
                 
@@ -527,21 +463,19 @@
                     response += `📌 **Xona nomi:** ${name}\n`;
                     response += `🔑 **Xona kodi:** \`${roomCode}\`\n`;
                     if (password) response += `🔒 **Parol:** \`${password}\`\n`;
-                    response += `\n💡 Bu kodni doskaga kirish uchun boshqalarga berishingiz mumkin.\n\n🔗 **Xonaga kirish:** "${roomCode} kodli xonaga kir" deb yozing.`;
+                    response += `\n💡 "${roomCode} kodli xonaga kir" deb yozing.`;
                     
                     addMessage('assistant', response);
                     
-                    // Jarayonni tugatish
                     waitingFor = null;
                     pendingAction = null;
                     
-                    // Xonalar ro'yxatini yangilash
                     const rooms = await getMyRooms();
                     if (rooms.length > 0) {
-                        addMessage('assistant', `📋 **Mening xonalarim:** ${rooms.length} ta xonangiz bor. "xonalarim" deb yozib ko'rishingiz mumkin.`);
+                        addMessage('assistant', `📋 Hozir ${rooms.length} ta xonangiz bor. "xonalarim" deb ko'rishingiz mumkin.`);
                     }
                 } catch(e) {
-                    addMessage('assistant', `❌ Xatolik yuz berdi: ${e.message}. Iltimos, qaytadan urinib ko'ring.`);
+                    addMessage('assistant', `❌ Xatolik: ${e.message}. Qaytadan urinib ko'ring.`);
                     waitingFor = null;
                     pendingAction = null;
                 }
@@ -550,7 +484,7 @@
             
             // 2. Xona yaratishni boshlash
             if (lower.includes('xona yarat') || lower.includes('yangi xona') || lower.includes('create room')) {
-                addMessage('assistant', `🎯 **Yangi xona yaratish uchun:**\n\n📝 **Xona nomi** nima bo'lsin?\n\n💡 *Menga "random" desangiz, o'zim chiroyli nom tanlayman.*`);
+                addMessage('assistant', `🎯 **Yangi xona yaratish uchun:**\n\n📝 **Xona nomi** nima bo'lsin?\n\n💡 "random" desangiz, o'zim chiroyli nom tanlayman.`);
                 waitingFor = 'room_name';
                 return;
             }
@@ -559,13 +493,13 @@
             if (lower.includes('mening xonalarim') || lower.includes('xonalarim') || lower.includes('my rooms')) {
                 const rooms = await getMyRooms();
                 if (rooms.length === 0) {
-                    addMessage('assistant', `📭 **Hozircha xonangiz yo'q.**\n\n🔹 "xona yarat" deb yozing, men sizga yordam beraman!`);
+                    addMessage('assistant', `📭 **Hozircha xonangiz yo'q.**\n\n🔹 "xona yarat" deb yozing, men yordam beraman!`);
                 } else {
                     let response = `📋 **Sizning xonalaringiz (${rooms.length} ta):**\n\n`;
                     for (const r of rooms) {
                         response += `• **${r.name}**\n  🔑 Kod: \`${r.id}\` | 👥 ${r.userCount} kishi\n`;
                     }
-                    response += `\n💡 Xonaga kirish uchun: \`${rooms[0]?.id} kodli xonaga kir\` deb yozing.`;
+                    response += `\n💡 Xonaga kirish: \`${rooms[0]?.id} kodli xonaga kir\` deb yozing.`;
                     addMessage('assistant', response);
                 }
                 return;
@@ -573,18 +507,18 @@
             
             // 4. Qisqa yo'llar
             if (lower.includes('qisqa yo\'l') || lower.includes('shortcut') || lower.includes('klaviatura')) {
-                addMessage('assistant', `⌨️ **MR BOARD qisqa yo'llari:**\n\n• **B** → Qalam\n• **E** → O'chirgich\n• **L** → Lazer\n• **H** → Surish (Pan)\n• **Ctrl+Z** → Bekor qilish\n• **M** → Mikrofon\n• **C** → Chat\n• **U** → Foydalanuvchilar\n• **F** → To'liq ekran\n• **Esc** → Chiqish\n\n💡 Bu tugmalar bilan ishlash ancha tezlashadi!`);
+                addMessage('assistant', `⌨️ **Qisqa yo'llar:**\n\n• B → Qalam\n• E → O'chirgich\n• L → Lazer\n• H → Surish\n• Ctrl+Z → Bekor\n• M → Mikrofon\n• C → Chat\n• U → Foydalanuvchilar\n• F → Fullscreen`);
                 return;
             }
             
             // 5. MR BOARD haqida
             if (lower.includes('mr board haqida') || lower.includes('about') || lower.includes('nima bu')) {
-                addMessage('assistant', `📚 **MR BOARD** - Muhammadrasul Qosimov tomonidan yaratilgan zamonaviy interaktiv whiteboard platformasi.\n\n✨ **Asosiy xususiyatlar:**\n• Cheksiz doska\n• Qalam, o'chirgich, lazer\n• Ovozli muloqot (WebRTC)\n• Real-time chat\n• Public/Private xonalar\n• Minimap\n• JSON/PNG eksport\n• Dark/Light mode\n\n👨‍💻 Muallif: Muhammadrasul Qosimov\n📦 Versiya: Enterprise Ultimate 2.0\n\n❓ Yana nimani bilmoqchisiz?`);
+                addMessage('assistant', `📚 **MR BOARD** - Muhammadrasul Qosimov yaratgan real vaqtli whiteboard.\n\n✨ **Xususiyatlar:** Cheksiz doska, qalam, o'chirgich, lazer, ovoz, chat, xonalar, minimap, JSON/PNG, dark mode.\n\n👨‍💻 Muallif: Muhammadrasul Qosimov\n📦 Versiya: Enterprise 2.0`);
                 return;
             }
             
-            // 6. Groq AI ga yuborish (boshqa savollar)
-            addMessage('assistant', `🤔 **Kuting, o'ylayapman...**`);
+            // 6. Groq AI ga yuborish
+            addMessage('assistant', `🤔 **O'ylayapman...**`);
             
             try {
                 const response = await fetch(GROQ_API_URL, {
@@ -593,17 +527,16 @@
                     body: JSON.stringify({
                         model: "llama-3.3-70b-versatile",
                         messages: [
-                            { role: "system", content: `Siz MR BOARD AI yordamchisisiz. Do'stona, iliq, qiziqarli suhbat qiling. Foydalanuvchi bilan savol-javob uslubida gaplashing. Javoblarni qisqa, ammo foydali qiling. O'zbek tilida javob bering.` },
+                            { role: "system", content: "Siz MR BOARD AI yordamchisisiz. Do'stona, iliq, qisqa va foydali javob bering. O'zbek tilida." },
                             { role: "user", content: message }
                         ],
-                        max_tokens: 400,
+                        max_tokens: 300,
                         temperature: 0.8
                     })
                 });
                 const data = await response.json();
                 const aiResponse = data.choices[0].message.content;
                 
-                // Oxirgi "Kuting" xabarini o'chirib, yangisini qo'shamiz
                 chatHistory.pop();
                 saveChat();
                 renderMessages();
@@ -613,7 +546,7 @@
                 chatHistory.pop();
                 saveChat();
                 renderMessages();
-                addMessage('assistant', `❌ Kechirasiz, texnik xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.`);
+                addMessage('assistant', `❌ Kechirasiz, xatolik yuz berdi. Qaytadan urinib ko'ring.`);
             }
         }
         
@@ -633,6 +566,11 @@
             
             isLoading = false;
             input.focus();
+        }
+        
+        // ========== MODAL YOPISH ==========
+        function closeModal() {
+            window.parent.postMessage('closeAIModal', '*');
         }
         
         // ========== AUTH ==========
@@ -657,12 +595,9 @@
                 const data = snap.val() || {};
                 const userName = data.fullName || data.username || user.email?.split('@')[0];
                 
-                // Agar suhbat juda eski bo'lsa, yangi emas
                 if (chatHistory.length <= 1) {
-                    addMessage('assistant', `👋 **Salom ${userName}!** Xush kelibsiz!\n\n🤗 Menga istalgancha savol berishingiz mumkin. "xona yarat" deb yozing, men sizga yordam beraman.\n\n🎯 Xonalaringizni ko'rish uchun "xonalarim" deb yozing.`);
+                    addMessage('assistant', `👋 **Salom ${userName}!**\n\n"xona yarat" deb yozing, men yordam beraman.`);
                 }
-            } else {
-                window.location.href = 'board.html';
             }
         });
         
@@ -671,11 +606,12 @@
         document.getElementById('chatInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
-        document.getElementById('newChatBtn').addEventListener('click', () => {
+        document.getElementById('newChatBtnSm').addEventListener('click', () => {
             if (confirm('Yangi suhbat boshlansin? Avvalgi suhbat saqlanmaydi.')) {
                 startNewChat();
             }
         });
+        document.getElementById('closeModalBtn').addEventListener('click', closeModal);
         
         document.querySelectorAll('.quick-q').forEach(btn => {
             btn.addEventListener('click', () => {
