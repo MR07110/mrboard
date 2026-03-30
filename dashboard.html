@@ -10,215 +10,865 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <style>
-        /* Asosiy stillar */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         :root {
             --bg-base: #ffffff;
             --bg-alt: #f8fafc;
-            --bg-glass: rgba(255,255,255,0.7);
+            --bg-glass: rgba(255,255,255,0.65);
+            --bg-panel: rgba(255,255,255,0.85);
+            --bg-card: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --brand-primary: #007aff;
             --border-subtle: #e2e8f0;
+            --border-strong: rgba(0,0,0,0.05);
+            --brand-primary: #007aff;
+            --brand-primary-dark: #0056b3;
+            --brand-alpha: rgba(0,122,255,0.1);
+            --state-danger: #ff3b30;
+            --state-success: #34c759;
+            --state-warning: #ffcc00;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+            --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.15);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-fast: 0.2s;
+            --transition-normal: 0.3s;
         }
 
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-alt); color: var(--text-main); overflow: hidden; height: 100vh; }
+        [data-theme="dark"] {
+            --bg-base: #020617;
+            --bg-alt: #0f172a;
+            --bg-glass: rgba(15,23,42,0.65);
+            --bg-panel: rgba(15,23,42,0.85);
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-subtle: rgba(255,255,255,0.1);
+            --border-strong: rgba(255,255,255,0.05);
+            --brand-primary: #0a84ff;
+            --brand-primary-dark: #007aff;
+            --brand-alpha: rgba(10,132,255,0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background: var(--bg-alt);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
 
         /* Header */
         .header {
-            height: 60px; background: var(--bg-glass); backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; border-bottom: 1px solid var(--border-subtle);
-            position: fixed; top: 0; width: 100%; z-index: 100;
+            padding: 16px 20px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .logo { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
-        
-        /* Main Content Area */
-        main { margin-top: 60px; height: calc(100vh - 130px); overflow-y: auto; padding: 20px; }
 
-        /* Tab Panes */
-        .tab-pane { display: none; width: 100%; height: 100%; }
-        .tab-pane.active { display: block; }
-        
-        iframe { width: 100%; height: 100%; border: none; }
-
-        /* Home Content Stili (Xonalar) */
-        .home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-        .room-card { 
-            background: white; padding: 16px; border-radius: 16px; 
-            border: 1px solid var(--border-subtle); transition: 0.2s; cursor: pointer;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 24px;
+            font-weight: 800;
+            text-decoration: none;
+            color: var(--text-main);
         }
-        .room-card:active { transform: scale(0.98); }
+        .logo span { color: var(--brand-primary); }
 
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; height: 70px;
-            background: var(--bg-glass); backdrop-filter: blur(15px);
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-container { position: relative; }
+        .search-input {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 40px;
+            padding: 8px 16px 8px 40px;
+            font-size: 14px;
+            width: 220px;
+            color: var(--text-main);
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            width: 280px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .theme-toggle {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 40px;
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .theme-toggle:hover { background: var(--brand-alpha); }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+        .user-name { font-weight: 600; font-size: 14px; }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+            border-radius: 28px;
+            padding: 24px;
+            color: white;
+            margin-bottom: 24px;
+        }
+        .welcome-card h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+        .welcome-card p { font-size: 14px; opacity: 0.9; }
+
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+        .quick-action {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 40px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--text-main);
+        }
+        .quick-action:hover { transform: translateY(-2px); border-color: var(--brand-primary); }
+        .quick-action.create { background: var(--brand-primary); color: white; border: none; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 24px 0 16px;
+        }
+        .section-title { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .refresh-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+        }
+        .refresh-btn:hover { background: var(--brand-alpha); color: var(--brand-primary); transform: rotate(180deg); }
+
+        .rooms-container {
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .rooms-container::-webkit-scrollbar { width: 4px; }
+        .rooms-container::-webkit-scrollbar-track { background: var(--border-strong); border-radius: 10px; }
+        .rooms-container::-webkit-scrollbar-thumb { background: var(--brand-primary); border-radius: 10px; }
+
+        .rooms-grid { display: flex; flex-direction: column; gap: 16px; }
+
+        .room-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 20px;
+            transition: all var(--transition-normal);
+            border: 1px solid var(--border-subtle);
+            position: relative;
+        }
+        .room-card:hover { transform: translateY(-2px); border-color: var(--brand-primary); box-shadow: var(--shadow-md); }
+
+        .room-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        .room-name { font-size: 16px; font-weight: 700; }
+        .room-badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--brand-alpha);
+            color: var(--brand-primary);
+        }
+        .room-badge.active { background: rgba(52,199,89,0.15); color: var(--state-success); }
+        .room-badge.private { background: rgba(255,59,48,0.1); color: var(--state-danger); }
+
+        .creator-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .creator-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+        }
+        .creator-name { font-size: 12px; font-weight: 600; cursor: pointer; }
+        .creator-name:hover { color: var(--brand-primary); }
+
+        .room-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .room-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .room-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all var(--transition-fast);
+        }
+        .room-join-btn { background: var(--brand-primary); color: white; border: none; }
+        .room-join-btn:hover { background: var(--brand-primary-dark); transform: translateY(-2px); }
+        .room-edit-btn { background: var(--bg-alt); border: 1px solid var(--border-subtle); color: var(--text-main); }
+        .room-edit-btn:hover { background: var(--brand-alpha); border-color: var(--brand-primary); }
+        .room-delete-btn { background: rgba(255,59,48,0.1); border: 1px solid rgba(255,59,48,0.2); color: var(--state-danger); }
+        .room-delete-btn:hover { background: rgba(255,59,48,0.2); transform: translateY(-2px); }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            border-radius: 24px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        /* Bottom Tab Bar */
+        .bottom-tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-glass);
+            backdrop-filter: blur(40px);
             border-top: 1px solid var(--border-subtle);
-            display: flex; justify-content: space-around; align-items: center;
-            padding-bottom: env(safe-area-inset-bottom); z-index: 100;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 20px 20px;
+            z-index: 100;
         }
-        .nav-item { 
-            display: flex; flex-direction: column; align-items: center; 
-            color: var(--text-muted); text-decoration: none; font-size: 0.7rem; font-weight: 500;
-            background: none; border: none; cursor: pointer; transition: 0.2s;
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 40px;
         }
-        .nav-item i { margin-bottom: 4px; transition: 0.2s; }
-        .nav-item.active { color: var(--brand-primary); }
-        .nav-item.active i { transform: translateY(-2px); }
+        .tab-item i { font-size: 24px; }
+        .tab-item.active { color: var(--brand-primary); background: var(--brand-alpha); }
 
-        /* Modal (New Board uchun) */
-        .modal { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
-            display: none; align-items: center; justify-content: center; z-index: 1000; 
+        /* Profile Modal */
+        .profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
         }
-        .modal-content { background: white; padding: 24px; border-radius: 24px; width: 90%; max-width: 400px; }
-        .btn-primary { 
-            background: var(--brand-primary); color: white; border: none; 
-            padding: 12px 24px; border-radius: 12px; font-weight: 600; width: 100%; margin-top: 10px;
+        .profile-modal.active { opacity: 1; visibility: visible; }
+        .profile-modal-content {
+            background: var(--bg-panel);
+            backdrop-filter: blur(40px);
+            border-radius: 32px;
+            padding: 32px;
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform var(--transition-normal) var(--ease-spring);
+            border: 1px solid var(--border-subtle);
         }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--border-subtle); border-radius: 10px; }
+        .profile-modal.active .profile-modal-content { transform: scale(1); }
+        .modal-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: 800;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+        }
+        .modal-avatar:hover { transform: scale(1.05); }
+        .modal-fullname { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+        .modal-username { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
+        .modal-bio { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+        .modal-close {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Large Avatar Modal */
+        .avatar-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+            cursor: pointer;
+        }
+        .avatar-modal.active { opacity: 1; visibility: visible; }
+        .large-avatar {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 32px;
+            box-shadow: 0 32px 64px rgba(0,0,0,0.3);
+        }
+
+        /* Edit Room Modal */
+        .edit-room-modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-panel);
+            backdrop-filter: blur(40px);
+            border-radius: 28px 28px 0 0;
+            padding: 24px;
+            z-index: 250;
+            transform: translateY(100%);
+            transition: transform var(--transition-normal) var(--ease-spring);
+        }
+        .edit-room-modal.active { transform: translateY(0); }
+
+        .section-page { display: none; }
+        .section-page.active { display: block; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-panel);
+            backdrop-filter: blur(40px);
+            border-radius: 28px 28px 0 0;
+            padding: 24px;
+            z-index: 201;
+            transform: translateY(100%);
+            transition: transform var(--transition-normal) var(--ease-spring);
+        }
+        .modal.active { transform: translateY(0); }
+        .modal-header { font-size: 20px; font-weight: 800; margin-bottom: 20px; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-base);
+            border: 2px solid var(--border-strong);
+            border-radius: 20px;
+            font-size: 15px;
+        }
+        .form-input:focus { border-color: var(--brand-primary); outline: none; }
+        .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-primary { background: var(--brand-primary); color: white; border: none; }
+        .btn-danger { background: var(--state-danger); color: white; border: none; }
+        .btn-ghost { background: var(--bg-base); border: 1px solid var(--border-strong); color: var(--text-main); }
+
+        .toast-wrapper {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast-item {
+            background: var(--bg-panel);
+            backdrop-filter: blur(40px);
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 13px;
+            box-shadow: var(--shadow-lg);
+            animation: toastIn 0.3s var(--ease-spring);
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .search-input { width: 140px; }
+            .search-input:focus { width: 180px; }
+            .user-name { display: none; }
+            .room-actions { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <div class="logo"><i data-lucide="layers"></i> MR BOARD</div>
-        <div id="userSmallAvatar" style="width: 35px; height: 35px; border-radius: 50%; background: #eee; overflow: hidden;"></div>
-    </header>
+    <div class="toast-wrapper" id="toastWrapper"></div>
 
-    <main>
-        <div id="tab-home" class="tab-pane active">
-            <div class="home-header">
-                <h2>Barcha xonalar</h2>
-                <button onclick="document.getElementById('newBoardModal').style.display='flex'" style="background:none; border:none; color:var(--brand-primary); font-weight:600; display:flex; align-items:center; gap:5px;">
-                    <i data-lucide="plus-circle"></i> New Board
-                </button>
-            </div>
-            <div id="publicRooms" class="rooms-grid">
-                <p style="color:var(--text-muted)">Yuklanmoqda...</p>
-            </div>
-        </div>
-
-        <div id="tab-iframe" class="tab-pane">
-            <iframe id="contentFrame" src=""></iframe>
-        </div>
-    </main>
-
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="switchTab('home')" id="btn-home">
-            <i data-lucide="home"></i> Home
-        </button>
-        <button class="nav-item" onclick="switchTab('rooms')" id="btn-rooms">
-            <i data-lucide="layout"></i> My Boards
-        </button>
-        <button class="nav-item" onclick="switchTab('profile')" id="btn-profile">
-            <i data-lucide="user"></i> Profile
-        </button>
-    </nav>
-
-    <div class="modal" id="newBoardModal">
-        <div class="modal-content">
-            <h3 style="margin-bottom:15px">Yangi xona ochish</h3>
-            <input type="text" id="boardName" placeholder="Xona nomi...">
-            <button class="btn-primary" onclick="createNewBoard()">Yaratish</button>
-            <button onclick="document.getElementById('newBoardModal').style.display='none'" style="width:100%; background:none; border:none; margin-top:10px; color:var(--text-muted)">Bekor qilish</button>
+    <div class="header">
+        <a href="index.html" class="logo"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>MR <span>BOARD</span></a>
+        <div class="header-actions">
+            <div class="search-container"><i data-lucide="search" size="16" class="search-icon"></i><input type="text" id="searchInput" class="search-input" placeholder="Xona yoki foydalanuvchi..."></div>
+            <button class="theme-toggle" id="themeToggle"><i data-lucide="sun" id="themeIcon"></i><span id="themeText">Light</span></button>
+            <div class="user-info" id="currentUserInfo"><span class="user-name" id="userName"></span><div class="user-avatar" id="userAvatar"></div></div>
         </div>
     </div>
 
+    <div class="main-content">
+        <div class="section-page active" id="homeSection">
+            <div class="welcome-card"><h1 id="welcomeMessage">Assalomu alaykum!</h1><p>Birgalikda ishlashni boshlang</p></div>
+            <div class="quick-actions"><button class="quick-action create" id="quickCreateBtn"><i data-lucide="plus-circle"></i> Yangi xona</button><button class="quick-action" id="quickJoinBtn"><i data-lucide="log-in"></i> Kod bilan kirish</button></div>
+            <div class="section-header"><h2 class="section-title">📋 Barcha xonalar</h2><button class="refresh-btn" id="refreshRoomsBtn"><i data-lucide="refresh-cw"></i></button></div>
+            <div class="rooms-container"><div id="roomsList" class="rooms-grid"><div class="empty-state">Yuklanmoqda...</div></div></div>
+        </div>
+
+        <div class="section-page" id="myRoomsSection">
+            <div class="section-header"><h2 class="section-title">⭐ Mening xonalarim</h2><button class="refresh-btn" id="refreshMyRoomsBtn"><i data-lucide="refresh-cw"></i></button></div>
+            <div class="rooms-container"><div id="myRoomsList" class="rooms-grid"><div class="empty-state">Yuklanmoqda...</div></div></div>
+        </div>
+
+        <div class="section-page" id="profileSection">
+            <div class="profile-card" style="background: var(--bg-card); border-radius: 28px; padding: 24px; text-align: center;">
+                <div class="profile-avatar" id="profileAvatar" onclick="document.getElementById('avatarInput').click()" style="width: 100px; height: 100px; border-radius: 50%; background: var(--brand-primary); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; font-weight: 800; cursor: pointer; background-size: cover; background-position: center;"><span id="avatarText">U</span></div>
+                <input type="file" id="avatarInput" style="display: none;" accept="image/*">
+                <div class="profile-field"><label>Ism</label><input type="text" id="profileFullname" placeholder="Ismingiz"></div>
+                <div class="profile-field"><label>Familiya</label><input type="text" id="profileLastname" placeholder="Familiyangiz"></div>
+                <div class="profile-field"><label>Username</label><input type="text" id="profileUsername" placeholder="username"></div>
+                <div class="profile-field"><label>Email</label><input type="email" id="profileEmail" disabled style="background: var(--bg-alt);"></div>
+                <div class="profile-field"><label>Bio</label><textarea id="profileBio" rows="3" placeholder="O'zingiz haqingizda..."></textarea></div>
+                <div class="profile-actions" style="display: flex; gap: 12px;"><button class="btn btn-primary" id="saveProfileBtn">💾 Saqlash</button><button class="btn btn-ghost" id="logoutBtn">🚪 Chiqish</button></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-tab-bar">
+        <button class="tab-item active" data-tab="home"><i data-lucide="home"></i><span>Bosh sahifa</span></button>
+        <button class="tab-item" data-tab="myrooms"><i data-lucide="star"></i><span>Mening xonalar</span></button>
+        <button class="tab-item" data-tab="profile"><i data-lucide="user"></i><span>Profil</span></button>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="profile-modal" id="userProfileModal">
+        <div class="profile-modal-content">
+            <div class="modal-avatar" id="modalAvatar" onclick="showLargeAvatar()"><span id="modalAvatarText">U</span></div>
+            <div class="modal-fullname" id="modalFullname"></div>
+            <div class="modal-username" id="modalUsername"></div>
+            <div class="modal-bio" id="modalBio"></div>
+            <button class="modal-close" onclick="closeUserProfile()">Yopish</button>
+        </div>
+    </div>
+
+    <!-- Large Avatar Modal -->
+    <div class="avatar-modal" id="avatarModal" onclick="closeLargeAvatar()">
+        <img class="large-avatar" id="largeAvatarImg" src="" alt="Avatar">
+    </div>
+
+    <!-- Edit Room Modal -->
+    <div class="edit-room-modal" id="editRoomModal">
+        <div class="modal-header">✏️ Xonani tahrirlash</div>
+        <div class="form-group"><label>Xona nomi</label><input type="text" id="editRoomName" class="form-input" placeholder="Xona nomi"></div>
+        <div class="form-group"><label>Xona turi</label><div class="room-type-selector" style="display: flex; gap: 12px;"><button class="type-btn" data-type="public" id="editPublicBtn">🌍 Public</button><button class="type-btn" data-type="private" id="editPrivateBtn">🔒 Private</button></div></div>
+        <div class="form-group" id="editPasswordGroup"><label>Parol</label><input type="password" id="editRoomPassword" class="form-input" placeholder="Parol (private uchun)"></div>
+        <div class="modal-actions"><button class="btn btn-ghost" id="cancelEditBtn">Bekor</button><button class="btn btn-primary" id="saveEditBtn">Saqlash</button></div>
+    </div>
+
+    <!-- Create/Join Modals -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal" id="createRoomModal"><div class="modal-header">✨ Yangi xona yaratish</div><div class="form-group"><label>Xona nomi</label><input type="text" id="roomNameInput" class="form-input" placeholder="Masalan: Matematika 7-sinf"></div><div class="form-group"><label>Xona turi</label><div class="room-type-selector" style="display: flex; gap: 12px;"><button class="type-btn active" data-type="public">🌍 Public</button><button class="type-btn" data-type="private">🔒 Private</button></div></div><div class="form-group" id="passwordGroup" style="display: none;"><label>Parol</label><input type="password" id="roomPassword" class="form-input" placeholder="Parol qo'yish"></div><div class="modal-actions"><button class="btn btn-ghost" id="cancelCreateBtn">Bekor</button><button class="btn btn-primary" id="confirmCreateBtn">Yaratish</button></div></div>
+    <div class="modal" id="joinRoomModal"><div class="modal-header">🔐 Xona kod bilan kirish</div><div class="form-group"><label>Xona kodi</label><input type="text" id="joinCodeInput" class="form-input" placeholder="Masalan: ABC123" maxlength="6" style="text-transform: uppercase;"></div><div class="form-group" id="joinPasswordGroup" style="display: none;"><label>Parol</label><input type="password" id="joinPassword" class="form-input" placeholder="Xona paroli"></div><div class="modal-actions"><button class="btn btn-ghost" id="cancelJoinBtn">Bekor</button><button class="btn btn-primary" id="confirmJoinBtn">Kirish</button></div></div>
+
     <script>
-        // Firebase Config (O'zingiznikini qo'ying)
-        const firebaseConfig = { /* CONFIG */ };
+        lucide.createIcons();
+
+        // Theme
+        function initTheme() { const saved = localStorage.getItem('mrboard_theme') || 'light'; document.documentElement.setAttribute('data-theme', saved); updateThemeUI(saved); }
+        function updateThemeUI(theme) { const icon = document.getElementById('themeIcon'), text = document.getElementById('themeText'); if (theme === 'dark') { icon.setAttribute('data-lucide', 'moon'); text.textContent = 'Dark'; } else { icon.setAttribute('data-lucide', 'sun'); text.textContent = 'Light'; } lucide.createIcons(); }
+        function toggleTheme() { const current = document.documentElement.getAttribute('data-theme'); const newTheme = current === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', newTheme); localStorage.setItem('mrboard_theme', newTheme); updateThemeUI(newTheme); showToast(newTheme === 'dark' ? '🌙 Dark mode yoqildi' : '☀️ Light mode yoqildi', 'success'); }
+        document.getElementById('themeToggle')?.addEventListener('click', toggleTheme); initTheme();
+
+        // Firebase
+        const firebaseConfig = { apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0", authDomain: "basic-formula-484419-k8.firebaseapp.com", databaseURL: "https://basic-formula-484419-k8-default-rtdb.europe-west1.firebasedatabase.app", projectId: "basic-formula-484419-k8", storageBucket: "basic-formula-484419-k8.firebasestorage.app", messagingSenderId: "629679926764", appId: "1:629679926764:web:0cff483e9c4752fbd024c9" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
+        const auth = firebase.auth(); const db = firebase.database();
 
-        let currentUser = null;
+        let currentUser = null, currentAvatar = null, allRooms = [], searchQuery = '', editingRoomId = null;
+        const userCache = new Map();
 
-        // TAB ALMASHTIRISH MANTIQI
-        function switchTab(target) {
-            const homeTab = document.getElementById('tab-home');
-            const iframeTab = document.getElementById('tab-iframe');
-            const iframe = document.getElementById('contentFrame');
+        async function getUserData(uid) { if (userCache.has(uid)) return userCache.get(uid); const snap = await db.ref(`users/${uid}`).once('value'); const data = snap.val() || {}; userCache.set(uid, data); return data; }
 
-            // Navigatsiya tugmalarini yangilash
-            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('btn-' + target).classList.add('active');
+        function switchTab(tabId) {
+            document.querySelectorAll('.section-page').forEach(s => s.classList.remove('active'));
+            document.getElementById(`${tabId}Section`).classList.add('active');
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab-item[data-tab="${tabId}"]`).classList.add('active');
+            if (tabId === 'home') loadPublicRooms();
+            if (tabId === 'myrooms') loadMyRooms();
+            if (tabId === 'profile') loadProfile();
+        }
 
-            if (target === 'home') {
-                homeTab.classList.add('active');
-                iframeTab.classList.remove('active');
-                iframe.src = ""; // Iframe-ni tozalash
+        async function loadPublicRooms() {
+            const container = document.getElementById('roomsList');
+            container.innerHTML = '<div class="empty-state">Yuklanmoqda...</div>';
+            try {
+                const snap = await db.ref('rooms').once('value');
+                const rooms = snap.val() || {};
+                allRooms = Object.entries(rooms).filter(([id, r]) => r.isActive !== false && r.isPublic === true).sort((a,b)=>b[1].createdAt - a[1].createdAt).map(([id,r])=>({id,...r}));
+                renderRoomsWithSearch();
+            } catch(e) { container.innerHTML = '<div class="empty-state">❌ Xatolik</div>'; }
+        }
+
+        function filterRooms(rooms) { if (!searchQuery) return rooms; const q = searchQuery.toLowerCase(); return rooms.filter(r => r.name?.toLowerCase().includes(q) || r.createdByName?.toLowerCase().includes(q) || r.id?.toLowerCase().includes(q)); }
+
+        async function renderRoomsWithSearch() {
+            const container = document.getElementById('roomsList');
+            const filtered = filterRooms(allRooms);
+            if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">🔍 Hech narsa topilmadi</div>'; return; }
+            let html = '';
+            for (const room of filtered) {
+                const userData = await getUserData(room.createdBy);
+                const avatarLetter = (userData.fullName || userData.username || 'U').charAt(0).toUpperCase();
+                const userCount = room.users ? Object.keys(room.users).length : 0;
+                const avatarStyle = userData.avatarBase64 ? `background-image: url('${userData.avatarBase64}'); background-size: cover;` : `background-color: var(--brand-primary);`;
+                html += `<div class="room-card"><div class="room-card-header"><span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span><span class="room-badge ${userCount>0?'active':''}">${userCount>0?'🟢 Faol':'⚫ Faol emas'}</span></div>
+                <div class="creator-info"><div class="creator-avatar" onclick="event.stopPropagation(); showUserProfile('${room.createdBy}')" style="${avatarStyle}">${!userData.avatarBase64 ? avatarLetter : ''}</div><span class="creator-name" onclick="event.stopPropagation(); showUserProfile('${room.createdBy}')">${escapeHtml(userData.fullName || userData.username || room.createdByName || 'Foydalanuvchi')}</span></div>
+                <div class="room-meta"><span>👥 ${userCount} kishi</span><span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span></div>
+                <button class="room-btn room-join-btn" onclick="goToRoom('${room.id}')">Kirish →</button></div>`;
+            }
+            container.innerHTML = html; lucide.createIcons();
+        }
+
+        // MY ROOMS with EDIT & DELETE
+        async function loadMyRooms() {
+            if (!currentUser) return;
+            const container = document.getElementById('myRoomsList');
+            container.innerHTML = '<div class="empty-state">Yuklanmoqda...</div>';
+            try {
+                const snap = await db.ref('rooms').orderByChild('createdBy').equalTo(currentUser.uid).once('value');
+                const rooms = snap.val() || {};
+                const roomsArray = Object.entries(rooms).filter(([id,r])=>r.isActive!==false).sort((a,b)=>b[1].createdAt - a[1].createdAt).map(([id,r])=>({id,...r}));
+                if (roomsArray.length === 0) { container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top:16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>'; document.getElementById('emptyCreateBtn')?.addEventListener('click', openCreateModal); lucide.createIcons(); return; }
+                let html = '';
+                for (const room of roomsArray) {
+                    const userCount = room.users ? Object.keys(room.users).length : 0;
+                    html += `<div class="room-card"><div class="room-card-header"><span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span><span class="room-badge ${room.isPublic?'':'private'}">${room.isPublic?'🌍 Public':'🔒 Private'}</span></div>
+                    <div class="creator-info"><div class="creator-avatar" style="background: var(--brand-primary);">${(currentUser.displayName || 'U').charAt(0).toUpperCase()}</div><span class="creator-name">Siz</span></div>
+                    <div class="room-meta"><span>👥 ${userCount} kishi</span><span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span><span>🔑 ${room.hasPassword ? 'Parol bor' : 'Parolsiz'}</span></div>
+                    <div class="room-actions"><button class="room-btn room-join-btn" onclick="goToRoom('${room.id}')">Kirish →</button><button class="room-btn room-edit-btn" onclick="openEditRoom('${room.id}', '${escapeHtml(room.name)}', ${room.isPublic}, '${room.password || ''}')">✏️ Tahrirlash</button><button class="room-btn room-delete-btn" onclick="deleteRoom('${room.id}', '${escapeHtml(room.name)}')">🗑 O'chirish</button></div></div>`;
+                }
+                container.innerHTML = html; lucide.createIcons();
+            } catch(e) { container.innerHTML = '<div class="empty-state">❌ Xatolik</div>'; }
+        }
+
+        function openEditRoom(roomId, roomName, isPublic, password) {
+            editingRoomId = roomId;
+            document.getElementById('editRoomName').value = roomName;
+            if (isPublic) { document.getElementById('editPublicBtn').classList.add('active'); document.getElementById('editPrivateBtn').classList.remove('active'); document.getElementById('editPasswordGroup').style.display = 'none'; }
+            else { document.getElementById('editPrivateBtn').classList.add('active'); document.getElementById('editPublicBtn').classList.remove('active'); document.getElementById('editPasswordGroup').style.display = 'block'; document.getElementById('editRoomPassword').value = password; }
+            document.getElementById('editRoomModal').classList.add('active');
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        async function saveEditRoom() {
+            if (!editingRoomId) return;
+            const newName = document.getElementById('editRoomName').value.trim();
+            if (!newName) { showToast('Xona nomini kiriting!', 'error'); return; }
+            const isPublic = document.getElementById('editPublicBtn').classList.contains('active');
+            const newPassword = document.getElementById('editRoomPassword').value;
+            await db.ref(`rooms/${editingRoomId}`).update({ name: newName, isPublic: isPublic, hasPassword: !isPublic && newPassword ? true : false, password: !isPublic ? newPassword || null : null });
+            closeEditModal();
+            showToast('✅ Xona yangilandi!', 'success');
+            loadMyRooms();
+            loadPublicRooms();
+        }
+
+        async function deleteRoom(roomId, roomName) {
+            if (confirm(`"${roomName}" xonasini o\'chirishni xohlaysizmi? Bu amal qaytarilmaydi!`)) {
+                await db.ref(`rooms/${roomId}`).update({ isActive: false });
+                showToast(`❌ "${roomName}" xonasi o\'chirildi`, 'success');
+                loadMyRooms();
                 loadPublicRooms();
-            } else {
-                homeTab.classList.remove('active');
-                iframeTab.classList.add('active');
-                
-                // Qaysi sahifani yuklashni aniqlash
-                if (target === 'profile') iframe.src = "profile.html";
-                if (target === 'rooms') iframe.src = "rooms.html";
             }
         }
 
-        // XONALARNI YUKLASH (HOME)
-        function loadPublicRooms() {
-            const container = document.getElementById('publicRooms');
-            db.ref('rooms').limitToLast(20).once('value', snapshot => {
-                container.innerHTML = "";
-                if (!snapshot.exists()) {
-                    container.innerHTML = "<p>Xonalar mavjud emas.</p>";
-                    return;
-                }
-                snapshot.forEach(child => {
-                    const room = child.val();
-                    const card = document.createElement('div');
-                    card.className = 'room-card';
-                    card.innerHTML = `
-                        <h4 style="margin-bottom:5px">${room.name}</h4>
-                        <p style="font-size:0.8rem; color:var(--text-muted)">Ega: ${room.creatorName || 'Noma'lum'}</p>
-                    `;
-                    card.onclick = () => window.location.href = `board.html?id=${child.key}`;
-                    container.appendChild(card);
-                });
-            });
+        function closeEditModal() {
+            document.getElementById('editRoomModal').classList.remove('active');
+            document.getElementById('modalOverlay').classList.remove('active');
+            editingRoomId = null;
         }
 
-        // YANGI XONA OCHISH
-        function createNewBoard() {
-            const name = document.getElementById('boardName').value;
-            if (!name || !currentUser) return;
-
-            const newRoomRef = db.ref('rooms').push();
-            newRoomRef.set({
-                name: name,
-                creatorId: currentUser.uid,
-                creatorName: currentUser.displayName || "User",
-                createdAt: Date.now()
-            }).then(() => {
-                document.getElementById('newBoardModal').style.display = 'none';
-                document.getElementById('boardName').value = "";
-                loadPublicRooms();
-            });
+        // Profile
+        async function loadProfile() {
+            if (!currentUser) return;
+            const snap = await db.ref(`users/${currentUser.uid}`).once('value');
+            const data = snap.val() || {};
+            document.getElementById('profileFullname').value = data.fullName || '';
+            document.getElementById('profileLastname').value = data.lastName || '';
+            document.getElementById('profileUsername').value = data.username || currentUser.email?.split('@')[0] || '';
+            document.getElementById('profileEmail').value = currentUser.email || '';
+            document.getElementById('profileBio').value = data.bio || '';
+            currentAvatar = data.avatarBase64 || null;
+            updateAvatarUI(currentAvatar, data.fullName || currentUser.displayName);
         }
 
-        // AUTH HOLATI
-        auth.onAuthStateChanged(user => {
+        function updateAvatarUI(avatar, name) {
+            const avatarDiv = document.getElementById('userAvatar');
+            const profileAvatar = document.getElementById('profileAvatar');
+            const letter = (name || 'U').charAt(0).toUpperCase();
+            if (avatar && avatar.startsWith('data:image')) {
+                avatarDiv.style.backgroundImage = `url(${avatar})`; avatarDiv.style.backgroundSize = 'cover'; avatarDiv.innerHTML = '';
+                profileAvatar.style.backgroundImage = `url(${avatar})`; profileAvatar.style.backgroundSize = 'cover'; profileAvatar.innerHTML = '';
+            } else {
+                avatarDiv.style.backgroundImage = 'none'; avatarDiv.style.backgroundColor = 'var(--brand-primary)'; avatarDiv.innerHTML = letter;
+                profileAvatar.style.backgroundImage = 'none'; profileAvatar.style.backgroundColor = 'var(--brand-primary)'; profileAvatar.innerHTML = `<span>${letter}</span>`;
+            }
+        }
+
+        async function saveProfile() {
+            if (!currentUser) return;
+            const fullName = document.getElementById('profileFullname').value.trim();
+            const lastName = document.getElementById('profileLastname').value.trim();
+            const username = document.getElementById('profileUsername').value.trim();
+            const bio = document.getElementById('profileBio').value.trim();
+            const updateData = { fullName, lastName, username, bio, updatedAt: Date.now() };
+            if (currentAvatar) updateData.avatarBase64 = currentAvatar;
+            await db.ref(`users/${currentUser.uid}`).update(updateData);
+            if (fullName) await currentUser.updateProfile({ displayName: fullName });
+            showToast('✅ Profil saqlandi!', 'success');
+            loadProfile();
+            document.getElementById('userName').textContent = username || fullName || currentUser.email?.split('@')[0];
+        }
+
+        document.getElementById('avatarInput')?.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => { currentAvatar = ev.target.result; updateAvatarUI(currentAvatar, document.getElementById('profileFullname').value); showToast('Avatar yangilandi. Saqlash tugmasini bosing!', 'success'); };
+            reader.readAsDataURL(file);
+        });
+
+        // User Profile Modal with Large Avatar
+        let currentProfileUser = null;
+        async function showUserProfile(uid) {
+            currentProfileUser = await getUserData(uid);
+            const modal = document.getElementById('userProfileModal');
+            const avatarDiv = document.getElementById('modalAvatar');
+            if (currentProfileUser.avatarBase64) {
+                avatarDiv.style.backgroundImage = `url(${currentProfileUser.avatarBase64})`;
+                avatarDiv.style.backgroundSize = 'cover';
+                avatarDiv.innerHTML = '';
+            } else {
+                avatarDiv.style.backgroundImage = 'none';
+                avatarDiv.style.backgroundColor = 'var(--brand-primary)';
+                avatarDiv.innerHTML = `<span>${(currentProfileUser.fullName || currentProfileUser.username || 'U').charAt(0).toUpperCase()}</span>`;
+            }
+            document.getElementById('modalFullname').textContent = currentProfileUser.fullName || 'Ism kiritilmagan';
+            document.getElementById('modalUsername').textContent = `@${currentProfileUser.username || 'username'}`;
+            document.getElementById('modalBio').textContent = currentProfileUser.bio || 'Bio mavjud emas';
+            modal.classList.add('active');
+        }
+
+        function showLargeAvatar() {
+            if (!currentProfileUser || !currentProfileUser.avatarBase64) { showToast('Rasm mavjud emas', 'error'); return; }
+            const modal = document.getElementById('avatarModal');
+            const img = document.getElementById('largeAvatarImg');
+            img.src = currentProfileUser.avatarBase64;
+            modal.classList.add('active');
+        }
+        function closeLargeAvatar() { document.getElementById('avatarModal').classList.remove('active'); }
+        function closeUserProfile() { document.getElementById('userProfileModal').classList.remove('active'); currentProfileUser = null; }
+
+        function goToRoom(roomId) { localStorage.setItem('lastRoomId', roomId); window.location.href = `board.html?room=${roomId}`; }
+        function joinRoom(roomId, hasPassword) { if (hasPassword) { document.getElementById('joinCodeInput').value = roomId; document.getElementById('joinPasswordGroup').style.display = 'block'; document.getElementById('joinRoomModal').classList.add('active'); document.getElementById('modalOverlay').classList.add('active'); } else { goToRoom(roomId); } }
+        async function confirmJoin() { const code = document.getElementById('joinCodeInput').value.trim().toUpperCase(); if (!code) { showToast('Xona kodini kiriting!', 'error'); return; } const password = document.getElementById('joinPassword').value; const snap = await db.ref(`rooms/${code}`).once('value'); const room = snap.val(); if (!room) { showToast('Xona topilmadi!', 'error'); return; } if (room.hasPassword && room.password !== password) { showToast('Parol noto\'g\'ri!', 'error'); return; } closeModals(); goToRoom(code); }
+
+        let roomType = 'public';
+        async function createRoom() { const name = document.getElementById('roomNameInput').value.trim(); if (!name) { showToast('Xona nomini kiriting!', 'error'); return; } const password = document.getElementById('roomPassword').value; const roomCode = Math.random().toString(36).substr(2, 6).toUpperCase(); const teacherSecret = Math.random().toString(36).substr(2, 16); const userData = await getUserData(currentUser.uid); await db.ref(`rooms/${roomCode}`).set({ name, createdBy: currentUser.uid, createdByName: userData.fullName || userData.username || currentUser.email?.split('@')[0], createdAt: Date.now(), isPublic: roomType === 'public', hasPassword: roomType === 'private' && password ? true : false, password: roomType === 'private' ? password || null : null, isActive: true, teacherSecret, elements: {} }); closeModals(); showToast(`✅ "${name}" xonasi yaratildi! Kod: ${roomCode}`, 'success'); loadMyRooms(); setTimeout(() => goToRoom(roomCode), 1000); }
+
+        function openCreateModal() { document.getElementById('roomNameInput').value = ''; document.getElementById('roomPassword').value = ''; document.getElementById('passwordGroup').style.display = 'none'; document.querySelector('.type-btn.active')?.classList.remove('active'); document.querySelector('.type-btn[data-type="public"]')?.classList.add('active'); roomType = 'public'; document.getElementById('createRoomModal').classList.add('active'); document.getElementById('modalOverlay').classList.add('active'); }
+        function openJoinModal() { document.getElementById('joinCodeInput').value = ''; document.getElementById('joinPassword').value = ''; document.getElementById('joinPasswordGroup').style.display = 'none'; document.getElementById('joinRoomModal').classList.add('active'); document.getElementById('modalOverlay').classList.add('active'); }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); document.getElementById('modalOverlay').classList.remove('active'); }
+
+        function showToast(msg, type) { const container = document.getElementById('toastWrapper'); const toast = document.createElement('div'); toast.className = `toast-item`; toast.innerHTML = `<span>${msg}</span>`; container.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+
+        document.getElementById('searchInput')?.addEventListener('input', (e) => { searchQuery = e.target.value; if (document.getElementById('homeSection').classList.contains('active')) renderRoomsWithSearch(); });
+        document.getElementById('quickCreateBtn')?.addEventListener('click', openCreateModal);
+        document.getElementById('quickJoinBtn')?.addEventListener('click', openJoinModal);
+        document.getElementById('cancelCreateBtn')?.addEventListener('click', closeModals);
+        document.getElementById('confirmCreateBtn')?.addEventListener('click', createRoom);
+        document.getElementById('cancelJoinBtn')?.addEventListener('click', closeModals);
+        document.getElementById('confirmJoinBtn')?.addEventListener('click', confirmJoin);
+        document.getElementById('refreshRoomsBtn')?.addEventListener('click', () => { if (document.getElementById('homeSection').classList.contains('active')) loadPublicRooms(); });
+        document.getElementById('refreshMyRoomsBtn')?.addEventListener('click', () => { if (document.getElementById('myRoomsSection').classList.contains('active')) loadMyRooms(); });
+        document.getElementById('saveProfileBtn')?.addEventListener('click', saveProfile);
+        document.getElementById('logoutBtn')?.addEventListener('click', () => auth.signOut());
+        document.getElementById('modalOverlay')?.addEventListener('click', closeModals);
+        document.getElementById('currentUserInfo')?.addEventListener('click', () => switchTab('profile'));
+        document.getElementById('cancelEditBtn')?.addEventListener('click', closeEditModal);
+        document.getElementById('saveEditBtn')?.addEventListener('click', saveEditRoom);
+        document.getElementById('editPublicBtn')?.addEventListener('click', () => { document.getElementById('editPublicBtn').classList.add('active'); document.getElementById('editPrivateBtn').classList.remove('active'); document.getElementById('editPasswordGroup').style.display = 'none'; });
+        document.getElementById('editPrivateBtn')?.addEventListener('click', () => { document.getElementById('editPrivateBtn').classList.add('active'); document.getElementById('editPublicBtn').classList.remove('active'); document.getElementById('editPasswordGroup').style.display = 'block'; });
+        document.querySelectorAll('.type-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); roomType = btn.dataset.type; document.getElementById('passwordGroup').style.display = roomType === 'private' ? 'block' : 'none'; }; });
+        document.querySelectorAll('.tab-item').forEach(tab => tab.addEventListener('click', () => switchTab(tab.dataset.tab)));
+
+        auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
-                loadPublicRooms();
-                lucide.createIcons();
-            } else {
-                window.location.href = 'board.html';
-            }
+                const snap = await db.ref(`users/${user.uid}`).once('value');
+                const data = snap.val() || {};
+                const username = data.username || user.email?.split('@')[0] || 'User';
+                const fullName = data.fullName || username;
+                document.getElementById('userName').textContent = username;
+                document.getElementById('welcomeMessage').textContent = `Assalomu alaykum, ${fullName}!`;
+                updateAvatarUI(data.avatarBase64, fullName);
+                loadPublicRooms(); loadMyRooms(); loadProfile(); lucide.createIcons();
+            } else { window.location.href = 'board.html'; }
         });
 
-        // IFRAME-DAN XABARLARNI QABUL QILISH
-        window.addEventListener('message', (e) => {
-            if (e.data === 'profileUpdated') {
-                // Profil o'zgarganda home dagi ba'zi ma'lumotlarni yangilash mumkin
-            }
-        });
+        window.goToRoom = goToRoom; window.joinRoom = joinRoom; window.switchTab = switchTab;
+        window.showUserProfile = showUserProfile; window.closeUserProfile = closeUserProfile;
+        window.showLargeAvatar = showLargeAvatar; window.closeLargeAvatar = closeLargeAvatar;
+        window.openEditRoom = openEditRoom; window.deleteRoom = deleteRoom;
     </script>
 </body>
 </html>
