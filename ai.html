@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>MR BOARD AI · Intelligent Assistant</title>
+    <title>MR BOARD AI · Do'stona Yordamchi</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -25,7 +25,6 @@
             --brand-primary-dark: #0056b3;
             --brand-alpha: rgba(0,122,255,0.08);
             --state-success: #34c759;
-            --state-warning: #ff9500;
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.02);
             --shadow-md: 0 8px 24px rgba(0,0,0,0.04);
             --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.08);
@@ -71,6 +70,32 @@
         }
         .logo:hover { transform: scale(1.02); }
         .logo span { color: var(--brand-primary); font-weight: 800; }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .new-chat-btn {
+            background: var(--brand-alpha);
+            border: 1px solid var(--border-strong);
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--brand-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all var(--transition-fast);
+        }
+        .new-chat-btn:hover {
+            background: var(--brand-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
 
         .back-btn {
             background: var(--bg-base);
@@ -193,8 +218,6 @@
             width: 8px; height: 8px; background: var(--text-muted);
             border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both;
         }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes typingBounce { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }
 
         .input-area {
@@ -285,6 +308,8 @@
             .message { max-width: 95%; }
             .quick-questions { padding: 12px 16px 16px; }
             .quick-q { font-size: 11px; padding: 6px 12px; }
+            .new-chat-btn span { display: none; }
+            .new-chat-btn { padding: 8px 12px; }
         }
     </style>
 </head>
@@ -300,7 +325,13 @@
             </svg>
             MR <span>BOARD</span>
         </a>
-        <a href="dashboard.html" class="back-btn"><i data-lucide="arrow-left"></i><span>Dashboard</span></a>
+        <div class="header-actions">
+            <button class="new-chat-btn" id="newChatBtn">
+                <i data-lucide="plus"></i>
+                <span>Yangi suhbat</span>
+            </button>
+            <a href="dashboard.html" class="back-btn"><i data-lucide="arrow-left"></i><span>Dashboard</span></a>
+        </div>
     </div>
 
     <div class="chat-container">
@@ -311,42 +342,22 @@
                 </svg>
             </div>
             <div class="chat-header-info">
-                <h2>MR BOARD AI Assistant</h2>
-                <p>🧠 Inson kabi tushunadi · Xona yaratish · 2000+ bilim · 10 xabargacha xotira</p>
+                <h2>MR BOARD AI</h2>
+                <p>💬 Do'stona · Savol-javob · Xotira saqlanadi</p>
             </div>
         </div>
 
-        <div class="messages-area" id="messagesArea">
-            <div class="message ai">
-                <div class="message-avatar ai">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/>
-                    </svg>
-                </div>
-                <div class="message-content">
-                    <strong>Assalomu alaykum!</strong><br><br>
-                    Men MR BOARD AI yordamchisiman. <strong>Inson kabi tushunaman</strong> – bir nechta buyruqni bir gapda ham bajaraman.<br><br>
-                    📌 <strong>Masalan:</strong><br>
-                    • "Yangi xona yarat, nomi Matematika, public bo'lsin"<br>
-                    • "Muhammadrasul yaratgan doskalarni ko'rsat"<br>
-                    • "Matematika xonasiga kir, parol 123456"<br>
-                    • "Bugun qancha xona yaratdim?"<br><br>
-                    ✨ <strong>Xususiyatlar:</strong> Xona yaratish, kirish, statistika, qisqa yo'llar, 2000+ bilim, 10 xabargacha xotira.<br><br>
-                    🤝 Men bilan odatdagi suhbatdagidek gaplashing!
-                    <div class="message-time">hozir</div>
-                </div>
-            </div>
-        </div>
+        <div class="messages-area" id="messagesArea"></div>
 
         <div class="quick-questions">
-            <button class="quick-q" data-question="Yangi xona yarat, nomi Dasturlash, public bo'lsin">💡 Yangi xona</button>
-            <button class="quick-q" data-question="Mening xonalarimni ko'rsat">📋 Mening xonalar</button>
-            <button class="quick-q" data-question="Qisqa yo'llarni ayt">⌨️ Qisqa yo'llar</button>
-            <button class="quick-q" data-question="MR BOARD haqida to'liq ma'lumot">📚 MR BOARD haqida</button>
+            <button class="quick-q" data-question="xona yarat">🏠 Xona yaratmoqchiman</button>
+            <button class="quick-q" data-question="mening xonalarim">📋 Xonalarimni ko'rsat</button>
+            <button class="quick-q" data-question="qisqa yo'llar">⌨️ Qisqa yo'llar</button>
+            <button class="quick-q" data-question="MR BOARD haqida">📚 MR BOARD haqida</button>
         </div>
 
         <div class="input-area">
-            <input type="text" id="chatInput" class="chat-input" placeholder="Tabiiy tilda gapiring... Masalan: Yangi xona yarat, Matematika darsi uchun, private bo'lsin">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Salom! Xona yaratmoqchiman...">
             <button class="send-btn" id="sendBtn"><i data-lucide="send"></i></button>
         </div>
     </div>
@@ -358,71 +369,93 @@
         const GROQ_API_KEY = "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";
         const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-        // ========== CHAT HISTORY (SON 10) ==========
-        let chatHistory = [];
+        // ========== LOCAL STORAGE (Xotira saqlash) ==========
         let currentUser = null;
-        let isLoading = false;
+        let currentChatId = null;
+        let chatHistory = [];
+        let pendingAction = null; // Xona yaratish jarayoni uchun
+        let waitingFor = null; // "name", "type" yoki null
 
-        function addToHistory(role, content) {
-            chatHistory.push({ role, content });
-            if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+        // Chatni yuklash
+        function loadChat() {
+            const saved = localStorage.getItem(`mrboard_ai_chat_${currentUser?.uid || 'guest'}`);
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    chatHistory = data.history || [];
+                    currentChatId = data.chatId || Date.now().toString();
+                    renderMessages();
+                } catch(e) { startNewChat(); }
+            } else {
+                startNewChat();
+            }
         }
 
-        // ========== DOM Elements ==========
-        const messagesArea = document.getElementById('messagesArea');
-        const chatInput = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendBtn');
-
-        function addMessage(sender, text, isHtml = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
+        // Yangi suhbat
+        function startNewChat() {
+            chatHistory = [];
+            currentChatId = Date.now().toString();
+            pendingAction = null;
+            waitingFor = null;
             
-            const avatar = sender === 'ai' 
-                ? `<div class="message-avatar ai"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></div>`
-                : `<div class="message-avatar user"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+            const welcomeMsg = {
+                role: 'assistant',
+                content: `👋 **Salom!** Men MR BOARD AI yordamchisiman.\n\n🤗 **Do'stona suhbat** qilamiz, savol-javob orqali ishlaymiz.\n\n🔹 **Misol:** "xona yarat" desangiz, men sizga nomini, turini so'rayman.\n🔹 **Random nom** ham berishim mumkin, sizga yoqqanini tanlaysiz.\n🔹 **Barcha suhbatlar** avtomatik saqlanadi.\n🔹 **"Yangi suhbat"** tugmasi bilan tozalashingiz mumkin.\n\n✨ **Nima qilamiz?** Xona yaratmoqchimisiz yoki MR BOARD haqida bilmoqchimisiz?`
+            };
+            chatHistory.push(welcomeMsg);
+            saveChat();
+            renderMessages();
+        }
+
+        function saveChat() {
+            if (!currentUser) return;
+            localStorage.setItem(`mrboard_ai_chat_${currentUser.uid}`, JSON.stringify({
+                chatId: currentChatId,
+                history: chatHistory,
+                updatedAt: Date.now()
+            }));
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('messagesArea');
+            if (!container) return;
+            container.innerHTML = '';
             
-            messageDiv.innerHTML = `${avatar}<div class="message-content">${isHtml ? text : text.replace(/\n/g, '<br>')}<div class="message-time">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div></div>`;
-            messagesArea.appendChild(messageDiv);
-            messagesArea.scrollTop = messagesArea.scrollHeight;
+            for (const msg of chatHistory) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.role}`;
+                
+                const avatar = msg.role === 'assistant' 
+                    ? `<div class="message-avatar ai"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></div>`
+                    : `<div class="message-avatar user"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+                
+                messageDiv.innerHTML = `${avatar}<div class="message-content">${msg.content.replace(/\n/g, '<br>')}<div class="message-time">${msg.time || 'hozir'}</div></div>`;
+                container.appendChild(messageDiv);
+            }
+            container.scrollTop = container.scrollHeight;
         }
 
-        function addTypingIndicator() {
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'message ai';
-            typingDiv.id = 'typingIndicator';
-            typingDiv.innerHTML = `<div class="message-avatar ai"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></div><div class="message-content"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
-            messagesArea.appendChild(typingDiv);
-            messagesArea.scrollTop = messagesArea.scrollHeight;
-        }
-
-        function removeTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) indicator.remove();
-        }
-
-        function showToast(msg) {
-            const container = document.getElementById('toastWrapper');
-            const toast = document.createElement('div');
-            toast.className = 'toast-item';
-            toast.innerHTML = `<span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        function addMessage(role, content) {
+            chatHistory.push({
+                role: role,
+                content: content,
+                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+            });
+            saveChat();
+            renderMessages();
         }
 
         // ========== FIREBASE ACTIONS ==========
-        async function getUserData(uid) {
-            const snap = await firebase.database().ref(`users/${uid}`).once('value');
-            return snap.val() || {};
-        }
-
-        async function createRoomAI(roomName, isPublic = true, password = null) {
+        async function createRoomFinal(name, isPublic, password = null) {
             if (!currentUser) throw new Error('Login qilmagan');
             const roomCode = Math.random().toString(36).substr(2, 6).toUpperCase();
             const teacherSecret = Math.random().toString(36).substr(2, 16);
-            const userData = await getUserData(currentUser.uid);
+            
+            const userSnap = await firebase.database().ref(`users/${currentUser.uid}`).once('value');
+            const userData = userSnap.val() || {};
             
             await firebase.database().ref(`rooms/${roomCode}`).set({
-                name: roomName,
+                name: name,
                 createdBy: currentUser.uid,
                 createdByName: userData.fullName || userData.username || currentUser.email?.split('@')[0],
                 createdAt: Date.now(),
@@ -433,7 +466,7 @@
                 teacherSecret: teacherSecret,
                 elements: {}
             });
-            return { roomCode, roomName };
+            return { roomCode, name };
         }
 
         async function getMyRooms() {
@@ -449,258 +482,159 @@
             return myRooms.sort((a,b) => b.createdAt - a.createdAt);
         }
 
-        // ========== INSON KABI TUSHUNISH - AQLLI BUYRUQ TAHLLI ==========
-        async function intelligentCommandProcessing(text) {
-            const lower = text.toLowerCase();
+        // ========== SAVOL-JAVOB USLUBIDA ISHLASH ==========
+        async function handleUserMessage(message) {
+            const lower = message.toLowerCase();
             
-            // ========== 1. XONA YARATISH (Turli xil ifodalar) ==========
-            const createPatterns = [
-                /(?:yangi|новый|new)\s*(?:xona|room)\s*(?:yarat|создать|create)/i,
-                /(?:xona|room)\s*(?:yarat|создать|create)/i,
-                /(?:och|открыть|open)\s*(?:yangi|новый)?\s*(?:xona|room)/i,
-                /(?:tashkil|создай|make)\s*(?:et|qil|сделай)?\s*(?:xona|room)/i,
-                /(?:dars|xona)\s*(?:uchun|для)\s*(?:yarat|создать)/i
-            ];
+            // 1. Agar kutayotgan bo'lsak (xona yaratish jarayoni)
+            if (waitingFor === 'room_name') {
+                let roomName = message.trim();
+                if (roomName.toLowerCase().includes('random') || roomName === '?' || roomName === 'ixtiyoriy' || roomName === 'o\'zing tanla') {
+                    const randomNames = ['Dasturlash', 'Matematika', 'Fizika', 'Kimyo', 'Biologiya', 'Tarix', 'Ingliz tili', 'San\'at', 'Musiqa', 'Geografiya', 'Adabiyot', 'Algoritmlar', 'Web Dasturlash', 'Mobil Dasturlash', 'Sun\'iy Intellekt'];
+                    roomName = randomNames[Math.floor(Math.random() * randomNames.length)];
+                    addMessage('assistant', `📝 **Qiziqarli tanlov!** Xona nomini "${roomName}" qilib belgiladim. Xona turi qanday bo'lsin? **Public** (hamma kirishi mumkin) yoki **Private** (parol bilan)?`);
+                    waitingFor = 'room_type';
+                    pendingAction = { name: roomName };
+                    return;
+                }
+                if (roomName.length < 2) {
+                    addMessage('assistant', `😊 Nom juda qisqa bo'lib qoldi. Iltimos, kamida 2 harfli nom yozing yoki "random" deb ayting, men o'zim tanlayman.`);
+                    return;
+                }
+                addMessage('assistant', `✅ **"${roomName}"** nomli xona bo'ladi. Endi xona turini tanlang:\n\n🔓 **Public** - hamma kirishi mumkin\n🔒 **Private** - parol bilan himoyalanadi\n\nQaysi birini tanlaysiz?`);
+                waitingFor = 'room_type';
+                pendingAction = { name: roomName };
+                return;
+            }
             
-            const isCreate = createPatterns.some(p => p.test(lower));
-            
-            if (isCreate) {
-                // Xona nomini topish (turli xil formatlarda)
-                let roomName = "";
+            if (waitingFor === 'room_type') {
+                const isPrivate = lower.includes('private') || lower.includes('maxfiy') || lower.includes('parol') || lower.includes('yopiq');
+                const isPublic = lower.includes('public') || lower.includes('ochiq') || lower.includes('hamma');
                 
-                // "nomi ..." format
-                let nameMatch = text.match(/(?:nomi|название|name)\s+["']?([^"']+?)["']?(?:\s+(?:public|private|ochiq|maxfiy|parol|password))?/i);
-                if (!nameMatch) {
-                    // "... nomli xona" format
-                    nameMatch = text.match(/(["']?)([^"']+?)\1\s*(?:nomli|названием|named)\s*xona/i);
-                }
-                if (!nameMatch) {
-                    // "xona yarat ..." format
-                    nameMatch = text.match(/(?:xona|room)\s+(?:yarat|создать|create)\s+["']?([^"']+?)["']?(?:\s+(?:public|private|ochiq|maxfiy))?/i);
-                }
-                if (!nameMatch) {
-                    // Oddiy: "Matematika xonasi yarat"
-                    nameMatch = text.match(/([A-Za-zА-Яа-я0-9\s]+?)\s*(?:xona|room)(?:si|i)?\s*(?:yarat|создать|och|open)/i);
+                if (!isPrivate && !isPublic) {
+                    addMessage('assistant', `🤔 Kechirasiz, tushunmadim. Xona turi: **Public** (hamma kirishi mumkin) yoki **Private** (parol bilan)?`);
+                    return;
                 }
                 
-                if (nameMatch) roomName = nameMatch[1].trim();
-                if (!roomName) roomName = "Nomsiz xona";
+                const password = isPrivate ? Math.random().toString(36).substr(2, 6) : null;
                 
-                // Public yoki Private aniqlash
-                const isPrivate = lower.includes('private') || lower.includes('maxfiy') || lower.includes('yopiq') || lower.includes('parol');
-                // Parolni topish
-                let password = null;
-                const passMatch = text.match(/(?:parol|password)\s+["']?(\S+)["']?/i);
-                if (passMatch) password = passMatch[1];
-                if (isPrivate && !password) password = Math.random().toString(36).substr(2, 6);
+                addMessage('assistant', `⏳ Xona yaratilmoqda, biroz sabr qiling...`);
                 
                 try {
-                    const { roomCode, roomName: createdName } = await createRoomAI(roomName, !isPrivate, password);
-                    let response = `✅ <strong>"${createdName}" xonasi muvaffaqiyatli yaratildi!</strong><br><br>`;
-                    response += `📌 <strong>Xona kodi:</strong> <code>${roomCode}</code><br>`;
-                    if (password) response += `🔒 <strong>Parol:</strong> <code>${password}</code><br>`;
-                    response += `<br>💡 Bu kodni doskaga kirish uchun boshqalarga berishingiz mumkin.`;
-                    return response;
+                    const { roomCode, name } = await createRoomFinal(pendingAction.name, !isPrivate, password);
+                    
+                    let response = `🎉 **Xona muvaffaqiyatli yaratildi!**\n\n`;
+                    response += `📌 **Xona nomi:** ${name}\n`;
+                    response += `🔑 **Xona kodi:** \`${roomCode}\`\n`;
+                    if (password) response += `🔒 **Parol:** \`${password}\`\n`;
+                    response += `\n💡 Bu kodni doskaga kirish uchun boshqalarga berishingiz mumkin.\n\n🔗 **Xonaga kirish:** "${roomCode} kodli xonaga kir" deb yozing.`;
+                    
+                    addMessage('assistant', response);
+                    
+                    // Jarayonni tugatish
+                    waitingFor = null;
+                    pendingAction = null;
+                    
+                    // Xonalar ro'yxatini yangilash
+                    const rooms = await getMyRooms();
+                    if (rooms.length > 0) {
+                        addMessage('assistant', `📋 **Mening xonalarim:** ${rooms.length} ta xonangiz bor. "xonalarim" deb yozib ko'rishingiz mumkin.`);
+                    }
                 } catch(e) {
-                    return `❌ Xona yaratishda xatolik: ${e.message}`;
+                    addMessage('assistant', `❌ Xatolik yuz berdi: ${e.message}. Iltimos, qaytadan urinib ko'ring.`);
+                    waitingFor = null;
+                    pendingAction = null;
                 }
+                return;
             }
             
-            // ========== 2. XONALARNI KO'RSATISH ==========
-            const showPatterns = [
-                /(?:mening|xonalarim|my rooms|меня|мои комнаты)/i,
-                /(?:ko'rsat|показать|show)\s*(?:xonalarim|my rooms)/i,
-                /(?:qanday|xonalar|какие комнаты)\s*(?:bor|есть)/i,
-                /(?:necha|сколько|how many)\s*(?:xona|room)/i
-            ];
+            // 2. Xona yaratishni boshlash
+            if (lower.includes('xona yarat') || lower.includes('yangi xona') || lower.includes('create room')) {
+                addMessage('assistant', `🎯 **Yangi xona yaratish uchun:**\n\n📝 **Xona nomi** nima bo'lsin?\n\n💡 *Menga "random" desangiz, o'zim chiroyli nom tanlayman.*`);
+                waitingFor = 'room_name';
+                return;
+            }
             
-            if (showPatterns.some(p => p.test(lower))) {
+            // 3. Mening xonalarim
+            if (lower.includes('mening xonalarim') || lower.includes('xonalarim') || lower.includes('my rooms')) {
                 const rooms = await getMyRooms();
                 if (rooms.length === 0) {
-                    return "⭐ Siz hali hech qanday xona yaratmagansiz. Menga 'Yangi xona yarat' deb buyruq berishingiz mumkin!";
-                }
-                let html = `<strong>📋 Sizning xonalaringiz (${rooms.length} ta):</strong><br><br>`;
-                for (const r of rooms) {
-                    html += `• <strong>${r.name}</strong><br>  &nbsp;&nbsp;📌 Kod: <code>${r.id}</code> | 👥 ${r.userCount} kishi | 📅 ${new Date(r.createdAt).toLocaleDateString()}<br>`;
-                }
-                html += `<br>💡 Xonaga kirish uchun: <code>${rooms[0]?.id} kodli xonaga kir</code> deb yozing.`;
-                return html;
-            }
-            
-            // ========== 3. XONAGA KIRISH ==========
-            const joinPatterns = [
-                /(?:kir|войти|join|open)\s*(?:xona|room|ga)/i,
-                /(?:xona|room)\s*(?:kodi|code)\s*(?:\d+|[A-Z0-9]{6})/i,
-                /(?:kirit|введите|enter)\s*(?:xona|room)/i
-            ];
-            
-            if (joinPatterns.some(p => p.test(lower))) {
-                // 6 xonalik kodni topish
-                let codeMatch = text.match(/\b([A-Z0-9]{6})\b/);
-                if (!codeMatch) {
-                    // So'z bilan aytilgan kod
-                    codeMatch = text.match(/(?:kodi|code)\s+["']?([A-Z0-9]{6})["']?/i);
-                }
-                
-                if (codeMatch) {
-                    const roomCode = codeMatch[1];
-                    const snap = await firebase.database().ref(`rooms/${roomCode}`).once('value');
-                    const room = snap.val();
-                    if (!room) return `❌ "${roomCode}" kodli xona topilmadi. Kodni tekshirib qayta urinib ko'ring.`;
-                    if (room.isActive === false) return "❌ Bu xona tugatilgan, boshqa xona tanlang.";
-                    
-                    if (room.hasPassword) {
-                        const passMatch = text.match(/(?:parol|password)\s+["']?(\S+)["']?/i);
-                        if (passMatch && room.password === passMatch[1]) {
-                            localStorage.setItem('lastRoomId', roomCode);
-                            setTimeout(() => { window.location.href = `board.html?room=${roomCode}`; }, 500);
-                            return `✅ Parol to'g'ri! "${room.name}" xonasiga kiritilmoqda...`;
-                        }
-                        return `🔐 "${room.name}" xonasi parol bilan himoyalangan. Iltimos, parolni ham yozing. Masalan: "${roomCode} kodli xonaga kir, parol 123456"`;
-                    }
-                    
-                    localStorage.setItem('lastRoomId', roomCode);
-                    setTimeout(() => { window.location.href = `board.html?room=${roomCode}`; }, 500);
-                    return `🚪 "${room.name}" xonasiga kiritilmoqda... Iltimos, kuting.`;
+                    addMessage('assistant', `📭 **Hozircha xonangiz yo'q.**\n\n🔹 "xona yarat" deb yozing, men sizga yordam beraman!`);
                 } else {
-                    return "📌 Qaysi xonaga kirishni xohlaysiz? Xona kodini 6 xonalik formatda ayting. Masalan: ABC123 kodli xonaga kir";
+                    let response = `📋 **Sizning xonalaringiz (${rooms.length} ta):**\n\n`;
+                    for (const r of rooms) {
+                        response += `• **${r.name}**\n  🔑 Kod: \`${r.id}\` | 👥 ${r.userCount} kishi\n`;
+                    }
+                    response += `\n💡 Xonaga kirish uchun: \`${rooms[0]?.id} kodli xonaga kir\` deb yozing.`;
+                    addMessage('assistant', response);
                 }
+                return;
             }
             
-            return null;
-        }
-
-        // ========== MR BOARD KNOWLEDGE ==========
-        const mrBoardKnowledge = {
-            fullInfo: `MR BOARD - Muhammadrasul Qosimov tomonidan yaratilgan zamonaviy interaktiv whiteboard platformasi.
-
-📌 ASOSIY XUSUSIYATLAR:
-• Cheksiz doska - istalgancha kengaytiriladigan ish maydoni
-• Professional chizish vositalari: qalam, o'chirgich, lazer, shakllar
-• Ovozli muloqot - WebRTC orqali real vaqtda suhbat
-• Real-time chat - foydalanuvchilar bilan xabar almashish
-• Xona tizimi - Public/Private xonalar, parol himoyasi
-• Minimap - doskada joylashuvni ko'rsatadi
-• Rang tanlash - 12+ rang va rang g'ildiragi
-• JSON Import/Export - loyihalarni saqlash va yuklash
-• PNG eksport - doskani rasm sifatida saqlash
-• Dark/Light mode - avtomatik tizimga moslashadi
-• Klaviatura qisqa yo'llari
-• AI Assistant - bu siz suhbatlashayotgan yordamchi
-
-⌨️ QISQA YO'LLAR:
-B - Qalam | E - O'chirgich | L - Lazer | H - Surish
-Ctrl+Z - Bekor qilish | M - Mikrofon | C - Chat
-U - Foydalanuvchilar | F - To'liq ekran | Esc - Chiqish
-
-👨‍💻 MUALLIF: Muhammadrasul Qosimov
-📦 VERSIYA: Enterprise Ultimate 2.0
-📅 YARATILGAN: 2024
-🔧 TEXNOLOGIYALAR: HTML5 Canvas, Firebase RTDB, WebRTC, Groq AI, Lucide Icons
-
-💡 MR BOARD bilan dars o'tish, brinstorming, dizayn loyihalari va jamoaviy ishlarni amalga oshirishingiz mumkin!`
-        };
-
-        function getLocalKnowledge(query) {
-            const q = query.toLowerCase();
-            if (q.includes('qisqa yo\'l') || q.includes('shortcut') || q.includes('klaviatura')) {
-                return `⌨️ <strong>MR BOARD qisqa yo'llari:</strong><br><br>• B → Qalam<br>• E → O'chirgich<br>• L → Lazer<br>• H → Surish (Pan)<br>• Ctrl+Z → Bekor qilish<br>• M → Mikrofon<br>• C → Chat<br>• U → Foydalanuvchilar<br>• F → To'liq ekran<br>• Esc → Chiqish`;
+            // 4. Qisqa yo'llar
+            if (lower.includes('qisqa yo\'l') || lower.includes('shortcut') || lower.includes('klaviatura')) {
+                addMessage('assistant', `⌨️ **MR BOARD qisqa yo'llari:**\n\n• **B** → Qalam\n• **E** → O'chirgich\n• **L** → Lazer\n• **H** → Surish (Pan)\n• **Ctrl+Z** → Bekor qilish\n• **M** → Mikrofon\n• **C** → Chat\n• **U** → Foydalanuvchilar\n• **F** → To'liq ekran\n• **Esc** → Chiqish\n\n💡 Bu tugmalar bilan ishlash ancha tezlashadi!`);
+                return;
             }
-            if (q.includes('haqida') || q.includes('about') || q.includes('nima') || q.includes('what is')) {
-                return mrBoardKnowledge.fullInfo;
-            }
-            if (q.includes('xususiyat') || q.includes('feature') || q.includes('nimalar')) {
-                return mrBoardKnowledge.fullInfo.split('ASOSIY XUSUSIYATLAR')[1]?.split('⌨️')[0] || mrBoardKnowledge.fullInfo;
-            }
-            if (q.includes('muallif') || q.includes('kim yaratgan')) {
-                return `👨‍💻 MR BOARD muallifi: <strong>Muhammadrasul Qosimov</strong><br>📅 Yaratilgan: 2024<br>📦 Versiya: Enterprise Ultimate 2.0<br>🔧 Texnologiyalar: HTML5 Canvas, Firebase RTDB, WebRTC, Groq AI`;
-            }
-            return null;
-        }
-
-        // ========== GROQ API ==========
-        async function callGroq(userMessage) {
-            const systemPrompt = `Siz MR BOARD AI yordamchisisiz. Inson kabi tushunasiz, bir nechta buyruqni bir gapda bajara olasiz.
-MR BOARD haqida ma'lumot: Muhammadrasul Qosimov yaratgan real vaqtli whiteboard. Xususiyatlari: cheksiz doska, qalam, o'chirgich, lazer, ovoz, chat, xonalar, minimap, JSON, PNG, dark mode.
-
-QOIDALAR:
-1. FAQAT MR BOARD haqida javob bering. Boshqa mavzuda: "Men faqat MR BOARD haqida gapirishim mumkin."
-2. Javoblarni O'zbek tilida, tabiiy va insoniy uslubda bering.
-3. Do'stona, iliq va yordamchi bo'ling. Foydalanuvchini ismi bilan chaqiring.
-4. Oxirgi 10 ta xabarni eslab qoling.`;
-
-            const messages = [
-                { role: "system", content: systemPrompt },
-                ...chatHistory.slice(-10),
-                { role: "user", content: userMessage }
-            ];
             
-            const response = await fetch(GROQ_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_API_KEY}` },
-                body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages, max_tokens: 600, temperature: 0.8 })
-            });
+            // 5. MR BOARD haqida
+            if (lower.includes('mr board haqida') || lower.includes('about') || lower.includes('nima bu')) {
+                addMessage('assistant', `📚 **MR BOARD** - Muhammadrasul Qosimov tomonidan yaratilgan zamonaviy interaktiv whiteboard platformasi.\n\n✨ **Asosiy xususiyatlar:**\n• Cheksiz doska\n• Qalam, o'chirgich, lazer\n• Ovozli muloqot (WebRTC)\n• Real-time chat\n• Public/Private xonalar\n• Minimap\n• JSON/PNG eksport\n• Dark/Light mode\n\n👨‍💻 Muallif: Muhammadrasul Qosimov\n📦 Versiya: Enterprise Ultimate 2.0\n\n❓ Yana nimani bilmoqchisiz?`);
+                return;
+            }
             
-            if (!response.ok) throw new Error(`API xatosi: ${response.status}`);
-            const data = await response.json();
-            return data.choices[0].message.content;
+            // 6. Groq AI ga yuborish (boshqa savollar)
+            addMessage('assistant', `🤔 **Kuting, o'ylayapman...**`);
+            
+            try {
+                const response = await fetch(GROQ_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_API_KEY}` },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: `Siz MR BOARD AI yordamchisisiz. Do'stona, iliq, qiziqarli suhbat qiling. Foydalanuvchi bilan savol-javob uslubida gaplashing. Javoblarni qisqa, ammo foydali qiling. O'zbek tilida javob bering.` },
+                            { role: "user", content: message }
+                        ],
+                        max_tokens: 400,
+                        temperature: 0.8
+                    })
+                });
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content;
+                
+                // Oxirgi "Kuting" xabarini o'chirib, yangisini qo'shamiz
+                chatHistory.pop();
+                saveChat();
+                renderMessages();
+                addMessage('assistant', aiResponse);
+                
+            } catch(e) {
+                chatHistory.pop();
+                saveChat();
+                renderMessages();
+                addMessage('assistant', `❌ Kechirasiz, texnik xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.`);
+            }
         }
-
-        // ========== ASOSIY SEND FUNKSIYASI ==========
+        
+        // ========== SEND MESSAGE ==========
+        let isLoading = false;
+        
         async function sendMessage() {
-            const message = chatInput.value.trim();
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
             if (!message || isLoading) return;
             
             addMessage('user', message);
-            addToHistory('user', message);
-            chatInput.value = '';
+            input.value = '';
             isLoading = true;
-            sendBtn.disabled = true;
             
-            // Avval aqlli buyruq tahlili
-            const commandResult = await intelligentCommandProcessing(message);
-            if (commandResult) {
-                addTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage('ai', commandResult);
-                    addToHistory('assistant', commandResult);
-                    isLoading = false;
-                    sendBtn.disabled = false;
-                }, 500);
-                return;
-            }
+            await handleUserMessage(message);
             
-            // Keyin lokal bilimlar
-            const localResult = getLocalKnowledge(message);
-            if (localResult) {
-                addTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage('ai', localResult);
-                    addToHistory('assistant', localResult);
-                    isLoading = false;
-                    sendBtn.disabled = false;
-                }, 300);
-                return;
-            }
-            
-            // Nihoyat Groq AI
-            addTypingIndicator();
-            try {
-                const response = await callGroq(message);
-                removeTypingIndicator();
-                addMessage('ai', response);
-                addToHistory('assistant', response);
-            } catch (error) {
-                removeTypingIndicator();
-                addMessage('ai', `❌ Kechirasiz, texnik xatolik yuz berdi: ${error.message}. Iltimos, keyinroq urinib ko'ring.`);
-            } finally {
-                isLoading = false;
-                sendBtn.disabled = false;
-            }
+            isLoading = false;
+            input.focus();
         }
-
+        
         // ========== AUTH ==========
         const firebaseConfig = {
             apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0",
@@ -717,28 +651,38 @@ QOIDALAR:
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
+                loadChat();
+                
                 const snap = await firebase.database().ref(`users/${user.uid}`).once('value');
                 const data = snap.val() || {};
-                const userName = data.fullName || data.username || user.email?.split('@')[0] || 'Do\'stim';
+                const userName = data.fullName || data.username || user.email?.split('@')[0];
                 
-                setTimeout(() => {
-                    addMessage('ai', `👋 Salom, <strong>${userName}</strong>! Men MR BOARD AI yordamchisiman. Inson kabi tushunaman – xohlaganingizcha gapiring, bir nechta buyruqni bir gapda ham bajaraman. Nima haqida yordam kerak?`, true);
-                }, 300);
+                // Agar suhbat juda eski bo'lsa, yangi emas
+                if (chatHistory.length <= 1) {
+                    addMessage('assistant', `👋 **Salom ${userName}!** Xush kelibsiz!\n\n🤗 Menga istalgancha savol berishingiz mumkin. "xona yarat" deb yozing, men sizga yordam beraman.\n\n🎯 Xonalaringizni ko'rish uchun "xonalarim" deb yozing.`);
+                }
             } else {
                 window.location.href = 'board.html';
             }
         });
-
+        
         // ========== EVENT LISTENERS ==========
-        sendBtn.addEventListener('click', sendMessage);
-        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+        });
+        document.getElementById('newChatBtn').addEventListener('click', () => {
+            if (confirm('Yangi suhbat boshlansin? Avvalgi suhbat saqlanmaydi.')) {
+                startNewChat();
+            }
+        });
+        
         document.querySelectorAll('.quick-q').forEach(btn => {
             btn.addEventListener('click', () => {
-                chatInput.value = btn.dataset.question;
+                document.getElementById('chatInput').value = btn.dataset.question;
                 sendMessage();
             });
         });
-        chatInput.focus();
     </script>
 </body>
 </html>
