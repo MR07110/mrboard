@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="uz" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MR BOARD · AI Assistant</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-base: #f8fafc;
+            --bg-canvas: #e2e8f0;
+            --bg-glass: rgba(255,255,255,0.65);
+            --bg-panel: rgba(255,255,255,0.85);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --brand-primary: #007aff;
+            --brand-alpha: rgba(0,122,255,0.15);
+            --border-subtle: rgba(255,255,255,0.4);
+            --border-strong: rgba(0,0,0,0.1);
+            --state-success: #34c759;
+            --state-danger: #ff3b30;
+            --state-warning: #ffcc00;
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background: var(--bg-canvas);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .ai-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-glass);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 800;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .logo span {
+            color: var(--brand-primary);
+        }
+
+        .back-btn {
+            background: var(--bg-base);
+            border: 1px solid var(--border-strong);
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Main Container */
+        .ai-container {
+            display: flex;
+            height: 100vh;
+            padding-top: 80px;
+        }
+
+        /* Left Panel - Canvas Preview */
+        .canvas-preview {
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border-right: 1px solid var(--border-strong);
+        }
+
+        .preview-title {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .drawing-area {
+            background: var(--bg-base);
+            border-radius: 24px;
+            border: 2px solid var(--border-strong);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            aspect-ratio: 1 / 1;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            cursor: crosshair;
+        }
+
+        #drawCanvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            background: white;
+            cursor: crosshair;
+        }
+
+        .canvas-tools {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .tool-btn {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-strong);
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            background: var(--bg-base);
+            transform: translateY(-2px);
+        }
+
+        .tool-btn.active {
+            background: var(--brand-primary);
+            color: white;
+            border-color: var(--brand-primary);
+        }
+
+        /* Right Panel - AI Response */
+        .ai-panel {
+            width: 420px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(40px);
+            border-left: 1px solid var(--border-strong);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-status {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-strong);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .api-badge {
+            background: var(--brand-alpha);
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--brand-primary);
+        }
+
+        .api-badge.active {
+            background: rgba(52, 199, 89, 0.15);
+            color: var(--state-success);
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            animation: slideIn 0.3s var(--ease-spring);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .message-avatar.ai {
+            background: linear-gradient(135deg, #007aff, #5856d6);
+        }
+
+        .message-avatar.user {
+            background: var(--text-muted);
+        }
+
+        .message-content {
+            flex: 1;
+            background: var(--bg-base);
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+            border: 1px solid var(--border-strong);
+        }
+
+        .message.ai .message-content {
+            background: var(--brand-alpha);
+            border-color: transparent;
+        }
+
+        .message-time {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .shape-detection {
+            background: var(--bg-base);
+            border-radius: 16px;
+            padding: 12px;
+            margin-top: 8px;
+            border-left: 3px solid var(--brand-primary);
+        }
+
+        .shape-name {
+            font-weight: 800;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .shape-confidence {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .error-tag {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--state-danger);
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        /* Input Area */
+        .ai-input-area {
+            padding: 20px;
+            border-top: 1px solid var(--border-strong);
+            display: flex;
+            gap: 12px;
+        }
+
+        .ai-input {
+            flex: 1;
+            background: var(--bg-base);
+            border: 1px solid var(--border-strong);
+            border-radius: 40px;
+            padding: 12px 20px;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .ai-input:focus {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px var(--brand-alpha);
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            transform: none;
+        }
+
+        /* Loading Animation */
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .ai-container {
+                flex-direction: column;
+            }
+            .canvas-preview {
+                border-right: none;
+                border-bottom: 1px solid var(--border-strong);
+                padding: 16px;
+            }
+            .ai-panel {
+                width: 100%;
+                height: 50vh;
+            }
+            .drawing-area {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ai-header">
+        <a href="board.html" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="1.5">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            MR <span>BOARD AI</span>
+        </a>
+        <a href="board.html" class="back-btn">
+            <i data-lucide="arrow-left"></i>
+            <span>Doskaga qaytish</span>
+        </a>
+    </div>
+
+    <div class="ai-container">
+        <!-- Left: Drawing Canvas -->
+        <div class="canvas-preview">
+            <div class="preview-title">
+                <i data-lucide="pen-tool"></i>
+                <span>Shaklni chizing</span>
+            </div>
+            <div class="drawing-area">
+                <canvas id="drawCanvas" width="500" height="500"></canvas>
+            </div>
+            <div class="canvas-tools">
+                <button class="tool-btn" id="clearCanvasBtn">
+                    <i data-lucide="trash-2"></i>
+                    Tozalash
+                </button>
+                <button class="tool-btn active" id="analyzeBtn">
+                    <i data-lucide="scan"></i>
+                    Shaklni aniqlash
+                </button>
+            </div>
+        </div>
+
+        <!-- Right: AI Assistant -->
+        <div class="ai-panel">
+            <div class="ai-status">
+                <div>
+                    <i data-lucide="bot" size="18"></i>
+                    <span style="font-weight: 700; margin-left: 8px;">AI Assistant</span>
+                </div>
+                <div class="api-badge" id="apiStatus">
+                    <i data-lucide="wifi"></i>
+                    <span>Groq API</span>
+                </div>
+            </div>
+
+            <div class="ai-messages" id="aiMessages">
+                <div class="message ai">
+                    <div class="message-avatar ai">
+                        <i data-lucide="bot" size="18" style="color: white;"></i>
+                    </div>
+                    <div class="message-content">
+                        <strong>Assalomu alaykum!</strong><br>
+                        Men MR BOARD AI yordamchisiman. Shakl chizing, men uni aniqlayman va xatoliklarni tuzatishga yordam beraman.
+                        <div class="message-time">hozir</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="aiInput" placeholder="Savol bering yoki maslahat so'rang...">
+                <button class="send-btn" id="sendBtn">
+                    <i data-lucide="send"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // ==================== CONFIGURATION ====================
+        // GROQ API KEY - O'ZINGIZNING API KEY INGIZNI QO'YING
+        const GROQ_API_KEY = "gsk_YOUR_API_KEY_HERE";
+        const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+        // ==================== CANVAS SETUP ====================
+        const canvas = document.getElementById('drawCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Canvas o'lchamlarini sozlash
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const size = Math.min(container.clientWidth, 500);
+            canvas.width = size;
+            canvas.height = size;
+            canvas.style.width = `${size}px`;
+            canvas.style.height = `${size}px`;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0f172a';
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // ==================== DRAWING LOGIC ====================
+        let drawing = false;
+        let lastX = 0, lastY = 0;
+
+        function startDrawing(e) {
+            drawing = true;
+            const pos = getCanvasCoordinates(e);
+            lastX = pos.x;
+            lastY = pos.y;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            e.preventDefault();
+            const pos = getCanvasCoordinates(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.strokeStyle = '#007aff';
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function stopDrawing() {
+            drawing = false;
+            ctx.beginPath();
+        }
+
+        function getCanvasCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            let clientX, clientY;
+            if (e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0f172a';
+            addMessage('user', 'Canvas tozalandi');
+            addMessage('ai', 'Yangi shakl chizishingiz mumkin. Chizganingizdan keyin "Shaklni aniqlash" tugmasini bosing.');
+        }
+
+        // Event listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
+        
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+
+        document.getElementById('clearCanvasBtn').addEventListener('click', clearCanvas);
+
+        // ==================== IMAGE TO BASE64 ====================
+        function getCanvasImage() {
+            return canvas.toDataURL('image/png');
+        }
+
+        // ==================== SHAPE DETECTION (GROQ API) ====================
+        async function detectShape() {
+            const imageData = getCanvasImage();
+            
+            // Show loading
+            const loadingId = addLoadingMessage();
+            
+            try {
+                const response = await fetch(GROQ_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${GROQ_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.2-90b-vision-preview',
+                        messages: [
+                            {
+                                role: 'user',
+                                content: [
+                                    {
+                                        type: 'text',
+                                        text: `Siz professional shakl aniqlovchi AI yordamchisiz. 
+Rasmda chizilgan shaklni aniqlang va quyidagi formatda javob bering:
+
+1. Shakl nomi (masalan: kvadrat, aylana, uchburchak, to'rtburchak, yulduz, chiziq, nuqta, spiral)
+2. Aniqlik foizi (0-100%)
+3. Xatoliklar (agar chizilgan shakl standart shaklga mos kelmasa, qanday tuzatish kerakligini yozing)
+4. Maslahat (shaklni qanday yaxshiroq chizish mumkin)
+
+FAQAT JSON formatida javob bering:
+{
+  "shape": "shakl_nomi",
+  "confidence": 95,
+  "errors": ["xato1", "xato2"],
+  "suggestion": "maslahat matni"
+}`,
+                                    },
+                                    {
+                                        type: 'image_url',
+                                        image_url: {
+                                            url: imageData
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        temperature: 0.3,
+                        max_tokens: 500
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const content = data.choices[0].message.content;
+                
+                // Remove loading message
+                removeLoadingMessage(loadingId);
+                
+                // Parse JSON response
+                let result;
+                try {
+                    // Extract JSON from response
+                    const jsonMatch = content.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        result = JSON.parse(jsonMatch[0]);
+                    } else {
+                        throw new Error('JSON not found');
+                    }
+                } catch (e) {
+                    // Fallback: use raw response
+                    result = {
+                        shape: 'aniqlanmadi',
+                        confidence: 0,
+                        errors: ['Shakl aniq emas'],
+                        suggestion: 'Aniqroq shakl chizing va qaytadan urinib ko\'ring'
+                    };
+                }
+                
+                // Display result
+                displayShapeResult(result);
+                
+                // Add to chat
+                addMessage('ai', `
+                    <strong>🔍 Shakl aniqlandi: ${result.shape}</strong><br>
+                    <div class="shape-detection">
+                        <div class="shape-name">📐 ${result.shape}</div>
+                        <div class="shape-confidence">🎯 Aniqlik: ${result.confidence}%</div>
+                        ${result.errors && result.errors.length > 0 ? `
+                            <div style="margin-top: 8px;">
+                                ${result.errors.map(err => `<div class="error-tag">⚠️ ${err}</div>`).join('')}
+                            </div>
+                        ` : ''}
+                        <div style="margin-top: 8px; font-size: 12px;">💡 ${result.suggestion || 'Ajoyib!'}</div>
+                    </div>
+                `);
+                
+            } catch (error) {
+                console.error('Shape detection error:', error);
+                removeLoadingMessage(loadingId);
+                addMessage('ai', `❌ Shaklni aniqlashda xatolik: ${error.message}<br><br>Iltimos, API kalitini tekshiring yoki qaytadan urinib ko'ring.`);
+                
+                // Update API status
+                const apiStatus = document.getElementById('apiStatus');
+                apiStatus.innerHTML = '<i data-lucide="wifi-off"></i><span>API xato</span>';
+                apiStatus.style.background = 'rgba(255,59,48,0.15)';
+                apiStatus.style.color = 'var(--state-danger)';
+                lucide.createIcons();
+            }
+        }
+
+        function displayShapeResult(result) {
+            const shapeName = document.querySelector('.preview-title span');
+            // Optional: update UI with detected shape
+        }
+
+        // ==================== CHAT FUNCTIONS ====================
+        function addMessage(type, content) {
+            const messagesContainer = document.getElementById('aiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const avatar = type === 'ai' 
+                ? '<div class="message-avatar ai"><i data-lucide="bot" size="18" style="color: white;"></i></div>'
+                : '<div class="message-avatar user"><i data-lucide="user" size="18" style="color: white;"></i></div>';
+            
+            messageDiv.innerHTML = `
+                ${avatar}
+                <div class="message-content">
+                    ${content}
+                    <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            lucide.createIcons();
+        }
+        
+        function addLoadingMessage() {
+            const messagesContainer = document.getElementById('aiMessages');
+            const id = 'loading_' + Date.now();
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message ai';
+            loadingDiv.id = id;
+            loadingDiv.innerHTML = `
+                <div class="message-avatar ai"><i data-lucide="bot" size="18" style="color: white;"></i></div>
+                <div class="message-content">
+                    <div class="loading-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(loadingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return id;
+        }
+        
+        function removeLoadingMessage(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addMessage('user', message);
+            input.value = '';
+            
+            const loadingId = addLoadingMessage();
+            
+            try {
+                const response = await fetch(GROQ_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${GROQ_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.2-90b-text-preview',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: `Siz MR BOARD AI yordamchisisiz. 
+Vazifangiz:
+1. Foydalanuvchilarga shakl chizishda yordam berish
+2. Geometrik shakllar haqida ma'lumot berish
+3. Chizilgan shakllarni tahlil qilish va xatoliklarni tuzatishga yordam berish
+4. Professional, qisqa va aniq javob bering
+
+Javoblaringizni o'zbek tilida bering.`
+                            },
+                            {
+                                role: 'user',
+                                content: message
+                            }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`API error: ${response.status}`);
+                
+                const data = await response.json();
+                const reply = data.choices[0].message.content;
+                
+                removeLoadingMessage(loadingId);
+                addMessage('ai', reply);
+                
+            } catch (error) {
+                console.error('Send message error:', error);
+                removeLoadingMessage(loadingId);
+                addMessage('ai', `❌ Xatolik: ${error.message}<br><br>Iltimos, API kalitini tekshiring.`);
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('analyzeBtn').addEventListener('click', detectShape);
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('aiInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        // Check API key on load
+        if (GROQ_API_KEY === "gsk_YOUR_API_KEY_HERE") {
+            addMessage('ai', '⚠️ **API kaliti sozlanmagan!**<br><br>Iltimos, `GROQ_API_KEY` ni o\'z kalitingiz bilan almashtiring.<br><br>Kalitni [Groq Console](https://console.groq.com) dan olishingiz mumkin.');
+            document.getElementById('apiStatus').innerHTML = '<i data-lucide="alert-triangle"></i><span>Kalit kerak</span>';
+            document.getElementById('apiStatus').style.background = 'rgba(255,204,0,0.15)';
+            document.getElementById('apiStatus').style.color = 'var(--state-warning)';
+        } else {
+            document.getElementById('apiStatus').innerHTML = '<i data-lucide="check-circle"></i><span>Groq API tayyor</span>';
+            document.getElementById('apiStatus').classList.add('active');
+        }
+        
+        lucide.createIcons();
+    </script>
+</body>
+</html>
