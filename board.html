@@ -23,7 +23,6 @@
     <!-- ==================== LOGIN/REGISTER PANEL ==================== -->
     <div id="auth-gateway">
         <div class="auth-gateway-container">
-            <!-- Chap tomondagi ma'lumot -->
             <div class="auth-info">
                 <div class="auth-info-content">
                     <div class="auth-logo">
@@ -45,14 +44,12 @@
                 </div>
             </div>
             
-            <!-- O'ng tomondagi forma (Login/Register) -->
             <div class="auth-form-container">
                 <div class="auth-tabs">
                     <button class="auth-tab active" data-tab="login">Kirish</button>
                     <button class="auth-tab" data-tab="register">Ro'yxatdan o'tish</button>
                 </div>
                 
-                <!-- Login Form -->
                 <div class="auth-panel active" id="login-panel">
                     <div class="auth-form">
                         <div class="form-group">
@@ -75,7 +72,6 @@
                     </div>
                 </div>
                 
-                <!-- Register Form -->
                 <div class="auth-panel" id="register-panel">
                     <div class="auth-form">
                         <div class="form-row">
@@ -101,7 +97,7 @@
                             <input type="password" id="reg-password" class="form-input" placeholder="••••••••">
                         </div>
                         <div class="form-group">
-                            <label><i数据-lucide="lock"></i> Parolni tasdiqlang</label>
+                            <label><i data-lucide="lock"></i> Parolni tasdiqlang</label>
                             <input type="password" id="reg-confirm" class="form-input" placeholder="••••••••">
                         </div>
                         <div class="error-message" id="register-error"></div>
@@ -126,12 +122,8 @@
         <div class="form-group">
             <label><i data-lucide="globe"></i> Xona turi</label>
             <div style="display: flex; gap: 12px; margin-top: 8px;">
-                <button class="room-type-selector active" data-type="public" style="flex: 1; padding: 12px; border-radius: 16px; background: var(--brand-alpha); border: 1px solid var(--brand-primary); cursor: pointer;">
-                    🌍 Public
-                </button>
-                <button class="room-type-selector" data-type="private" style="flex: 1; padding: 12px; border-radius: 16px; background: var(--bg-base); border: 1px solid var(--border-strong); cursor: pointer;">
-                    🔒 Private
-                </button>
+                <button class="room-type-selector active" data-type="public" style="flex: 1; padding: 12px; border-radius: 16px; background: var(--brand-alpha); border: 1px solid var(--brand-primary); cursor: pointer;">🌍 Public</button>
+                <button class="room-type-selector" data-type="private" style="flex: 1; padding: 12px; border-radius: 16px; background: var(--bg-base); border: 1px solid var(--border-strong); cursor: pointer;">🔒 Private</button>
             </div>
         </div>
         <div class="form-group" id="new-room-password-group" style="display: none;">
@@ -145,7 +137,7 @@
         </div>
     </div>
 
-    <!-- ==================== XONAGA KIRISH MODAL (PAROL UCHUN) ==================== -->
+    <!-- ==================== XONAGA KIRISH MODAL ==================== -->
     <div class="modal-box" id="modal-join-room" style="max-width: 360px;">
         <h3 style="text-align: center; font-size: 20px; margin-bottom: 20px;">🔐 Xonaga kirish</h3>
         <div id="join-room-info" style="margin-bottom: 16px; text-align: center;">
@@ -182,7 +174,6 @@
 
     <!-- ==================== WHITEBOARD APP ==================== -->
     <div id="app-container" class="grid-pattern" style="display: none;">
-        <!-- User Info Bar -->
         <div class="user-info-bar">
             <div class="user-info-left">
                 <div class="user-avatar" id="user-avatar"></div>
@@ -218,17 +209,9 @@
 
     <div id="ui-overlay" style="display: none;">
         <div class="top-bar">
-            <div class="status-pill">
-                <i data-lucide="hash"></i>
-                <span id="ui-room-code">---</span>
-            </div>
-            <div class="status-pill">
-                <i data-lucide="zoom-in"></i>
-                <span id="ui-zoom-level">100%</span>
-            </div>
-            <div class="status-pill" id="ui-user-role">
-                <i data-lucide="eye"></i> Kuzatuvchi
-            </div>
+            <div class="status-pill"><i data-lucide="hash"></i><span id="ui-room-code">---</span></div>
+            <div class="status-pill"><i data-lucide="zoom-in"></i><span id="ui-zoom-level">100%</span></div>
+            <div class="status-pill" id="ui-user-role"><i data-lucide="eye"></i> Kuzatuvchi</div>
         </div>
 
         <div class="bottom-dock">
@@ -289,7 +272,7 @@
                 <button class="setting-card" id="act-undo"><i data-lucide="undo-2"></i>Bekor</button>
                 <button class="setting-card" id="act-image"><i data-lucide="image"></i>Rasm</button>
                 <button class="setting-card" id="act-export"><i data-lucide="download"></i>PNG</button>
-                <button class="setting-card" id="act-save-json"><i数据-lucide="save"></i>Saqlash</button>
+                <button class="setting-card" id="act-save-json"><i data-lucide="save"></i>Saqlash</button>
                 <button class="setting-card" id="act-load-json"><i data-lucide="folder-open"></i>Yuklash</button>
             </div>
             
@@ -330,7 +313,7 @@
     <div class="drawer right" id="drawer-users">
         <div class="drawer-header">
             <div class="drawer-title"><i data-lucide="users"></i> Qatnashchilar</div>
-            <button class="btn-close" data-close><i data-lucide="x"></i></button>
+            <button class="btn-close" data-close><i数据-lucide="x"></i></button>
         </div>
         <div class="drawer-content">
             <div class="user-list" id="ui-participants-list"></div>
@@ -392,6 +375,8 @@
             localStorage.setItem('pendingRoomId', roomIdFromUrl);
         }
     </script>
-   
+    
+    <!-- ✅ AI MODAL - XATOLIKSIZ UNIVERSAL -->
+    <script src="js/ai-modal.js"></script>
 </body>
-</html> 
+</html>
