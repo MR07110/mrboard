@@ -17,35 +17,53 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* ========== LIGHT MODE (DEFAULT) ========== */
         :root {
             --bg-base: #ffffff;
             --bg-alt: #f8fafc;
             --bg-glass: rgba(255,255,255,0.65);
             --bg-panel: rgba(255,255,255,0.85);
+            --bg-card: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border-subtle: #e2e8f0;
             --border-strong: rgba(0,0,0,0.05);
             --brand-primary: #007aff;
+            --brand-primary-dark: #0056b3;
             --brand-alpha: rgba(0,122,255,0.1);
+            --brand-alpha-hover: rgba(0,122,255,0.2);
             --state-danger: #ff3b30;
             --state-success: #34c759;
             --state-warning: #ffcc00;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+            --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.15);
+            --shadow-hover: 0 20px 40px -12px rgba(0,122,255,0.25);
             --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-            --shadow-float: 0 24px 48px -12px rgba(0,0,0,0.15);
+            --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-fast: 0.2s;
+            --transition-normal: 0.3s;
         }
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-base: #020617;
-                --bg-alt: #0f172a;
-                --bg-glass: rgba(15,23,42,0.65);
-                --bg-panel: rgba(15,23,42,0.85);
-                --text-main: #f8fafc;
-                --text-muted: #94a3b8;
-                --border-subtle: rgba(255,255,255,0.1);
-                --border-strong: rgba(255,255,255,0.05);
-            }
+        /* ========== DARK MODE ========== */
+        [data-theme="dark"] {
+            --bg-base: #020617;
+            --bg-alt: #0f172a;
+            --bg-glass: rgba(15,23,42,0.65);
+            --bg-panel: rgba(15,23,42,0.85);
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-subtle: rgba(255,255,255,0.1);
+            --border-strong: rgba(255,255,255,0.05);
+            --brand-primary: #0a84ff;
+            --brand-primary-dark: #007aff;
+            --brand-alpha: rgba(10,132,255,0.15);
+            --brand-alpha-hover: rgba(10,132,255,0.25);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
+            --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.4);
+            --shadow-hover: 0 20px 40px -12px rgba(10,132,255,0.3);
         }
 
         body {
@@ -56,9 +74,10 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            transition: background var(--transition-normal), color var(--transition-normal);
         }
 
-        /* Header */
+        /* ========== HEADER ========== */
         .header {
             padding: 16px 20px;
             background: var(--bg-glass);
@@ -80,10 +99,39 @@
             font-weight: 800;
             text-decoration: none;
             color: var(--text-main);
+            transition: transform var(--transition-fast) var(--ease-spring);
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
         }
 
         .logo span {
             color: var(--brand-primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 40px;
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all var(--transition-fast) var(--ease-spring);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            background: var(--brand-alpha);
         }
 
         .user-info {
@@ -104,8 +152,13 @@
             font-weight: 700;
             font-size: 16px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-fast) var(--ease-spring);
             overflow: hidden;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 3px var(--brand-alpha);
         }
 
         .user-name {
@@ -113,7 +166,7 @@
             font-size: 14px;
         }
 
-        /* Main Content */
+        /* ========== MAIN CONTENT ========== */
         .main-content {
             flex: 1;
             overflow-y: auto;
@@ -121,13 +174,30 @@
             padding-bottom: 80px;
         }
 
-        /* Welcome Card */
+        /* Welcome Card with Animation */
         .welcome-card {
-            background: linear-gradient(135deg, var(--brand-primary) 0%, #5856d6 100%);
+            background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
             border-radius: 28px;
             padding: 24px;
             color: white;
             margin-bottom: 24px;
+            animation: slideDown 0.5s var(--ease-spring);
+            transition: transform var(--transition-normal) var(--ease-spring);
+        }
+
+        .welcome-card:hover {
+            transform: translateY(-4px);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .welcome-card h1 {
@@ -148,10 +218,22 @@
             margin-bottom: 24px;
             overflow-x: auto;
             padding-bottom: 4px;
+            animation: fadeIn 0.5s var(--ease-smooth) 0.1s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .quick-action {
-            background: var(--bg-base);
+            background: var(--bg-card);
             border: 1px solid var(--border-subtle);
             border-radius: 40px;
             padding: 12px 20px;
@@ -161,14 +243,20 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-fast) var(--ease-spring);
             white-space: nowrap;
             color: var(--text-main);
+            box-shadow: var(--shadow-sm);
         }
 
         .quick-action:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.02);
             border-color: var(--brand-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .quick-action:active {
+            transform: scale(0.98);
         }
 
         .quick-action.create {
@@ -177,10 +265,20 @@
             border: none;
         }
 
+        .quick-action.create:hover {
+            background: var(--brand-primary-dark);
+            box-shadow: var(--shadow-hover);
+        }
+
         .quick-action.ai {
-            background: linear-gradient(135deg, #007aff, #5856d6);
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark));
             color: white;
             border: none;
+        }
+
+        .quick-action.ai:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: var(--shadow-hover);
         }
 
         /* Section Header */
@@ -194,6 +292,9 @@
         .section-title {
             font-size: 18px;
             font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .refresh-btn {
@@ -203,33 +304,70 @@
             cursor: pointer;
             padding: 8px;
             border-radius: 50%;
-            transition: all 0.2s;
+            transition: all var(--transition-fast) var(--ease-spring);
         }
 
         .refresh-btn:hover {
-            background: var(--border-strong);
+            background: var(--brand-alpha);
+            color: var(--brand-primary);
+            transform: rotate(180deg);
         }
 
         /* Rooms Grid */
         .rooms-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            animation: fadeInUp 0.5s var(--ease-smooth);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .room-card {
-            background: var(--bg-base);
-            border-radius: 20px;
-            padding: 16px;
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 20px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-normal) var(--ease-spring);
             border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .room-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--brand-primary), var(--state-success));
+            opacity: 0;
+            transition: opacity var(--transition-normal);
         }
 
         .room-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-6px);
             border-color: var(--brand-primary);
-            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .room-card:hover::before {
+            opacity: 1;
+        }
+
+        .room-card:active {
+            transform: scale(0.98);
         }
 
         .room-card-header {
@@ -250,6 +388,7 @@
             border-radius: 20px;
             background: var(--brand-alpha);
             color: var(--brand-primary);
+            transition: all var(--transition-fast);
         }
 
         .room-badge.private {
@@ -262,36 +401,64 @@
             gap: 16px;
             font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .room-join-btn {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background: var(--brand-primary);
             color: white;
             border: none;
-            border-radius: 14px;
+            border-radius: 16px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-fast) var(--ease-spring);
         }
 
         .room-join-btn:hover {
-            background: #0056b3;
+            background: var(--brand-primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Show More / Show Less Button */
+        .show-more-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 40px;
+            padding: 12px 24px;
+            margin-top: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast) var(--ease-spring);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            color: var(--text-main);
+        }
+
+        .show-more-btn:hover {
+            background: var(--brand-alpha);
+            border-color: var(--brand-primary);
+            transform: translateY(-2px);
         }
 
         .empty-state {
             text-align: center;
             padding: 60px;
             color: var(--text-muted);
-            background: var(--bg-base);
+            background: var(--bg-card);
             border-radius: 24px;
             border: 1px solid var(--border-subtle);
+            animation: fadeIn 0.5s var(--ease-smooth);
         }
 
-        /* Bottom Tab Bar (Instagram Style) */
+        /* Bottom Tab Bar */
         .bottom-tab-bar {
             position: fixed;
             bottom: 0;
@@ -318,13 +485,14 @@
             font-size: 10px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-fast) var(--ease-spring);
             padding: 8px 16px;
             border-radius: 40px;
         }
 
         .tab-item i {
             font-size: 24px;
+            transition: transform var(--transition-fast) var(--ease-spring);
         }
 
         .tab-item.active {
@@ -332,8 +500,80 @@
             background: var(--brand-alpha);
         }
 
+        .tab-item:hover i {
+            transform: translateY(-2px);
+        }
+
         .tab-item:hover {
             color: var(--brand-primary);
+        }
+
+        /* Profile Section */
+        .profile-card {
+            background: var(--bg-card);
+            border-radius: 28px;
+            padding: 24px;
+            text-align: center;
+            animation: fadeInUp 0.5s var(--ease-smooth);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all var(--transition-normal) var(--ease-spring);
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 4px var(--brand-alpha);
+        }
+
+        .profile-field {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .profile-field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .profile-field input,
+        .profile-field textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-alt);
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            font-size: 15px;
+            color: var(--text-main);
+            transition: all var(--transition-fast);
+        }
+
+        .profile-field input:focus,
+        .profile-field textarea:focus {
+            border-color: var(--brand-primary);
+            outline: none;
+            box-shadow: 0 0 0 3px var(--brand-alpha);
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
         }
 
         /* Modals */
@@ -348,7 +588,7 @@
             z-index: 200;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s;
+            transition: all var(--transition-normal);
         }
 
         .modal-overlay.active {
@@ -367,7 +607,7 @@
             padding: 24px;
             z-index: 201;
             transform: translateY(100%);
-            transition: transform 0.3s var(--ease-spring);
+            transition: transform var(--transition-normal) var(--ease-spring);
         }
 
         .modal.active {
@@ -399,11 +639,14 @@
             border: 2px solid var(--border-strong);
             border-radius: 20px;
             font-size: 15px;
+            color: var(--text-main);
+            transition: all var(--transition-fast);
         }
 
         .form-input:focus {
             border-color: var(--brand-primary);
             outline: none;
+            box-shadow: 0 0 0 3px var(--brand-alpha);
         }
 
         .room-type-selector {
@@ -420,7 +663,7 @@
             border: 1px solid var(--border-strong);
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-fast);
         }
 
         .type-btn.active {
@@ -442,6 +685,7 @@
             font-weight: 600;
             cursor: pointer;
             text-align: center;
+            transition: all var(--transition-fast) var(--ease-spring);
         }
 
         .btn-primary {
@@ -450,62 +694,20 @@
             border: none;
         }
 
+        .btn-primary:hover {
+            background: var(--brand-primary-dark);
+            transform: translateY(-2px);
+        }
+
         .btn-ghost {
             background: var(--bg-base);
             border: 1px solid var(--border-strong);
             color: var(--text-main);
         }
 
-        /* Profile Section */
-        .profile-card {
-            background: var(--bg-base);
-            border-radius: 28px;
-            padding: 24px;
-            text-align: center;
-        }
-
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: var(--brand-primary);
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 40px;
-            font-weight: 800;
-            cursor: pointer;
-        }
-
-        .profile-field {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .profile-field label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .profile-field input,
-        .profile-field textarea {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-alt);
-            border: 1px solid var(--border-strong);
-            border-radius: 16px;
-            font-size: 15px;
-        }
-
-        .profile-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
+        .btn-ghost:hover {
+            background: var(--brand-alpha);
+            border-color: var(--brand-primary);
         }
 
         /* Hide sections */
@@ -537,7 +739,7 @@
             border-radius: 40px;
             font-weight: 600;
             font-size: 13px;
-            box-shadow: var(--shadow-float);
+            box-shadow: var(--shadow-lg);
             animation: toastIn 0.3s var(--ease-spring);
         }
 
@@ -552,9 +754,47 @@
             }
         }
 
+        /* Pagination Controls */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .page-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: var(--brand-alpha);
+            border-color: var(--brand-primary);
+            transform: translateY(-2px);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
         @media (max-width: 768px) {
             .rooms-grid {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
             .quick-actions {
                 gap: 8px;
@@ -590,9 +830,15 @@
             </svg>
             MR <span>BOARD</span>
         </a>
-        <div class="user-info">
-            <span class="user-name" id="userName"></span>
-            <div class="user-avatar" id="userAvatar" onclick="switchTab('profile')"></div>
+        <div class="header-actions">
+            <button class="theme-toggle" id="themeToggle">
+                <i data-lucide="sun" id="themeIcon"></i>
+                <span id="themeText">Light</span>
+            </button>
+            <div class="user-info">
+                <span class="user-name" id="userName"></span>
+                <div class="user-avatar" id="userAvatar" onclick="switchTab('profile')"></div>
+            </div>
         </div>
     </div>
 
@@ -626,6 +872,7 @@
             <div id="roomsList" class="rooms-grid">
                 <div class="empty-state">Yuklanmoqda...</div>
             </div>
+            <div id="roomsPagination" class="pagination-controls" style="display: none;"></div>
         </div>
 
         <!-- My Rooms Section -->
@@ -639,6 +886,7 @@
             <div id="myRoomsList" class="rooms-grid">
                 <div class="empty-state">Yuklanmoqda...</div>
             </div>
+            <div id="myRoomsPagination" class="pagination-controls" style="display: none;"></div>
         </div>
 
         <!-- Profile Section -->
@@ -677,7 +925,7 @@
         </div>
     </div>
 
-    <!-- Bottom Tab Bar (Instagram Style) -->
+    <!-- Bottom Tab Bar -->
     <div class="bottom-tab-bar">
         <button class="tab-item active" data-tab="home">
             <i data-lucide="home"></i>
@@ -738,7 +986,39 @@
     <script>
         lucide.createIcons();
 
-        // Firebase Config
+        // ========== THEME MANAGEMENT ==========
+        function initTheme() {
+            const savedTheme = localStorage.getItem('mrboard_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeUI(savedTheme);
+        }
+
+        function updateThemeUI(theme) {
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            if (theme === 'dark') {
+                themeIcon.setAttribute('data-lucide', 'moon');
+                themeText.textContent = 'Dark';
+            } else {
+                themeIcon.setAttribute('data-lucide', 'sun');
+                themeText.textContent = 'Light';
+            }
+            lucide.createIcons();
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('mrboard_theme', newTheme);
+            updateThemeUI(newTheme);
+            showToast(newTheme === 'dark' ? '🌙 Dark mode yoqildi' : '☀️ Light mode yoqildi', 'success');
+        }
+
+        document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+        initTheme();
+
+        // ========== FIREBASE CONFIG ==========
         const firebaseConfig = {
             apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0",
             authDomain: "basic-formula-484419-k8.firebaseapp.com",
@@ -756,6 +1036,15 @@
         let currentUser = null;
         let currentAvatar = null;
 
+        // Pagination state
+        let publicRooms = [];
+        let publicCurrentPage = 1;
+        let publicItemsPerPage = 3;
+
+        let myRooms = [];
+        let myCurrentPage = 1;
+        let myItemsPerPage = 999; // No limit for my rooms
+
         // ========== TAB SWITCH ==========
         function switchTab(tabId) {
             document.querySelectorAll('.section-page').forEach(section => {
@@ -768,46 +1057,92 @@
             });
             document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
             
-            if (tabId === 'home') loadRooms();
+            if (tabId === 'home') loadPublicRooms();
             if (tabId === 'myrooms') loadMyRooms();
             if (tabId === 'profile') loadProfile();
         }
 
-        // ========== LOAD ROOMS ==========
-        async function loadRooms() {
+        // ========== LOAD PUBLIC ROOMS (with pagination) ==========
+        async function loadPublicRooms() {
             const container = document.getElementById('roomsList');
             container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i> Yuklanmoqda...</div>';
             
             try {
                 const snapshot = await db.ref('rooms').once('value');
                 const rooms = snapshot.val() || {};
-                const roomsArray = Object.entries(rooms)
+                publicRooms = Object.entries(rooms)
                     .filter(([id, room]) => room.isActive !== false && room.isPublic === true)
-                    .sort((a, b) => b[1].createdAt - a[1].createdAt);
+                    .sort((a, b) => b[1].createdAt - a[1].createdAt)
+                    .map(([id, room]) => ({ id, ...room }));
                 
-                if (roomsArray.length === 0) {
-                    container.innerHTML = '<div class="empty-state">📭 Hozircha ochiq xonalar yo\'q</div>';
-                } else {
-                    container.innerHTML = roomsArray.map(([id, room]) => `
-                        <div class="room-card" onclick="joinRoom('${id}', ${room.hasPassword})">
-                            <div class="room-card-header">
-                                <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
-                                <span class="room-badge">🌍 Public</span>
-                            </div>
-                            <div class="room-meta">
-                                <span>👤 ${escapeHtml(room.createdByName || 'Foydalanuvchi')}</span>
-                                <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
-                            </div>
-                            <button class="room-join-btn">Kirish →</button>
-                        </div>
-                    `).join('');
-                }
-                lucide.createIcons();
+                renderPublicRooms();
             } catch(e) {
                 container.innerHTML = '<div class="empty-state">❌ Xatolik yuz berdi</div>';
             }
         }
 
+        function renderPublicRooms() {
+            const container = document.getElementById('roomsList');
+            const paginationContainer = document.getElementById('roomsPagination');
+            
+            const startIndex = (publicCurrentPage - 1) * publicItemsPerPage;
+            const endIndex = startIndex + publicItemsPerPage;
+            const paginatedRooms = publicRooms.slice(startIndex, endIndex);
+            const totalPages = Math.ceil(publicRooms.length / publicItemsPerPage);
+            
+            if (publicRooms.length === 0) {
+                container.innerHTML = '<div class="empty-state">📭 Hozircha ochiq xonalar yo\'q</div>';
+                paginationContainer.style.display = 'none';
+                return;
+            }
+            
+            container.innerHTML = paginatedRooms.map(room => `
+                <div class="room-card" onclick="joinRoom('${room.id}', ${room.hasPassword})">
+                    <div class="room-card-header">
+                        <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
+                        <span class="room-badge">🌍 Public</span>
+                    </div>
+                    <div class="room-meta">
+                        <span>👤 ${escapeHtml(room.createdByName || 'Foydalanuvchi')}</span>
+                        <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <button class="room-join-btn">Kirish →</button>
+                </div>
+            `).join('');
+            
+            // Pagination controls
+            if (totalPages > 1) {
+                paginationContainer.style.display = 'flex';
+                paginationContainer.innerHTML = `
+                    <button class="page-btn" id="prevPageBtn" ${publicCurrentPage === 1 ? 'disabled' : ''}>
+                        <i data-lucide="chevron-left"></i> Oldingi
+                    </button>
+                    <span class="page-info">${publicCurrentPage} / ${totalPages}</span>
+                    <button class="page-btn" id="nextPageBtn" ${publicCurrentPage === totalPages ? 'disabled' : ''}>
+                        Keyingi <i data-lucide="chevron-right"></i>
+                    </button>
+                `;
+                
+                document.getElementById('prevPageBtn')?.addEventListener('click', () => {
+                    if (publicCurrentPage > 1) {
+                        publicCurrentPage--;
+                        renderPublicRooms();
+                    }
+                });
+                document.getElementById('nextPageBtn')?.addEventListener('click', () => {
+                    if (publicCurrentPage < totalPages) {
+                        publicCurrentPage++;
+                        renderPublicRooms();
+                    }
+                });
+            } else {
+                paginationContainer.style.display = 'none';
+            }
+            
+            lucide.createIcons();
+        }
+
+        // ========== LOAD MY ROOMS (no limit - all rooms) ==========
         async function loadMyRooms() {
             if (!currentUser) return;
             const container = document.getElementById('myRoomsList');
@@ -816,29 +1151,46 @@
             try {
                 const snapshot = await db.ref('rooms').orderByChild('createdBy').equalTo(currentUser.uid).once('value');
                 const rooms = snapshot.val() || {};
-                const roomsArray = Object.entries(rooms).filter(([id, room]) => room.isActive !== false);
+                myRooms = Object.entries(rooms)
+                    .filter(([id, room]) => room.isActive !== false)
+                    .sort((a, b) => b[1].createdAt - a[1].createdAt)
+                    .map(([id, room]) => ({ id, ...room }));
                 
-                if (roomsArray.length === 0) {
-                    container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz</div>';
-                } else {
-                    container.innerHTML = roomsArray.map(([id, room]) => `
-                        <div class="room-card" onclick="goToRoom('${id}')">
-                            <div class="room-card-header">
-                                <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
-                                <span class="room-badge ${room.isPublic ? '' : 'private'}">${room.isPublic ? '🌍 Public' : '🔒 Private'}</span>
-                            </div>
-                            <div class="room-meta">
-                                <span>👥 ${room.users ? Object.keys(room.users).length : 0} kishi</span>
-                                <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
-                            </div>
-                            <button class="room-join-btn">Davom ettirish →</button>
-                        </div>
-                    `).join('');
-                }
-                lucide.createIcons();
+                renderMyRooms();
             } catch(e) {
                 container.innerHTML = '<div class="empty-state">❌ Xatolik</div>';
             }
+        }
+
+        function renderMyRooms() {
+            const container = document.getElementById('myRoomsList');
+            const paginationContainer = document.getElementById('myRoomsPagination');
+            
+            if (myRooms.length === 0) {
+                container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top: 16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>';
+                paginationContainer.style.display = 'none';
+                document.getElementById('emptyCreateBtn')?.addEventListener('click', openCreateModal);
+                lucide.createIcons();
+                return;
+            }
+            
+            // Show ALL rooms (no pagination for my rooms)
+            container.innerHTML = myRooms.map(room => `
+                <div class="room-card" onclick="goToRoom('${room.id}')">
+                    <div class="room-card-header">
+                        <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
+                        <span class="room-badge ${room.isPublic ? '' : 'private'}">${room.isPublic ? '🌍 Public' : '🔒 Private'}</span>
+                    </div>
+                    <div class="room-meta">
+                        <span>👥 ${room.users ? Object.keys(room.users).length : 0} kishi</span>
+                        <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <button class="room-join-btn">Davom ettirish →</button>
+                </div>
+            `).join('');
+            
+            paginationContainer.style.display = 'none';
+            lucide.createIcons();
         }
 
         function joinRoom(roomId, hasPassword) {
@@ -875,7 +1227,6 @@
         function updateAvatarUI(avatar, name) {
             const avatarDiv = document.getElementById('userAvatar');
             const profileAvatar = document.getElementById('profileAvatar');
-            const avatarText = document.getElementById('avatarText');
             const letter = (name || 'U').charAt(0).toUpperCase();
             
             if (avatar && avatar.startsWith('data:image')) {
@@ -914,7 +1265,6 @@
             loadProfile();
         }
 
-        // Avatar upload
         document.getElementById('avatarInput')?.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -979,6 +1329,12 @@
 
         // ========== MODALS ==========
         function openCreateModal() {
+            document.getElementById('roomNameInput').value = '';
+            document.getElementById('roomPassword').value = '';
+            document.getElementById('passwordGroup').style.display = 'none';
+            document.querySelector('.type-btn.active')?.classList.remove('active');
+            document.querySelector('.type-btn[data-type="public"]')?.classList.add('active');
+            roomType = 'public';
             document.getElementById('createRoomModal').classList.add('active');
             document.getElementById('modalOverlay').classList.add('active');
         }
@@ -1021,7 +1377,7 @@
                 document.getElementById('userName').textContent = name;
                 document.getElementById('welcomeMessage').textContent = `Assalomu alaykum, ${name}!`;
                 document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
-                loadRooms();
+                loadPublicRooms();
                 loadMyRooms();
                 loadProfile();
                 lucide.createIcons();
@@ -1037,7 +1393,10 @@
         document.getElementById('confirmCreateBtn')?.addEventListener('click', createRoom);
         document.getElementById('cancelJoinBtn')?.addEventListener('click', closeModals);
         document.getElementById('confirmJoinBtn')?.addEventListener('click', confirmJoin);
-        document.getElementById('refreshRoomsBtn')?.addEventListener('click', loadRooms);
+        document.getElementById('refreshRoomsBtn')?.addEventListener('click', () => {
+            publicCurrentPage = 1;
+            loadPublicRooms();
+        });
         document.getElementById('refreshMyRoomsBtn')?.addEventListener('click', loadMyRooms);
         document.getElementById('saveProfileBtn')?.addEventListener('click', saveProfile);
         document.getElementById('logoutBtn')?.addEventListener('click', () => auth.signOut());
