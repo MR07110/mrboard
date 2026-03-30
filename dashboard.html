@@ -17,7 +17,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ========== LIGHT MODE (DEFAULT) ========== */
         :root {
             --bg-base: #ffffff;
             --bg-alt: #f8fafc;
@@ -35,6 +34,7 @@
             --state-danger: #ff3b30;
             --state-success: #34c759;
             --state-warning: #ffcc00;
+            --state-active: #34c759;
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
             --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
             --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.15);
@@ -45,7 +45,6 @@
             --transition-normal: 0.3s;
         }
 
-        /* ========== DARK MODE ========== */
         [data-theme="dark"] {
             --bg-base: #020617;
             --bg-alt: #0f172a;
@@ -77,7 +76,7 @@
             transition: background var(--transition-normal), color var(--transition-normal);
         }
 
-        /* ========== HEADER ========== */
+        /* Header */
         .header {
             padding: 16px 20px;
             background: var(--bg-glass);
@@ -102,18 +101,43 @@
             transition: transform var(--transition-fast) var(--ease-spring);
         }
 
-        .logo:hover {
-            transform: scale(1.02);
-        }
-
-        .logo span {
-            color: var(--brand-primary);
-        }
+        .logo:hover { transform: scale(1.02); }
+        .logo span { color: var(--brand-primary); }
 
         .header-actions {
             display: flex;
             align-items: center;
             gap: 12px;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 40px;
+            padding: 8px 16px 8px 40px;
+            font-size: 14px;
+            width: 220px;
+            transition: all var(--transition-fast);
+            color: var(--text-main);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            width: 280px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
         }
 
         .theme-toggle {
@@ -137,6 +161,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;
         }
 
         .user-avatar {
@@ -150,7 +175,6 @@
             color: white;
             font-weight: 700;
             font-size: 16px;
-            cursor: pointer;
             transition: all var(--transition-fast) var(--ease-spring);
             overflow: hidden;
         }
@@ -165,7 +189,7 @@
             font-size: 14px;
         }
 
-        /* ========== MAIN CONTENT (SCROLLABLE) ========== */
+        /* Main Content */
         .main-content {
             flex: 1;
             overflow-y: auto;
@@ -181,34 +205,15 @@
             color: white;
             margin-bottom: 24px;
             animation: slideDown 0.5s var(--ease-spring);
-            transition: transform var(--transition-normal) var(--ease-spring);
-        }
-
-        .welcome-card:hover {
-            transform: translateY(-4px);
         }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .welcome-card h1 {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .welcome-card p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
+        .welcome-card h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+        .welcome-card p { font-size: 14px; opacity: 0.9; }
 
         /* Quick Actions */
         .quick-actions {
@@ -217,18 +222,6 @@
             margin-bottom: 24px;
             overflow-x: auto;
             padding-bottom: 4px;
-            animation: fadeIn 0.5s var(--ease-smooth) 0.1s both;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .quick-action {
@@ -245,28 +238,17 @@
             transition: all var(--transition-fast) var(--ease-spring);
             white-space: nowrap;
             color: var(--text-main);
-            box-shadow: var(--shadow-sm);
         }
 
         .quick-action:hover {
-            transform: translateY(-3px) scale(1.02);
+            transform: translateY(-3px);
             border-color: var(--brand-primary);
-            box-shadow: var(--shadow-md);
-        }
-
-        .quick-action:active {
-            transform: scale(0.98);
         }
 
         .quick-action.create {
             background: var(--brand-primary);
             color: white;
             border: none;
-        }
-
-        .quick-action.create:hover {
-            background: var(--brand-primary-dark);
-            box-shadow: var(--shadow-hover);
         }
 
         /* Section Header */
@@ -292,7 +274,7 @@
             cursor: pointer;
             padding: 8px;
             border-radius: 50%;
-            transition: all var(--transition-fast) var(--ease-spring);
+            transition: all var(--transition-fast);
         }
 
         .refresh-btn:hover {
@@ -301,7 +283,7 @@
             transform: rotate(180deg);
         }
 
-        /* Rooms Container with SCROLL (max 3 visible) */
+        /* Rooms Container */
         .rooms-container {
             max-height: 420px;
             overflow-y: auto;
@@ -311,16 +293,8 @@
         .rooms-container::-webkit-scrollbar {
             width: 4px;
         }
-
-        .rooms-container::-webkit-scrollbar-track {
-            background: var(--border-strong);
-            border-radius: 10px;
-        }
-
-        .rooms-container::-webkit-scrollbar-thumb {
-            background: var(--brand-primary);
-            border-radius: 10px;
-        }
+        .rooms-container::-webkit-scrollbar-track { background: var(--border-strong); border-radius: 10px; }
+        .rooms-container::-webkit-scrollbar-thumb { background: var(--brand-primary); border-radius: 10px; }
 
         .rooms-grid {
             display: flex;
@@ -328,6 +302,7 @@
             gap: 16px;
         }
 
+        /* Room Card */
         .room-card {
             background: var(--bg-card);
             border-radius: 24px;
@@ -335,7 +310,6 @@
             cursor: pointer;
             transition: all var(--transition-normal) var(--ease-spring);
             border: 1px solid var(--border-subtle);
-            box-shadow: var(--shadow-sm);
             position: relative;
             overflow: hidden;
         }
@@ -357,14 +331,7 @@
             border-color: var(--brand-primary);
             box-shadow: var(--shadow-hover);
         }
-
-        .room-card:hover::before {
-            opacity: 1;
-        }
-
-        .room-card:active {
-            transform: scale(0.98);
-        }
+        .room-card:hover::before { opacity: 1; }
 
         .room-card-header {
             display: flex;
@@ -373,23 +340,57 @@
             margin-bottom: 12px;
         }
 
-        .room-name {
-            font-size: 16px;
-            font-weight: 700;
-        }
-
+        .room-name { font-size: 16px; font-weight: 700; }
+        
         .room-badge {
             font-size: 11px;
             padding: 4px 10px;
             border-radius: 20px;
             background: var(--brand-alpha);
             color: var(--brand-primary);
-            transition: all var(--transition-fast);
         }
-
+        .room-badge.active {
+            background: rgba(52,199,89,0.15);
+            color: var(--state-active);
+        }
         .room-badge.private {
             background: rgba(255,59,48,0.1);
             color: var(--state-danger);
+        }
+
+        /* Creator Info */
+        .creator-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .creator-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        .creator-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px var(--brand-alpha);
+        }
+        .creator-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+        .creator-name:hover {
+            color: var(--brand-primary);
         }
 
         .room-meta {
@@ -410,13 +411,9 @@
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all var(--transition-fast) var(--ease-spring);
+            transition: all var(--transition-fast);
         }
-
-        .room-join-btn:hover {
-            background: var(--brand-primary-dark);
-            transform: translateY(-2px);
-        }
+        .room-join-btn:hover { background: var(--brand-primary-dark); transform: translateY(-2px); }
 
         .empty-state {
             text-align: center;
@@ -425,7 +422,6 @@
             background: var(--bg-card);
             border-radius: 24px;
             border: 1px solid var(--border-subtle);
-            animation: fadeIn 0.5s var(--ease-smooth);
         }
 
         /* Bottom Tab Bar */
@@ -455,27 +451,93 @@
             font-size: 10px;
             font-weight: 600;
             cursor: pointer;
-            transition: all var(--transition-fast) var(--ease-spring);
+            transition: all var(--transition-fast);
             padding: 8px 16px;
             border-radius: 40px;
         }
+        .tab-item i { font-size: 24px; transition: transform var(--transition-fast); }
+        .tab-item.active { color: var(--brand-primary); background: var(--brand-alpha); }
+        .tab-item:hover i { transform: translateY(-2px); }
 
-        .tab-item i {
-            font-size: 24px;
-            transition: transform var(--transition-fast) var(--ease-spring);
+        /* Profile Modal */
+        .profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
         }
-
-        .tab-item.active {
-            color: var(--brand-primary);
-            background: var(--brand-alpha);
+        .profile-modal.active {
+            opacity: 1;
+            visibility: visible;
         }
-
-        .tab-item:hover i {
-            transform: translateY(-2px);
+        .profile-modal-content {
+            background: var(--bg-panel);
+            backdrop-filter: blur(40px);
+            border-radius: 32px;
+            padding: 32px;
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform var(--transition-normal) var(--ease-spring);
+            border: 1px solid var(--border-subtle);
         }
-
-        .tab-item:hover {
-            color: var(--brand-primary);
+        .profile-modal.active .profile-modal-content {
+            transform: scale(1);
+        }
+        .modal-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: 800;
+            overflow: hidden;
+        }
+        .modal-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .modal-fullname {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .modal-username {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        .modal-bio {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            padding: 0 16px;
+        }
+        .modal-close {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
         /* Profile Section */
@@ -484,20 +546,7 @@
             border-radius: 28px;
             padding: 24px;
             text-align: center;
-            animation: fadeInUp 0.5s var(--ease-smooth);
         }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .profile-avatar {
             width: 100px;
             height: 100px;
@@ -511,29 +560,12 @@
             font-size: 40px;
             font-weight: 800;
             cursor: pointer;
-            transition: all var(--transition-normal) var(--ease-spring);
+            transition: all var(--transition-normal);
         }
-
-        .profile-avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 0 4px var(--brand-alpha);
-        }
-
-        .profile-field {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .profile-field label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .profile-field input,
-        .profile-field textarea {
+        .profile-avatar:hover { transform: scale(1.05); box-shadow: 0 0 0 4px var(--brand-alpha); }
+        .profile-field { margin-bottom: 20px; text-align: left; }
+        .profile-field label { font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; }
+        .profile-field input, .profile-field textarea {
             width: 100%;
             padding: 12px 16px;
             background: var(--bg-alt);
@@ -541,21 +573,12 @@
             border-radius: 16px;
             font-size: 15px;
             color: var(--text-main);
-            transition: all var(--transition-fast);
         }
-
-        .profile-field input:focus,
-        .profile-field textarea:focus {
+        .profile-field input:focus, .profile-field textarea:focus {
             border-color: var(--brand-primary);
             outline: none;
-            box-shadow: 0 0 0 3px var(--brand-alpha);
         }
-
-        .profile-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
+        .profile-actions { display: flex; gap: 12px; margin-top: 24px; }
 
         /* Modals */
         .modal-overlay {
@@ -571,12 +594,7 @@
             visibility: hidden;
             transition: all var(--transition-normal);
         }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal {
             position: fixed;
             bottom: 0;
@@ -590,29 +608,10 @@
             transform: translateY(100%);
             transition: transform var(--transition-normal) var(--ease-spring);
         }
-
-        .modal.active {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
+        .modal.active { transform: translateY(0); }
+        .modal-header { font-size: 20px; font-weight: 800; margin-bottom: 20px; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
         .form-input {
             width: 100%;
             padding: 14px 18px;
@@ -620,22 +619,9 @@
             border: 2px solid var(--border-strong);
             border-radius: 20px;
             font-size: 15px;
-            color: var(--text-main);
-            transition: all var(--transition-fast);
         }
-
-        .form-input:focus {
-            border-color: var(--brand-primary);
-            outline: none;
-            box-shadow: 0 0 0 3px var(--brand-alpha);
-        }
-
-        .room-type-selector {
-            display: flex;
-            gap: 12px;
-            margin-top: 8px;
-        }
-
+        .form-input:focus { border-color: var(--brand-primary); outline: none; }
+        .room-type-selector { display: flex; gap: 12px; margin-top: 8px; }
         .type-btn {
             flex: 1;
             padding: 12px;
@@ -644,21 +630,9 @@
             border: 1px solid var(--border-strong);
             font-weight: 600;
             cursor: pointer;
-            transition: all var(--transition-fast);
         }
-
-        .type-btn.active {
-            background: var(--brand-alpha);
-            border-color: var(--brand-primary);
-            color: var(--brand-primary);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
+        .type-btn.active { background: var(--brand-alpha); border-color: var(--brand-primary); color: var(--brand-primary); }
+        .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
         .btn {
             flex: 1;
             padding: 14px;
@@ -666,41 +640,13 @@
             font-weight: 600;
             cursor: pointer;
             text-align: center;
-            transition: all var(--transition-fast) var(--ease-spring);
         }
+        .btn-primary { background: var(--brand-primary); color: white; border: none; }
+        .btn-ghost { background: var(--bg-base); border: 1px solid var(--border-strong); color: var(--text-main); }
 
-        .btn-primary {
-            background: var(--brand-primary);
-            color: white;
-            border: none;
-        }
+        .section-page { display: none; }
+        .section-page.active { display: block; }
 
-        .btn-primary:hover {
-            background: var(--brand-primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .btn-ghost {
-            background: var(--bg-base);
-            border: 1px solid var(--border-strong);
-            color: var(--text-main);
-        }
-
-        .btn-ghost:hover {
-            background: var(--brand-alpha);
-            border-color: var(--brand-primary);
-        }
-
-        /* Hide sections */
-        .section-page {
-            display: none;
-        }
-
-        .section-page.active {
-            display: block;
-        }
-
-        /* Toast */
         .toast-wrapper {
             position: fixed;
             top: 80px;
@@ -712,7 +658,6 @@
             gap: 8px;
             pointer-events: none;
         }
-
         .toast-item {
             background: var(--bg-panel);
             backdrop-filter: blur(40px);
@@ -723,41 +668,16 @@
             box-shadow: var(--shadow-lg);
             animation: toastIn 0.3s var(--ease-spring);
         }
-
         @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         @media (max-width: 768px) {
-            .rooms-grid {
-                gap: 12px;
-            }
-            .quick-actions {
-                gap: 8px;
-            }
-            .quick-action {
-                padding: 10px 16px;
-                font-size: 13px;
-            }
-            .user-name {
-                display: none;
-            }
-            .tab-item {
-                padding: 6px 12px;
-            }
-            .tab-item i {
-                font-size: 22px;
-            }
-            .rooms-container {
-                max-height: 360px;
-            }
+            .search-input { width: 140px; }
+            .search-input:focus { width: 180px; }
+            .user-name { display: none; }
+            .rooms-container { max-height: 360px; }
         }
     </style>
 </head>
@@ -777,62 +697,50 @@
             MR <span>BOARD</span>
         </a>
         <div class="header-actions">
+            <div class="search-container">
+                <i data-lucide="search" size="16" class="search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Xona yoki foydalanuvchi...">
+            </div>
             <button class="theme-toggle" id="themeToggle">
                 <i data-lucide="sun" id="themeIcon"></i>
                 <span id="themeText">Light</span>
             </button>
-            <div class="user-info">
+            <div class="user-info" id="currentUserInfo">
                 <span class="user-name" id="userName"></span>
-                <div class="user-avatar" id="userAvatar" onclick="switchTab('profile')"></div>
+                <div class="user-avatar" id="userAvatar"></div>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Home Section (Barcha xonalar) -->
+        <!-- Home Section -->
         <div class="section-page active" id="homeSection">
             <div class="welcome-card">
                 <h1 id="welcomeMessage">Assalomu alaykum!</h1>
                 <p>Birgalikda ishlashni boshlang</p>
             </div>
-
             <div class="quick-actions">
-                <button class="quick-action create" id="quickCreateBtn">
-                    <i data-lucide="plus-circle"></i> Yangi xona
-                </button>
-                <button class="quick-action" id="quickJoinBtn">
-                    <i data-lucide="log-in"></i> Kod bilan kirish
-                </button>
+                <button class="quick-action create" id="quickCreateBtn"><i data-lucide="plus-circle"></i> Yangi xona</button>
+                <button class="quick-action" id="quickJoinBtn"><i data-lucide="log-in"></i> Kod bilan kirish</button>
             </div>
-
             <div class="section-header">
                 <h2 class="section-title">📋 Barcha xonalar</h2>
-                <button class="refresh-btn" id="refreshRoomsBtn">
-                    <i data-lucide="refresh-cw"></i>
-                </button>
+                <button class="refresh-btn" id="refreshRoomsBtn"><i data-lucide="refresh-cw"></i></button>
             </div>
-            
-            <!-- Scrollable Container - max 3 visible -->
-            <div class="rooms-container" id="roomsContainer">
-                <div id="roomsList" class="rooms-grid">
-                    <div class="empty-state">Yuklanmoqda...</div>
-                </div>
+            <div class="rooms-container">
+                <div id="roomsList" class="rooms-grid"><div class="empty-state">Yuklanmoqda...</div></div>
             </div>
         </div>
 
-        <!-- My Rooms Section (Mening xonalarim) -->
+        <!-- My Rooms Section -->
         <div class="section-page" id="myRoomsSection">
             <div class="section-header">
                 <h2 class="section-title">⭐ Mening xonalarim</h2>
-                <button class="refresh-btn" id="refreshMyRoomsBtn">
-                    <i data-lucide="refresh-cw"></i>
-                </button>
+                <button class="refresh-btn" id="refreshMyRoomsBtn"><i data-lucide="refresh-cw"></i></button>
             </div>
-            <div class="rooms-container" id="myRoomsContainer">
-                <div id="myRoomsList" class="rooms-grid">
-                    <div class="empty-state">Yuklanmoqda...</div>
-                </div>
+            <div class="rooms-container">
+                <div id="myRoomsList" class="rooms-grid"><div class="empty-state">Yuklanmoqda...</div></div>
             </div>
         </div>
 
@@ -843,27 +751,10 @@
                     <span id="avatarText">U</span>
                 </div>
                 <input type="file" id="avatarInput" style="display: none;" accept="image/*">
-                
-                <div class="profile-field">
-                    <label>Ism</label>
-                    <input type="text" id="profileFullname" placeholder="Ismingiz">
-                </div>
-                
-                <div class="profile-field">
-                    <label>Username</label>
-                    <input type="text" id="profileUsername" placeholder="username">
-                </div>
-                
-                <div class="profile-field">
-                    <label>Email</label>
-                    <input type="email" id="profileEmail" disabled>
-                </div>
-                
-                <div class="profile-field">
-                    <label>Bio</label>
-                    <textarea id="profileBio" rows="3" placeholder="O'zingiz haqingizda..."></textarea>
-                </div>
-                
+                <div class="profile-field"><label>Ism</label><input type="text" id="profileFullname" placeholder="Ismingiz"></div>
+                <div class="profile-field"><label>Familiya</label><input type="text" id="profileLastname" placeholder="Familiyangiz"></div>
+                <div class="profile-field"><label>Username</label><input type="text" id="profileUsername" placeholder="username"></div>
+                <div class="profile-field"><label>Bio</label><textarea id="profileBio" rows="3" placeholder="O'zingiz haqingizda..."></textarea></div>
                 <div class="profile-actions">
                     <button class="btn btn-primary" id="saveProfileBtn">💾 Saqlash</button>
                     <button class="btn btn-ghost" id="logoutBtn">🚪 Chiqish</button>
@@ -874,29 +765,27 @@
 
     <!-- Bottom Tab Bar -->
     <div class="bottom-tab-bar">
-        <button class="tab-item active" data-tab="home">
-            <i data-lucide="home"></i>
-            <span>Bosh sahifa</span>
-        </button>
-        <button class="tab-item" data-tab="myrooms">
-            <i data-lucide="star"></i>
-            <span>Mening xonalar</span>
-        </button>
-        <button class="tab-item" data-tab="profile">
-            <i data-lucide="user"></i>
-            <span>Profil</span>
-        </button>
+        <button class="tab-item active" data-tab="home"><i data-lucide="home"></i><span>Bosh sahifa</span></button>
+        <button class="tab-item" data-tab="myrooms"><i data-lucide="star"></i><span>Mening xonalar</span></button>
+        <button class="tab-item" data-tab="profile"><i data-lucide="user"></i><span>Profil</span></button>
+    </div>
+
+    <!-- User Profile Modal -->
+    <div class="profile-modal" id="userProfileModal">
+        <div class="profile-modal-content">
+            <div class="modal-avatar" id="modalAvatar"><span id="modalAvatarText">U</span></div>
+            <div class="modal-fullname" id="modalFullname"></div>
+            <div class="modal-username" id="modalUsername"></div>
+            <div class="modal-bio" id="modalBio"></div>
+            <button class="modal-close" onclick="closeUserProfile()">Yopish</button>
+        </div>
     </div>
 
     <!-- Modals -->
     <div class="modal-overlay" id="modalOverlay"></div>
-    
     <div class="modal" id="createRoomModal">
         <div class="modal-header">✨ Yangi xona yaratish</div>
-        <div class="form-group">
-            <label>Xona nomi</label>
-            <input type="text" id="roomNameInput" class="form-input" placeholder="Masalan: Matematika 7-sinf">
-        </div>
+        <div class="form-group"><label>Xona nomi</label><input type="text" id="roomNameInput" class="form-input" placeholder="Masalan: Matematika 7-sinf"></div>
         <div class="form-group">
             <label>Xona turi</label>
             <div class="room-type-selector">
@@ -904,42 +793,26 @@
                 <button class="type-btn" data-type="private">🔒 Private</button>
             </div>
         </div>
-        <div class="form-group" id="passwordGroup" style="display: none;">
-            <label>Parol (ixtiyoriy)</label>
-            <input type="password" id="roomPassword" class="form-input" placeholder="Parol qo'yish">
-        </div>
-        <div class="modal-actions">
-            <button class="btn btn-ghost" id="cancelCreateBtn">Bekor</button>
-            <button class="btn btn-primary" id="confirmCreateBtn">Yaratish</button>
-        </div>
+        <div class="form-group" id="passwordGroup" style="display: none;"><label>Parol</label><input type="password" id="roomPassword" class="form-input" placeholder="Parol qo'yish"></div>
+        <div class="modal-actions"><button class="btn btn-ghost" id="cancelCreateBtn">Bekor</button><button class="btn btn-primary" id="confirmCreateBtn">Yaratish</button></div>
     </div>
 
     <div class="modal" id="joinRoomModal">
         <div class="modal-header">🔐 Xona kod bilan kirish</div>
-        <div class="form-group">
-            <label>Xona kodi</label>
-            <input type="text" id="joinCodeInput" class="form-input" placeholder="Masalan: ABC123" maxlength="6" style="text-transform: uppercase;">
-        </div>
-        <div class="form-group" id="joinPasswordGroup" style="display: none;">
-            <label>Parol</label>
-            <input type="password" id="joinPassword" class="form-input" placeholder="Xona paroli">
-        </div>
-        <div class="modal-actions">
-            <button class="btn btn-ghost" id="cancelJoinBtn">Bekor</button>
-            <button class="btn btn-primary" id="confirmJoinBtn">Kirish</button>
-        </div>
+        <div class="form-group"><label>Xona kodi</label><input type="text" id="joinCodeInput" class="form-input" placeholder="Masalan: ABC123" maxlength="6" style="text-transform: uppercase;"></div>
+        <div class="form-group" id="joinPasswordGroup" style="display: none;"><label>Parol</label><input type="password" id="joinPassword" class="form-input" placeholder="Xona paroli"></div>
+        <div class="modal-actions"><button class="btn btn-ghost" id="cancelJoinBtn">Bekor</button><button class="btn btn-primary" id="confirmJoinBtn">Kirish</button></div>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // ========== THEME MANAGEMENT ==========
+        // Theme
         function initTheme() {
             const savedTheme = localStorage.getItem('mrboard_theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeUI(savedTheme);
         }
-
         function updateThemeUI(theme) {
             const themeIcon = document.getElementById('themeIcon');
             const themeText = document.getElementById('themeText');
@@ -952,7 +825,6 @@
             }
             lucide.createIcons();
         }
-
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -961,11 +833,10 @@
             updateThemeUI(newTheme);
             showToast(newTheme === 'dark' ? '🌙 Dark mode yoqildi' : '☀️ Light mode yoqildi', 'success');
         }
-
         document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
         initTheme();
 
-        // ========== FIREBASE CONFIG ==========
+        // Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0",
             authDomain: "basic-formula-484419-k8.firebaseapp.com",
@@ -975,108 +846,167 @@
             messagingSenderId: "629679926764",
             appId: "1:629679926764:web:0cff483e9c4752fbd024c9"
         };
-        
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
         let currentUser = null;
         let currentAvatar = null;
+        let allRooms = [];
+        let searchQuery = '';
 
-        // ========== TAB SWITCH ==========
+        // User cache for profile info
+        const userCache = new Map();
+
+        // Get user data by ID
+        async function getUserData(uid) {
+            if (userCache.has(uid)) return userCache.get(uid);
+            const snap = await db.ref(`users/${uid}`).once('value');
+            const data = snap.val() || {};
+            userCache.set(uid, data);
+            return data;
+        }
+
+        // Tab Switch
         function switchTab(tabId) {
-            document.querySelectorAll('.section-page').forEach(section => {
-                section.classList.remove('active');
-            });
+            document.querySelectorAll('.section-page').forEach(s => s.classList.remove('active'));
             document.getElementById(`${tabId}Section`).classList.add('active');
-            
-            document.querySelectorAll('.tab-item').forEach(tab => {
-                tab.classList.remove('active');
-            });
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
             document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-            
             if (tabId === 'home') loadPublicRooms();
             if (tabId === 'myrooms') loadMyRooms();
             if (tabId === 'profile') loadProfile();
         }
 
-        // ========== LOAD PUBLIC ROOMS ==========
+        // Load Public Rooms
         async function loadPublicRooms() {
             const container = document.getElementById('roomsList');
             container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i> Yuklanmoqda...</div>';
-            
             try {
                 const snapshot = await db.ref('rooms').once('value');
                 const rooms = snapshot.val() || {};
-                const roomsArray = Object.entries(rooms)
+                allRooms = Object.entries(rooms)
                     .filter(([id, room]) => room.isActive !== false && room.isPublic === true)
                     .sort((a, b) => b[1].createdAt - a[1].createdAt)
                     .map(([id, room]) => ({ id, ...room }));
-                
-                if (roomsArray.length === 0) {
-                    container.innerHTML = '<div class="empty-state">📭 Hozircha ochiq xonalar yo\'q</div>';
-                    return;
-                }
-                
-                container.innerHTML = roomsArray.map(room => `
-                    <div class="room-card" onclick="joinRoom('${room.id}', ${room.hasPassword})">
-                        <div class="room-card-header">
-                            <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
-                            <span class="room-badge">🌍 Public</span>
-                        </div>
-                        <div class="room-meta">
-                            <span>👤 ${escapeHtml(room.createdByName || 'Foydalanuvchi')}</span>
-                            <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
-                        </div>
-                        <button class="room-join-btn">Kirish →</button>
-                    </div>
-                `).join('');
-                
-                lucide.createIcons();
+                renderRoomsWithSearch();
             } catch(e) {
                 container.innerHTML = '<div class="empty-state">❌ Xatolik yuz berdi</div>';
             }
         }
 
-        // ========== LOAD MY ROOMS ==========
+        // Search filter
+        function filterRooms(rooms) {
+            if (!searchQuery) return rooms;
+            const query = searchQuery.toLowerCase();
+            return rooms.filter(room => 
+                room.name?.toLowerCase().includes(query) ||
+                room.createdByName?.toLowerCase().includes(query) ||
+                room.id?.toLowerCase().includes(query)
+            );
+        }
+
+        async function renderRoomsWithSearch() {
+            const container = document.getElementById('roomsList');
+            const filtered = filterRooms(allRooms);
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state">🔍 Hech narsa topilmadi</div>';
+                return;
+            }
+            let html = '';
+            for (const room of filtered) {
+                const userData = await getUserData(room.createdBy);
+                const avatarLetter = (userData.fullName || userData.username || 'U').charAt(0).toUpperCase();
+                const userCount = room.users ? Object.keys(room.users).length : 0;
+                const isActive = userCount > 0;
+                html += `
+                    <div class="room-card" onclick="goToRoom('${room.id}')">
+                        <div class="room-card-header">
+                            <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
+                            <span class="room-badge ${isActive ? 'active' : ''}">${isActive ? '🟢 Faol' : '⚫ Faol emas'}</span>
+                        </div>
+                        <div class="creator-info">
+                            <div class="creator-avatar" onclick="event.stopPropagation(); showUserProfile('${room.createdBy}')" style="background-image: ${userData.avatarBase64 ? `url('${userData.avatarBase64}')` : 'none'}; background-size: cover; background-position: center; ${!userData.avatarBase64 ? `background-color: var(--brand-primary)` : ''}">
+                                ${!userData.avatarBase64 ? avatarLetter : ''}
+                            </div>
+                            <span class="creator-name" onclick="event.stopPropagation(); showUserProfile('${room.createdBy}')">${escapeHtml(userData.fullName || userData.username || room.createdByName || 'Foydalanuvchi')}</span>
+                        </div>
+                        <div class="room-meta">
+                            <span>👥 ${userCount} kishi</span>
+                            <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <button class="room-join-btn" onclick="event.stopPropagation(); joinRoom('${room.id}', ${room.hasPassword})">Kirish →</button>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // Load My Rooms
         async function loadMyRooms() {
             if (!currentUser) return;
             const container = document.getElementById('myRoomsList');
             container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i> Yuklanmoqda...</div>';
-            
             try {
                 const snapshot = await db.ref('rooms').orderByChild('createdBy').equalTo(currentUser.uid).once('value');
                 const rooms = snapshot.val() || {};
-                const roomsArray = Object.entries(rooms)
-                    .filter(([id, room]) => room.isActive !== false)
-                    .sort((a, b) => b[1].createdAt - a[1].createdAt)
-                    .map(([id, room]) => ({ id, ...room }));
-                
+                const roomsArray = Object.entries(rooms).filter(([id, room]) => room.isActive !== false).map(([id, room]) => ({ id, ...room }));
                 if (roomsArray.length === 0) {
                     container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top: 16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>';
                     document.getElementById('emptyCreateBtn')?.addEventListener('click', openCreateModal);
                     lucide.createIcons();
                     return;
                 }
-                
-                container.innerHTML = roomsArray.map(room => `
-                    <div class="room-card" onclick="goToRoom('${room.id}')">
-                        <div class="room-card-header">
-                            <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
-                            <span class="room-badge ${room.isPublic ? '' : 'private'}">${room.isPublic ? '🌍 Public' : '🔒 Private'}</span>
+                let html = '';
+                for (const room of roomsArray) {
+                    const userCount = room.users ? Object.keys(room.users).length : 0;
+                    html += `
+                        <div class="room-card" onclick="goToRoom('${room.id}')">
+                            <div class="room-card-header">
+                                <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
+                                <span class="room-badge ${room.isPublic ? '' : 'private'}">${room.isPublic ? '🌍 Public' : '🔒 Private'}</span>
+                            </div>
+                            <div class="creator-info">
+                                <div class="creator-avatar" style="background: var(--brand-primary);">${(currentUser.displayName || 'U').charAt(0).toUpperCase()}</div>
+                                <span class="creator-name">Siz</span>
+                            </div>
+                            <div class="room-meta">
+                                <span>👥 ${userCount} kishi</span>
+                                <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
+                            </div>
+                            <button class="room-join-btn" onclick="event.stopPropagation(); goToRoom('${room.id}')">Davom ettirish →</button>
                         </div>
-                        <div class="room-meta">
-                            <span>👥 ${room.users ? Object.keys(room.users).length : 0} kishi</span>
-                            <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
-                        </div>
-                        <button class="room-join-btn">Davom ettirish →</button>
-                    </div>
-                `).join('');
-                
+                    `;
+                }
+                container.innerHTML = html;
                 lucide.createIcons();
-            } catch(e) {
-                container.innerHTML = '<div class="empty-state">❌ Xatolik</div>';
+            } catch(e) { container.innerHTML = '<div class="empty-state">❌ Xatolik</div>'; }
+        }
+
+        // Show User Profile Modal
+        async function showUserProfile(uid) {
+            const userData = await getUserData(uid);
+            const modal = document.getElementById('userProfileModal');
+            const avatarDiv = document.getElementById('modalAvatar');
+            const avatarText = document.getElementById('modalAvatarText');
+            if (userData.avatarBase64) {
+                avatarDiv.style.backgroundImage = `url(${userData.avatarBase64})`;
+                avatarDiv.style.backgroundSize = 'cover';
+                avatarDiv.innerHTML = '';
+            } else {
+                avatarDiv.style.backgroundImage = 'none';
+                avatarDiv.style.backgroundColor = 'var(--brand-primary)';
+                avatarDiv.innerHTML = `<span id="modalAvatarText">${(userData.fullName || userData.username || 'U').charAt(0).toUpperCase()}</span>`;
             }
+            document.getElementById('modalFullname').textContent = userData.fullName || 'Ism kiritilmagan';
+            document.getElementById('modalUsername').textContent = `@${userData.username || 'username'}`;
+            document.getElementById('modalBio').textContent = userData.bio || 'Bio mavjud emas';
+            modal.classList.add('active');
+        }
+
+        function closeUserProfile() {
+            document.getElementById('userProfileModal').classList.remove('active');
         }
 
         function joinRoom(roomId, hasPassword) {
@@ -1095,17 +1025,15 @@
             window.location.href = `board.html?room=${roomId}`;
         }
 
-        // ========== PROFILE ==========
+        // Profile
         async function loadProfile() {
             if (!currentUser) return;
-            const snapshot = await db.ref(`users/${currentUser.uid}`).once('value');
-            const data = snapshot.val() || {};
-            
-            document.getElementById('profileFullname').value = data.fullName || currentUser.displayName || '';
+            const snap = await db.ref(`users/${currentUser.uid}`).once('value');
+            const data = snap.val() || {};
+            document.getElementById('profileFullname').value = data.fullName || '';
+            document.getElementById('profileLastname').value = data.lastName || '';
             document.getElementById('profileUsername').value = data.username || currentUser.email?.split('@')[0] || '';
-            document.getElementById('profileEmail').value = currentUser.email || '';
             document.getElementById('profileBio').value = data.bio || '';
-            
             currentAvatar = data.avatarBase64 || null;
             updateAvatarUI(currentAvatar, data.fullName || currentUser.displayName);
         }
@@ -1114,41 +1042,36 @@
             const avatarDiv = document.getElementById('userAvatar');
             const profileAvatar = document.getElementById('profileAvatar');
             const letter = (name || 'U').charAt(0).toUpperCase();
-            
             if (avatar && avatar.startsWith('data:image')) {
                 avatarDiv.style.backgroundImage = `url(${avatar})`;
                 avatarDiv.style.backgroundSize = 'cover';
                 avatarDiv.innerHTML = '';
-                if (profileAvatar) {
-                    profileAvatar.style.backgroundImage = `url(${avatar})`;
-                    profileAvatar.style.backgroundSize = 'cover';
-                    profileAvatar.innerHTML = '';
-                }
+                profileAvatar.style.backgroundImage = `url(${avatar})`;
+                profileAvatar.style.backgroundSize = 'cover';
+                profileAvatar.innerHTML = '';
             } else {
                 avatarDiv.style.backgroundImage = 'none';
                 avatarDiv.style.backgroundColor = 'var(--brand-primary)';
                 avatarDiv.innerHTML = letter;
-                if (profileAvatar) {
-                    profileAvatar.style.backgroundImage = 'none';
-                    profileAvatar.style.backgroundColor = 'var(--brand-primary)';
-                    profileAvatar.innerHTML = `<span id="avatarText">${letter}</span>`;
-                }
+                profileAvatar.style.backgroundImage = 'none';
+                profileAvatar.style.backgroundColor = 'var(--brand-primary)';
+                profileAvatar.innerHTML = `<span id="avatarText">${letter}</span>`;
             }
         }
 
         async function saveProfile() {
             if (!currentUser) return;
             const fullName = document.getElementById('profileFullname').value.trim();
+            const lastName = document.getElementById('profileLastname').value.trim();
             const username = document.getElementById('profileUsername').value.trim();
             const bio = document.getElementById('profileBio').value.trim();
-            
-            const updateData = { fullName, username, bio, updatedAt: Date.now() };
+            const updateData = { fullName, lastName, username, bio, updatedAt: Date.now() };
             if (currentAvatar) updateData.avatarBase64 = currentAvatar;
-            
             await db.ref(`users/${currentUser.uid}`).update(updateData);
             if (fullName) await currentUser.updateProfile({ displayName: fullName });
             showToast('✅ Profil saqlandi!', 'success');
             loadProfile();
+            document.getElementById('userName').textContent = username || fullName || currentUser.email?.split('@')[0];
         }
 
         document.getElementById('avatarInput')?.addEventListener('change', (e) => {
@@ -1163,7 +1086,7 @@
             reader.readAsDataURL(file);
         });
 
-        // ========== CREATE ROOM ==========
+        // Create Room
         let roomType = 'public';
         document.querySelectorAll('.type-btn').forEach(btn => {
             btn.onclick = () => {
@@ -1180,40 +1103,33 @@
             const password = document.getElementById('roomPassword').value;
             const roomCode = Math.random().toString(36).substr(2, 6).toUpperCase();
             const teacherSecret = Math.random().toString(36).substr(2, 16);
-            
+            const userData = await getUserData(currentUser.uid);
             await db.ref(`rooms/${roomCode}`).set({
                 name, createdBy: currentUser.uid,
-                createdByName: currentUser.displayName || currentUser.email?.split('@')[0],
+                createdByName: userData.fullName || userData.username || currentUser.email?.split('@')[0],
                 createdAt: Date.now(), isPublic: roomType === 'public',
                 hasPassword: roomType === 'private' && password ? true : false,
                 password: roomType === 'private' ? password || null : null,
                 isActive: true, teacherSecret, elements: {}
             });
-            
             closeModals();
             showToast(`✅ "${name}" xonasi yaratildi! Kod: ${roomCode}`, 'success');
             loadMyRooms();
             setTimeout(() => goToRoom(roomCode), 1000);
         }
 
-        // ========== JOIN ROOM ==========
         async function confirmJoin() {
             const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
             if (!code) { showToast('Xona kodini kiriting!', 'error'); return; }
             const password = document.getElementById('joinPassword').value;
-            
-            const snapshot = await db.ref(`rooms/${code}`).once('value');
-            const room = snapshot.val();
+            const snap = await db.ref(`rooms/${code}`).once('value');
+            const room = snap.val();
             if (!room) { showToast('Xona topilmadi!', 'error'); return; }
-            if (room.hasPassword && room.password !== password) {
-                showToast('Parol noto\'g\'ri!', 'error');
-                return;
-            }
+            if (room.hasPassword && room.password !== password) { showToast('Parol noto\'g\'ri!', 'error'); return; }
             closeModals();
             goToRoom(code);
         }
 
-        // ========== MODALS ==========
         function openCreateModal() {
             document.getElementById('roomNameInput').value = '';
             document.getElementById('roomPassword').value = '';
@@ -1224,7 +1140,6 @@
             document.getElementById('createRoomModal').classList.add('active');
             document.getElementById('modalOverlay').classList.add('active');
         }
-        
         function openJoinModal() {
             document.getElementById('joinCodeInput').value = '';
             document.getElementById('joinPassword').value = '';
@@ -1232,13 +1147,11 @@
             document.getElementById('joinRoomModal').classList.add('active');
             document.getElementById('modalOverlay').classList.add('active');
         }
-        
         function closeModals() {
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
             document.getElementById('modalOverlay').classList.remove('active');
         }
 
-        // ========== TOAST ==========
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toastWrapper');
             const toast = document.createElement('div');
@@ -1253,16 +1166,23 @@
             return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
         }
 
-        // ========== AUTH ==========
+        // Search listener
+        document.getElementById('searchInput')?.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderRoomsWithSearch();
+        });
+
+        // Auth
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
-                const snapshot = await db.ref(`users/${user.uid}`).once('value');
-                const data = snapshot.val() || {};
-                const name = data.fullName || user.displayName || user.email?.split('@')[0] || 'User';
-                document.getElementById('userName').textContent = name;
-                document.getElementById('welcomeMessage').textContent = `Assalomu alaykum, ${name}!`;
-                document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+                const snap = await db.ref(`users/${user.uid}`).once('value');
+                const data = snap.val() || {};
+                const username = data.username || user.email?.split('@')[0] || 'User';
+                const fullName = data.fullName || username;
+                document.getElementById('userName').textContent = username;
+                document.getElementById('welcomeMessage').textContent = `Assalomu alaykum, ${fullName}!`;
+                updateAvatarUI(data.avatarBase64, fullName);
                 loadPublicRooms();
                 loadMyRooms();
                 loadProfile();
@@ -1272,7 +1192,7 @@
             }
         });
 
-        // ========== EVENT LISTENERS ==========
+        // Event Listeners
         document.getElementById('quickCreateBtn')?.addEventListener('click', openCreateModal);
         document.getElementById('quickJoinBtn')?.addEventListener('click', openJoinModal);
         document.getElementById('cancelCreateBtn')?.addEventListener('click', closeModals);
@@ -1284,6 +1204,7 @@
         document.getElementById('saveProfileBtn')?.addEventListener('click', saveProfile);
         document.getElementById('logoutBtn')?.addEventListener('click', () => auth.signOut());
         document.getElementById('modalOverlay')?.addEventListener('click', closeModals);
+        document.getElementById('currentUserInfo')?.addEventListener('click', () => switchTab('profile'));
         
         document.querySelectorAll('.tab-item').forEach(tab => {
             tab.addEventListener('click', () => switchTab(tab.dataset.tab));
@@ -1292,6 +1213,8 @@
         window.joinRoom = joinRoom;
         window.goToRoom = goToRoom;
         window.switchTab = switchTab;
+        window.showUserProfile = showUserProfile;
+        window.closeUserProfile = closeUserProfile;
     </script>
 </body>
 </html>
