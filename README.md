@@ -72,4 +72,4 @@ Ushbu loyiha shunchaki chizish asbobi emas, balki to'liq ekotizimdir:
 * *Kelajakdagi rejalar:* AI yordamida shakllarni aniqlash va video darslarni yozib olish funksiyasi.
 
 ---
-<p align="center">Built with ❤️ on Linux (i3wm)</p>
+<p align="center">Build with ❤️ on Linux (i3wm) 2011 computer</p>
