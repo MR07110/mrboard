@@ -116,7 +116,6 @@
             gap: 12px;
         }
 
-        /* Theme Toggle Button */
         .theme-toggle {
             background: var(--bg-panel);
             border: 1px solid var(--border-subtle);
@@ -166,7 +165,7 @@
             font-size: 14px;
         }
 
-        /* ========== MAIN CONTENT ========== */
+        /* ========== MAIN CONTENT (SCROLLABLE) ========== */
         .main-content {
             flex: 1;
             overflow-y: auto;
@@ -174,7 +173,7 @@
             padding-bottom: 80px;
         }
 
-        /* Welcome Card with Animation */
+        /* Welcome Card */
         .welcome-card {
             background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
             border-radius: 28px;
@@ -276,11 +275,6 @@
             border: none;
         }
 
-        .quick-action.ai:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: var(--shadow-hover);
-        }
-
         /* Section Header */
         .section-header {
             display: flex;
@@ -313,23 +307,31 @@
             transform: rotate(180deg);
         }
 
-        /* Rooms Grid */
-        .rooms-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-            animation: fadeInUp 0.5s var(--ease-smooth);
+        /* Rooms Grid with SCROLL (max 3 items visible, rest scroll) */
+        .rooms-container {
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 4px;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .rooms-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .rooms-container::-webkit-scrollbar-track {
+            background: var(--border-strong);
+            border-radius: 10px;
+        }
+
+        .rooms-container::-webkit-scrollbar-thumb {
+            background: var(--brand-primary);
+            border-radius: 10px;
+        }
+
+        .rooms-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
         .room-card {
@@ -357,7 +359,7 @@
         }
 
         .room-card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-4px);
             border-color: var(--brand-primary);
             box-shadow: var(--shadow-hover);
         }
@@ -422,35 +424,9 @@
             transform: translateY(-2px);
         }
 
-        /* Show More / Show Less Button */
-        .show-more-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 40px;
-            padding: 12px 24px;
-            margin-top: 24px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-fast) var(--ease-spring);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
-            color: var(--text-main);
-        }
-
-        .show-more-btn:hover {
-            background: var(--brand-alpha);
-            border-color: var(--brand-primary);
-            transform: translateY(-2px);
-        }
-
         .empty-state {
             text-align: center;
-            padding: 60px;
+            padding: 40px;
             color: var(--text-muted);
             background: var(--bg-card);
             border-radius: 24px;
@@ -515,6 +491,17 @@
             padding: 24px;
             text-align: center;
             animation: fadeInUp 0.5s var(--ease-smooth);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .profile-avatar {
@@ -754,47 +741,9 @@
             }
         }
 
-        /* Pagination Controls */
-        .pagination-controls {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .page-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 40px;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .page-btn:hover:not(:disabled) {
-            background: var(--brand-alpha);
-            border-color: var(--brand-primary);
-            transform: translateY(-2px);
-        }
-
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .page-info {
-            display: flex;
-            align-items: center;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
         @media (max-width: 768px) {
             .rooms-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
+                gap: 12px;
             }
             .quick-actions {
                 gap: 8px;
@@ -811,6 +760,9 @@
             }
             .tab-item i {
                 font-size: 22px;
+            }
+            .rooms-container {
+                max-height: 360px;
             }
         }
     </style>
@@ -869,13 +821,16 @@
                     <i data-lucide="refresh-cw"></i>
                 </button>
             </div>
-            <div id="roomsList" class="rooms-grid">
-                <div class="empty-state">Yuklanmoqda...</div>
+            
+            <!-- Scrollable Container - max 3 items visible, rest scroll -->
+            <div class="rooms-container" id="roomsContainer">
+                <div id="roomsList" class="rooms-grid">
+                    <div class="empty-state">Yuklanmoqda...</div>
+                </div>
             </div>
-            <div id="roomsPagination" class="pagination-controls" style="display: none;"></div>
         </div>
 
-        <!-- My Rooms Section -->
+        <!-- My Rooms Section (NO LIMIT - all visible with scroll) -->
         <div class="section-page" id="myRoomsSection">
             <div class="section-header">
                 <h2 class="section-title">⭐ Mening xonalarim</h2>
@@ -883,10 +838,11 @@
                     <i data-lucide="refresh-cw"></i>
                 </button>
             </div>
-            <div id="myRoomsList" class="rooms-grid">
-                <div class="empty-state">Yuklanmoqda...</div>
+            <div class="rooms-container" id="myRoomsContainer">
+                <div id="myRoomsList" class="rooms-grid">
+                    <div class="empty-state">Yuklanmoqda...</div>
+                </div>
             </div>
-            <div id="myRoomsPagination" class="pagination-controls" style="display: none;"></div>
         </div>
 
         <!-- Profile Section -->
@@ -1036,15 +992,6 @@
         let currentUser = null;
         let currentAvatar = null;
 
-        // Pagination state
-        let publicRooms = [];
-        let publicCurrentPage = 1;
-        let publicItemsPerPage = 3;
-
-        let myRooms = [];
-        let myCurrentPage = 1;
-        let myItemsPerPage = 999; // No limit for my rooms
-
         // ========== TAB SWITCH ==========
         function switchTab(tabId) {
             document.querySelectorAll('.section-page').forEach(section => {
@@ -1062,7 +1009,7 @@
             if (tabId === 'profile') loadProfile();
         }
 
-        // ========== LOAD PUBLIC ROOMS (with pagination) ==========
+        // ========== LOAD PUBLIC ROOMS (with SCROLL - max 3 visible) ==========
         async function loadPublicRooms() {
             const container = document.getElementById('roomsList');
             container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i> Yuklanmoqda...</div>';
@@ -1070,79 +1017,38 @@
             try {
                 const snapshot = await db.ref('rooms').once('value');
                 const rooms = snapshot.val() || {};
-                publicRooms = Object.entries(rooms)
+                const roomsArray = Object.entries(rooms)
                     .filter(([id, room]) => room.isActive !== false && room.isPublic === true)
                     .sort((a, b) => b[1].createdAt - a[1].createdAt)
                     .map(([id, room]) => ({ id, ...room }));
                 
-                renderPublicRooms();
+                if (roomsArray.length === 0) {
+                    container.innerHTML = '<div class="empty-state">📭 Hozircha ochiq xonalar yo\'q</div>';
+                    return;
+                }
+                
+                // Show ALL rooms in scrollable container (max 3 visible, rest scroll)
+                container.innerHTML = roomsArray.map(room => `
+                    <div class="room-card" onclick="joinRoom('${room.id}', ${room.hasPassword})">
+                        <div class="room-card-header">
+                            <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
+                            <span class="room-badge">🌍 Public</span>
+                        </div>
+                        <div class="room-meta">
+                            <span>👤 ${escapeHtml(room.createdByName || 'Foydalanuvchi')}</span>
+                            <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <button class="room-join-btn">Kirish →</button>
+                    </div>
+                `).join('');
+                
+                lucide.createIcons();
             } catch(e) {
                 container.innerHTML = '<div class="empty-state">❌ Xatolik yuz berdi</div>';
             }
         }
 
-        function renderPublicRooms() {
-            const container = document.getElementById('roomsList');
-            const paginationContainer = document.getElementById('roomsPagination');
-            
-            const startIndex = (publicCurrentPage - 1) * publicItemsPerPage;
-            const endIndex = startIndex + publicItemsPerPage;
-            const paginatedRooms = publicRooms.slice(startIndex, endIndex);
-            const totalPages = Math.ceil(publicRooms.length / publicItemsPerPage);
-            
-            if (publicRooms.length === 0) {
-                container.innerHTML = '<div class="empty-state">📭 Hozircha ochiq xonalar yo\'q</div>';
-                paginationContainer.style.display = 'none';
-                return;
-            }
-            
-            container.innerHTML = paginatedRooms.map(room => `
-                <div class="room-card" onclick="joinRoom('${room.id}', ${room.hasPassword})">
-                    <div class="room-card-header">
-                        <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
-                        <span class="room-badge">🌍 Public</span>
-                    </div>
-                    <div class="room-meta">
-                        <span>👤 ${escapeHtml(room.createdByName || 'Foydalanuvchi')}</span>
-                        <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <button class="room-join-btn">Kirish →</button>
-                </div>
-            `).join('');
-            
-            // Pagination controls
-            if (totalPages > 1) {
-                paginationContainer.style.display = 'flex';
-                paginationContainer.innerHTML = `
-                    <button class="page-btn" id="prevPageBtn" ${publicCurrentPage === 1 ? 'disabled' : ''}>
-                        <i data-lucide="chevron-left"></i> Oldingi
-                    </button>
-                    <span class="page-info">${publicCurrentPage} / ${totalPages}</span>
-                    <button class="page-btn" id="nextPageBtn" ${publicCurrentPage === totalPages ? 'disabled' : ''}>
-                        Keyingi <i data-lucide="chevron-right"></i>
-                    </button>
-                `;
-                
-                document.getElementById('prevPageBtn')?.addEventListener('click', () => {
-                    if (publicCurrentPage > 1) {
-                        publicCurrentPage--;
-                        renderPublicRooms();
-                    }
-                });
-                document.getElementById('nextPageBtn')?.addEventListener('click', () => {
-                    if (publicCurrentPage < totalPages) {
-                        publicCurrentPage++;
-                        renderPublicRooms();
-                    }
-                });
-            } else {
-                paginationContainer.style.display = 'none';
-            }
-            
-            lucide.createIcons();
-        }
-
-        // ========== LOAD MY ROOMS (no limit - all rooms) ==========
+        // ========== LOAD MY ROOMS (ALL rooms, scrollable) ==========
         async function loadMyRooms() {
             if (!currentUser) return;
             const container = document.getElementById('myRoomsList');
@@ -1151,46 +1057,37 @@
             try {
                 const snapshot = await db.ref('rooms').orderByChild('createdBy').equalTo(currentUser.uid).once('value');
                 const rooms = snapshot.val() || {};
-                myRooms = Object.entries(rooms)
+                const roomsArray = Object.entries(rooms)
                     .filter(([id, room]) => room.isActive !== false)
                     .sort((a, b) => b[1].createdAt - a[1].createdAt)
                     .map(([id, room]) => ({ id, ...room }));
                 
-                renderMyRooms();
+                if (roomsArray.length === 0) {
+                    container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top: 16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>';
+                    document.getElementById('emptyCreateBtn')?.addEventListener('click', openCreateModal);
+                    lucide.createIcons();
+                    return;
+                }
+                
+                // Show ALL rooms (no limit, scrollable)
+                container.innerHTML = roomsArray.map(room => `
+                    <div class="room-card" onclick="goToRoom('${room.id}')">
+                        <div class="room-card-header">
+                            <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
+                            <span class="room-badge ${room.isPublic ? '' : 'private'}">${room.isPublic ? '🌍 Public' : '🔒 Private'}</span>
+                        </div>
+                        <div class="room-meta">
+                            <span>👥 ${room.users ? Object.keys(room.users).length : 0} kishi</span>
+                            <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <button class="room-join-btn">Davom ettirish →</button>
+                    </div>
+                `).join('');
+                
+                lucide.createIcons();
             } catch(e) {
                 container.innerHTML = '<div class="empty-state">❌ Xatolik</div>';
             }
-        }
-
-        function renderMyRooms() {
-            const container = document.getElementById('myRoomsList');
-            const paginationContainer = document.getElementById('myRoomsPagination');
-            
-            if (myRooms.length === 0) {
-                container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top: 16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>';
-                paginationContainer.style.display = 'none';
-                document.getElementById('emptyCreateBtn')?.addEventListener('click', openCreateModal);
-                lucide.createIcons();
-                return;
-            }
-            
-            // Show ALL rooms (no pagination for my rooms)
-            container.innerHTML = myRooms.map(room => `
-                <div class="room-card" onclick="goToRoom('${room.id}')">
-                    <div class="room-card-header">
-                        <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
-                        <span class="room-badge ${room.isPublic ? '' : 'private'}">${room.isPublic ? '🌍 Public' : '🔒 Private'}</span>
-                    </div>
-                    <div class="room-meta">
-                        <span>👥 ${room.users ? Object.keys(room.users).length : 0} kishi</span>
-                        <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <button class="room-join-btn">Davom ettirish →</button>
-                </div>
-            `).join('');
-            
-            paginationContainer.style.display = 'none';
-            lucide.createIcons();
         }
 
         function joinRoom(roomId, hasPassword) {
@@ -1393,10 +1290,7 @@
         document.getElementById('confirmCreateBtn')?.addEventListener('click', createRoom);
         document.getElementById('cancelJoinBtn')?.addEventListener('click', closeModals);
         document.getElementById('confirmJoinBtn')?.addEventListener('click', confirmJoin);
-        document.getElementById('refreshRoomsBtn')?.addEventListener('click', () => {
-            publicCurrentPage = 1;
-            loadPublicRooms();
-        });
+        document.getElementById('refreshRoomsBtn')?.addEventListener('click', loadPublicRooms);
         document.getElementById('refreshMyRoomsBtn')?.addEventListener('click', loadMyRooms);
         document.getElementById('saveProfileBtn')?.addEventListener('click', saveProfile);
         document.getElementById('logoutBtn')?.addEventListener('click', () => auth.signOut());
