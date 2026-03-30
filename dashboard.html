@@ -33,9 +33,11 @@
             --state-danger: #ff3b30;
             --state-success: #34c759;
             --state-warning: #ffcc00;
+            --state-active: #34c759;
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
             --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
             --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.15);
+            --shadow-hover: 0 20px 40px -12px rgba(0,122,255,0.25);
             --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
             --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
             --transition-fast: 0.2s;
@@ -55,6 +57,10 @@
             --brand-primary: #0a84ff;
             --brand-primary-dark: #007aff;
             --brand-alpha: rgba(10,132,255,0.15);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
+            --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.4);
+            --shadow-hover: 0 20px 40px -12px rgba(10,132,255,0.3);
         }
 
         body {
@@ -89,7 +95,9 @@
             font-weight: 800;
             text-decoration: none;
             color: var(--text-main);
+            transition: transform var(--transition-fast) var(--ease-spring);
         }
+        .logo:hover { transform: scale(1.02); }
         .logo span { color: var(--brand-primary); }
 
         .header-actions {
@@ -98,7 +106,9 @@
             gap: 12px;
         }
 
-        .search-container { position: relative; }
+        .search-container {
+            position: relative;
+        }
         .search-input {
             background: var(--bg-panel);
             border: 1px solid var(--border-subtle);
@@ -106,6 +116,7 @@
             padding: 8px 16px 8px 40px;
             font-size: 14px;
             width: 220px;
+            transition: all var(--transition-fast);
             color: var(--text-main);
         }
         .search-input:focus {
@@ -130,8 +141,12 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            transition: all var(--transition-fast) var(--ease-spring);
         }
-        .theme-toggle:hover { background: var(--brand-alpha); }
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            background: var(--brand-alpha);
+        }
 
         .user-info {
             display: flex;
@@ -150,11 +165,17 @@
             color: white;
             font-weight: 700;
             font-size: 16px;
+            transition: all var(--transition-fast) var(--ease-spring);
             overflow: hidden;
-            background-size: cover;
-            background-position: center;
         }
-        .user-name { font-weight: 600; font-size: 14px; }
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 3px var(--brand-alpha);
+        }
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
 
         /* Main Content */
         .main-content {
@@ -164,21 +185,29 @@
             padding-bottom: 80px;
         }
 
+        /* Welcome Card */
         .welcome-card {
             background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
             border-radius: 28px;
             padding: 24px;
             color: white;
             margin-bottom: 24px;
+            animation: slideDown 0.5s var(--ease-spring);
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .welcome-card h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
         .welcome-card p { font-size: 14px; opacity: 0.9; }
 
+        /* Quick Actions */
         .quick-actions {
             display: flex;
             gap: 12px;
             margin-bottom: 24px;
             overflow-x: auto;
+            padding-bottom: 4px;
         }
         .quick-action {
             background: var(--bg-card);
@@ -191,19 +220,34 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
+            transition: all var(--transition-fast) var(--ease-spring);
             white-space: nowrap;
             color: var(--text-main);
         }
-        .quick-action:hover { transform: translateY(-2px); border-color: var(--brand-primary); }
-        .quick-action.create { background: var(--brand-primary); color: white; border: none; }
+        .quick-action:hover {
+            transform: translateY(-3px);
+            border-color: var(--brand-primary);
+        }
+        .quick-action.create {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+        }
 
+        /* Section Header */
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin: 24px 0 16px;
         }
-        .section-title { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         .refresh-btn {
             background: none;
             border: none;
@@ -211,29 +255,60 @@
             cursor: pointer;
             padding: 8px;
             border-radius: 50%;
+            transition: all var(--transition-fast);
         }
-        .refresh-btn:hover { background: var(--brand-alpha); color: var(--brand-primary); transform: rotate(180deg); }
+        .refresh-btn:hover {
+            background: var(--brand-alpha);
+            color: var(--brand-primary);
+            transform: rotate(180deg);
+        }
 
+        /* Rooms Container */
         .rooms-container {
             max-height: 420px;
             overflow-y: auto;
             padding-right: 4px;
         }
-        .rooms-container::-webkit-scrollbar { width: 4px; }
+        .rooms-container::-webkit-scrollbar {
+            width: 4px;
+        }
         .rooms-container::-webkit-scrollbar-track { background: var(--border-strong); border-radius: 10px; }
         .rooms-container::-webkit-scrollbar-thumb { background: var(--brand-primary); border-radius: 10px; }
 
-        .rooms-grid { display: flex; flex-direction: column; gap: 16px; }
+        .rooms-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
 
+        /* Room Card */
         .room-card {
             background: var(--bg-card);
             border-radius: 24px;
             padding: 20px;
-            transition: all var(--transition-normal);
+            cursor: pointer;
+            transition: all var(--transition-normal) var(--ease-spring);
             border: 1px solid var(--border-subtle);
             position: relative;
+            overflow: hidden;
         }
-        .room-card:hover { transform: translateY(-2px); border-color: var(--brand-primary); box-shadow: var(--shadow-md); }
+        .room-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--brand-primary), var(--state-success));
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+        .room-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--brand-primary);
+            box-shadow: var(--shadow-hover);
+        }
+        .room-card:hover::before { opacity: 1; }
 
         .room-card-header {
             display: flex;
@@ -249,8 +324,14 @@
             background: var(--brand-alpha);
             color: var(--brand-primary);
         }
-        .room-badge.active { background: rgba(52,199,89,0.15); color: var(--state-success); }
-        .room-badge.private { background: rgba(255,59,48,0.1); color: var(--state-danger); }
+        .room-badge.active {
+            background: rgba(52,199,89,0.15);
+            color: var(--state-active);
+        }
+        .room-badge.private {
+            background: rgba(255,59,48,0.1);
+            color: var(--state-danger);
+        }
 
         .creator-info {
             display: flex;
@@ -270,10 +351,20 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
+            transition: all var(--transition-fast);
             background-size: cover;
             background-position: center;
         }
-        .creator-name { font-size: 12px; font-weight: 600; cursor: pointer; }
+        .creator-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px var(--brand-alpha);
+        }
+        .creator-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+        }
         .creator-name:hover { color: var(--brand-primary); }
 
         .room-meta {
@@ -284,27 +375,19 @@
             margin-bottom: 16px;
         }
 
-        .room-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 12px;
-        }
-        .room-btn {
-            flex: 1;
-            padding: 10px;
+        .room-join-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--brand-primary);
+            color: white;
+            border: none;
             border-radius: 16px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            text-align: center;
             transition: all var(--transition-fast);
         }
-        .room-join-btn { background: var(--brand-primary); color: white; border: none; }
         .room-join-btn:hover { background: var(--brand-primary-dark); transform: translateY(-2px); }
-        .room-edit-btn { background: var(--bg-alt); border: 1px solid var(--border-subtle); color: var(--text-main); }
-        .room-edit-btn:hover { background: var(--brand-alpha); border-color: var(--brand-primary); }
-        .room-delete-btn { background: rgba(255,59,48,0.1); border: 1px solid rgba(255,59,48,0.2); color: var(--state-danger); }
-        .room-delete-btn:hover { background: rgba(255,59,48,0.2); transform: translateY(-2px); }
 
         .empty-state {
             text-align: center;
@@ -341,11 +424,13 @@
             font-size: 10px;
             font-weight: 600;
             cursor: pointer;
+            transition: all var(--transition-fast);
             padding: 8px 16px;
             border-radius: 40px;
         }
-        .tab-item i { font-size: 24px; }
+        .tab-item i { font-size: 24px; transition: transform var(--transition-fast); }
         .tab-item.active { color: var(--brand-primary); background: var(--brand-alpha); }
+        .tab-item:hover i { transform: translateY(-2px); }
 
         /* Profile Modal */
         .profile-modal {
@@ -354,7 +439,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.5);
             backdrop-filter: blur(8px);
             z-index: 300;
             display: flex;
@@ -364,7 +449,10 @@
             visibility: hidden;
             transition: all var(--transition-normal);
         }
-        .profile-modal.active { opacity: 1; visibility: visible; }
+        .profile-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
         .profile-modal-content {
             background: var(--bg-panel);
             backdrop-filter: blur(40px);
@@ -393,13 +481,10 @@
             overflow: hidden;
             background-size: cover;
             background-position: center;
-            cursor: pointer;
-            transition: transform var(--transition-fast);
         }
-        .modal-avatar:hover { transform: scale(1.05); }
         .modal-fullname { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
         .modal-username { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
-        .modal-bio { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+        .modal-bio { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; padding: 0 16px; }
         .modal-close {
             background: var(--brand-primary);
             color: white;
@@ -410,50 +495,49 @@
             cursor: pointer;
         }
 
-        /* Large Avatar Modal */
-        .avatar-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 400;
+        /* Profile Section */
+        .profile-card {
+            background: var(--bg-card);
+            border-radius: 28px;
+            padding: 24px;
+            text-align: center;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all var(--transition-normal);
+            color: white;
+            font-size: 40px;
+            font-weight: 800;
             cursor: pointer;
+            transition: all var(--transition-normal);
+            background-size: cover;
+            background-position: center;
         }
-        .avatar-modal.active { opacity: 1; visibility: visible; }
-        .large-avatar {
-            max-width: 90vw;
-            max-height: 90vh;
-            border-radius: 32px;
-            box-shadow: 0 32px 64px rgba(0,0,0,0.3);
+        .profile-avatar:hover { transform: scale(1.05); box-shadow: 0 0 0 4px var(--brand-alpha); }
+        .profile-field { margin-bottom: 20px; text-align: left; }
+        .profile-field label { font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; }
+        .profile-field input, .profile-field textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-alt);
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            font-size: 15px;
+            color: var(--text-main);
         }
-
-        /* Edit Room Modal */
-        .edit-room-modal {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-panel);
-            backdrop-filter: blur(40px);
-            border-radius: 28px 28px 0 0;
-            padding: 24px;
-            z-index: 250;
-            transform: translateY(100%);
-            transition: transform var(--transition-normal) var(--ease-spring);
+        .profile-field input:focus, .profile-field textarea:focus {
+            border-color: var(--brand-primary);
+            outline: none;
         }
-        .edit-room-modal.active { transform: translateY(0); }
+        .profile-actions { display: flex; gap: 12px; margin-top: 24px; }
 
-        .section-page { display: none; }
-        .section-page.active { display: block; }
-
+        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -465,9 +549,9 @@
             z-index: 200;
             opacity: 0;
             visibility: hidden;
+            transition: all var(--transition-normal);
         }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-
         .modal {
             position: fixed;
             bottom: 0;
@@ -494,6 +578,17 @@
             font-size: 15px;
         }
         .form-input:focus { border-color: var(--brand-primary); outline: none; }
+        .room-type-selector { display: flex; gap: 12px; margin-top: 8px; }
+        .type-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 16px;
+            background: var(--bg-base);
+            border: 1px solid var(--border-strong);
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .type-btn.active { background: var(--brand-alpha); border-color: var(--brand-primary); color: var(--brand-primary); }
         .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
         .btn {
             flex: 1;
@@ -504,8 +599,10 @@
             text-align: center;
         }
         .btn-primary { background: var(--brand-primary); color: white; border: none; }
-        .btn-danger { background: var(--state-danger); color: white; border: none; }
         .btn-ghost { background: var(--bg-base); border: 1px solid var(--border-strong); color: var(--text-main); }
+
+        .section-page { display: none; }
+        .section-page.active { display: block; }
 
         .toast-wrapper {
             position: fixed;
@@ -537,60 +634,164 @@
             .search-input { width: 140px; }
             .search-input:focus { width: 180px; }
             .user-name { display: none; }
-            .room-actions { flex-direction: column; }
+            .rooms-container { max-height: 360px; }
         }
+      /* Room Actions Buttons */
+.room-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+.room-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all var(--transition-fast);
+}
+.room-join-btn {
+    background: var(--brand-primary);
+    color: white;
+    border: none;
+}
+.room-join-btn:hover {
+    background: var(--brand-primary-dark);
+    transform: translateY(-2px);
+}
+.room-edit-btn {
+    background: var(--bg-alt);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+}
+.room-edit-btn:hover {
+    background: var(--brand-alpha);
+    border-color: var(--brand-primary);
+}
+.room-delete-btn {
+    background: rgba(255,59,48,0.1);
+    border: 1px solid rgba(255,59,48,0.2);
+    color: var(--state-danger);
+}
+.room-delete-btn:hover {
+    background: rgba(255,59,48,0.2);
+    transform: translateY(-2px);
+}
+
+/* Edit Room Modal */
+.edit-room-modal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-panel);
+    backdrop-filter: blur(40px);
+    border-radius: 28px 28px 0 0;
+    padding: 24px;
+    z-index: 250;
+    transform: translateY(100%);
+    transition: transform var(--transition-normal) var(--ease-spring);
+}
+.edit-room-modal.active {
+    transform: translateY(0);
+}
     </style>
 </head>
 <body>
 
     <div class="toast-wrapper" id="toastWrapper"></div>
 
+    <!-- Header -->
     <div class="header">
-        <a href="index.html" class="logo"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>MR <span>BOARD</span></a>
+        <a href="index.html" class="logo">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="1.5">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            MR <span>BOARD</span>
+        </a>
         <div class="header-actions">
-            <div class="search-container"><i data-lucide="search" size="16" class="search-icon"></i><input type="text" id="searchInput" class="search-input" placeholder="Xona yoki foydalanuvchi..."></div>
-            <button class="theme-toggle" id="themeToggle"><i data-lucide="sun" id="themeIcon"></i><span id="themeText">Light</span></button>
-            <div class="user-info" id="currentUserInfo"><span class="user-name" id="userName"></span><div class="user-avatar" id="userAvatar"></div></div>
-        </div>
-    </div>
-
-    <div class="main-content">
-        <div class="section-page active" id="homeSection">
-            <div class="welcome-card"><h1 id="welcomeMessage">Assalomu alaykum!</h1><p>Birgalikda ishlashni boshlang</p></div>
-            <div class="quick-actions"><button class="quick-action create" id="quickCreateBtn"><i data-lucide="plus-circle"></i> Yangi xona</button><button class="quick-action" id="quickJoinBtn"><i data-lucide="log-in"></i> Kod bilan kirish</button></div>
-            <div class="section-header"><h2 class="section-title">📋 Barcha xonalar</h2><button class="refresh-btn" id="refreshRoomsBtn"><i data-lucide="refresh-cw"></i></button></div>
-            <div class="rooms-container"><div id="roomsList" class="rooms-grid"><div class="empty-state">Yuklanmoqda...</div></div></div>
-        </div>
-
-        <div class="section-page" id="myRoomsSection">
-            <div class="section-header"><h2 class="section-title">⭐ Mening xonalarim</h2><button class="refresh-btn" id="refreshMyRoomsBtn"><i data-lucide="refresh-cw"></i></button></div>
-            <div class="rooms-container"><div id="myRoomsList" class="rooms-grid"><div class="empty-state">Yuklanmoqda...</div></div></div>
-        </div>
-
-        <div class="section-page" id="profileSection">
-            <div class="profile-card" style="background: var(--bg-card); border-radius: 28px; padding: 24px; text-align: center;">
-                <div class="profile-avatar" id="profileAvatar" onclick="document.getElementById('avatarInput').click()" style="width: 100px; height: 100px; border-radius: 50%; background: var(--brand-primary); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; font-weight: 800; cursor: pointer; background-size: cover; background-position: center;"><span id="avatarText">U</span></div>
-                <input type="file" id="avatarInput" style="display: none;" accept="image/*">
-                <div class="profile-field"><label>Ism</label><input type="text" id="profileFullname" placeholder="Ismingiz"></div>
-                <div class="profile-field"><label>Familiya</label><input type="text" id="profileLastname" placeholder="Familiyangiz"></div>
-                <div class="profile-field"><label>Username</label><input type="text" id="profileUsername" placeholder="username"></div>
-                <div class="profile-field"><label>Email</label><input type="email" id="profileEmail" disabled style="background: var(--bg-alt);"></div>
-                <div class="profile-field"><label>Bio</label><textarea id="profileBio" rows="3" placeholder="O'zingiz haqingizda..."></textarea></div>
-                <div class="profile-actions" style="display: flex; gap: 12px;"><button class="btn btn-primary" id="saveProfileBtn">💾 Saqlash</button><button class="btn btn-ghost" id="logoutBtn">🚪 Chiqish</button></div>
+            <div class="search-container">
+                <i data-lucide="search" size="16" class="search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Xona yoki foydalanuvchi...">
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i data-lucide="sun" id="themeIcon"></i>
+                <span id="themeText">Light</span>
+            </button>
+            <div class="user-info" id="currentUserInfo">
+                <span class="user-name" id="userName"></span>
+                <div class="user-avatar" id="userAvatar"></div>
             </div>
         </div>
     </div>
 
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Home Section -->
+        <div class="section-page active" id="homeSection">
+            <div class="welcome-card">
+                <h1 id="welcomeMessage">Assalomu alaykum!</h1>
+                <p>Birgalikda ishlashni boshlang</p>
+            </div>
+            <div class="quick-actions">
+                <button class="quick-action create" id="quickCreateBtn"><i data-lucide="plus-circle"></i> Yangi xona</button>
+                <button class="quick-action" id="quickJoinBtn"><i data-lucide="log-in"></i> Kod bilan kirish</button>
+            </div>
+            <div class="section-header">
+                <h2 class="section-title">📋 Barcha xonalar</h2>
+                <button class="refresh-btn" id="refreshRoomsBtn"><i data-lucide="refresh-cw"></i></button>
+            </div>
+            <div class="rooms-container">
+                <div id="roomsList" class="rooms-grid"><div class="empty-state">Yuklanmoqda...</div></div>
+            </div>
+        </div>
+
+        <!-- My Rooms Section -->
+        <div class="section-page" id="myRoomsSection">
+            <div class="section-header">
+                <h2 class="section-title">⭐ Mening xonalarim</h2>
+                <button class="refresh-btn" id="refreshMyRoomsBtn"><i data-lucide="refresh-cw"></i></button>
+            </div>
+            <div class="rooms-container">
+                <div id="myRoomsList" class="rooms-grid"><div class="empty-state">Yuklanmoqda...</div></div>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="section-page" id="profileSection">
+            <div class="profile-card">
+                <div class="profile-avatar" id="profileAvatar" onclick="document.getElementById('avatarInput').click()">
+                    <span id="avatarText">U</span>
+                </div>
+                <input type="file" id="avatarInput" style="display: none;" accept="image/*">
+                <div class="profile-field"><label>Ism</label><input type="text" id="profileFullname" placeholder="Ismingiz"></div>
+                <div class="profile-field"><label>Familiya</label><input type="text" id="profileLastname" placeholder="Familiyangiz"></div>
+                <div class="profile-field"><label>Username</label><input type="text" id="profileUsername" placeholder="username"></div>
+                <div class="profile-field"><label>Bio</label><textarea id="profileBio" rows="3" placeholder="O'zingiz haqingizda..."></textarea></div>
+                <div class="profile-actions">
+                    <button class="btn btn-primary" id="saveProfileBtn">💾 Saqlash</button>
+                    <button class="btn btn-ghost" id="logoutBtn">🚪 Chiqish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Tab Bar -->
     <div class="bottom-tab-bar">
         <button class="tab-item active" data-tab="home"><i data-lucide="home"></i><span>Bosh sahifa</span></button>
         <button class="tab-item" data-tab="myrooms"><i data-lucide="star"></i><span>Mening xonalar</span></button>
         <button class="tab-item" data-tab="profile"><i data-lucide="user"></i><span>Profil</span></button>
     </div>
 
-    <!-- Profile Modal -->
+    <!-- User Profile Modal -->
     <div class="profile-modal" id="userProfileModal">
         <div class="profile-modal-content">
-            <div class="modal-avatar" id="modalAvatar" onclick="showLargeAvatar()"><span id="modalAvatarText">U</span></div>
+            <div class="modal-avatar" id="modalAvatar"><span id="modalAvatarText">U</span></div>
             <div class="modal-fullname" id="modalFullname"></div>
             <div class="modal-username" id="modalUsername"></div>
             <div class="modal-bio" id="modalBio"></div>
@@ -598,142 +799,288 @@
         </div>
     </div>
 
-    <!-- Large Avatar Modal -->
-    <div class="avatar-modal" id="avatarModal" onclick="closeLargeAvatar()">
-        <img class="large-avatar" id="largeAvatarImg" src="" alt="Avatar">
-    </div>
-
-    <!-- Edit Room Modal -->
-    <div class="edit-room-modal" id="editRoomModal">
-        <div class="modal-header">✏️ Xonani tahrirlash</div>
-        <div class="form-group"><label>Xona nomi</label><input type="text" id="editRoomName" class="form-input" placeholder="Xona nomi"></div>
-        <div class="form-group"><label>Xona turi</label><div class="room-type-selector" style="display: flex; gap: 12px;"><button class="type-btn" data-type="public" id="editPublicBtn">🌍 Public</button><button class="type-btn" data-type="private" id="editPrivateBtn">🔒 Private</button></div></div>
-        <div class="form-group" id="editPasswordGroup"><label>Parol</label><input type="password" id="editRoomPassword" class="form-input" placeholder="Parol (private uchun)"></div>
-        <div class="modal-actions"><button class="btn btn-ghost" id="cancelEditBtn">Bekor</button><button class="btn btn-primary" id="saveEditBtn">Saqlash</button></div>
-    </div>
-
-    <!-- Create/Join Modals -->
+    <!-- Modals -->
     <div class="modal-overlay" id="modalOverlay"></div>
-    <div class="modal" id="createRoomModal"><div class="modal-header">✨ Yangi xona yaratish</div><div class="form-group"><label>Xona nomi</label><input type="text" id="roomNameInput" class="form-input" placeholder="Masalan: Matematika 7-sinf"></div><div class="form-group"><label>Xona turi</label><div class="room-type-selector" style="display: flex; gap: 12px;"><button class="type-btn active" data-type="public">🌍 Public</button><button class="type-btn" data-type="private">🔒 Private</button></div></div><div class="form-group" id="passwordGroup" style="display: none;"><label>Parol</label><input type="password" id="roomPassword" class="form-input" placeholder="Parol qo'yish"></div><div class="modal-actions"><button class="btn btn-ghost" id="cancelCreateBtn">Bekor</button><button class="btn btn-primary" id="confirmCreateBtn">Yaratish</button></div></div>
-    <div class="modal" id="joinRoomModal"><div class="modal-header">🔐 Xona kod bilan kirish</div><div class="form-group"><label>Xona kodi</label><input type="text" id="joinCodeInput" class="form-input" placeholder="Masalan: ABC123" maxlength="6" style="text-transform: uppercase;"></div><div class="form-group" id="joinPasswordGroup" style="display: none;"><label>Parol</label><input type="password" id="joinPassword" class="form-input" placeholder="Xona paroli"></div><div class="modal-actions"><button class="btn btn-ghost" id="cancelJoinBtn">Bekor</button><button class="btn btn-primary" id="confirmJoinBtn">Kirish</button></div></div>
+    <div class="modal" id="createRoomModal">
+        <div class="modal-header">✨ Yangi xona yaratish</div>
+        <div class="form-group"><label>Xona nomi</label><input type="text" id="roomNameInput" class="form-input" placeholder="Masalan: Matematika 7-sinf"></div>
+        <div class="form-group">
+            <label>Xona turi</label>
+            <div class="room-type-selector">
+                <button class="type-btn active" data-type="public">🌍 Public</button>
+                <button class="type-btn" data-type="private">🔒 Private</button>
+            </div>
+        </div>
+        <div class="form-group" id="passwordGroup" style="display: none;"><label>Parol</label><input type="password" id="roomPassword" class="form-input" placeholder="Parol qo'yish"></div>
+        <div class="modal-actions"><button class="btn btn-ghost" id="cancelCreateBtn">Bekor</button><button class="btn btn-primary" id="confirmCreateBtn">Yaratish</button></div>
+    </div>
+
+    <div class="modal" id="joinRoomModal">
+        <div class="modal-header">🔐 Xona kod bilan kirish</div>
+        <div class="form-group"><label>Xona kodi</label><input type="text" id="joinCodeInput" class="form-input" placeholder="Masalan: ABC123" maxlength="6" style="text-transform: uppercase;"></div>
+        <div class="form-group" id="joinPasswordGroup" style="display: none;"><label>Parol</label><input type="password" id="joinPassword" class="form-input" placeholder="Xona paroli"></div>
+        <div class="modal-actions"><button class="btn btn-ghost" id="cancelJoinBtn">Bekor</button><button class="btn btn-primary" id="confirmJoinBtn">Kirish</button></div>
+    </div>
 
     <script>
         lucide.createIcons();
 
         // Theme
-        function initTheme() { const saved = localStorage.getItem('mrboard_theme') || 'light'; document.documentElement.setAttribute('data-theme', saved); updateThemeUI(saved); }
-        function updateThemeUI(theme) { const icon = document.getElementById('themeIcon'), text = document.getElementById('themeText'); if (theme === 'dark') { icon.setAttribute('data-lucide', 'moon'); text.textContent = 'Dark'; } else { icon.setAttribute('data-lucide', 'sun'); text.textContent = 'Light'; } lucide.createIcons(); }
-        function toggleTheme() { const current = document.documentElement.getAttribute('data-theme'); const newTheme = current === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', newTheme); localStorage.setItem('mrboard_theme', newTheme); updateThemeUI(newTheme); showToast(newTheme === 'dark' ? '🌙 Dark mode yoqildi' : '☀️ Light mode yoqildi', 'success'); }
-        document.getElementById('themeToggle')?.addEventListener('click', toggleTheme); initTheme();
+        function initTheme() {
+            const savedTheme = localStorage.getItem('mrboard_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeUI(savedTheme);
+        }
+        function updateThemeUI(theme) {
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            if (theme === 'dark') {
+                themeIcon.setAttribute('data-lucide', 'moon');
+                themeText.textContent = 'Dark';
+            } else {
+                themeIcon.setAttribute('data-lucide', 'sun');
+                themeText.textContent = 'Light';
+            }
+            lucide.createIcons();
+        }
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('mrboard_theme', newTheme);
+            updateThemeUI(newTheme);
+            showToast(newTheme === 'dark' ? '🌙 Dark mode yoqildi' : '☀️ Light mode yoqildi', 'success');
+        }
+        document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+        initTheme();
 
         // Firebase
-        const firebaseConfig = { apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0", authDomain: "basic-formula-484419-k8.firebaseapp.com", databaseURL: "https://basic-formula-484419-k8-default-rtdb.europe-west1.firebasedatabase.app", projectId: "basic-formula-484419-k8", storageBucket: "basic-formula-484419-k8.firebasestorage.app", messagingSenderId: "629679926764", appId: "1:629679926764:web:0cff483e9c4752fbd024c9" };
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0",
+            authDomain: "basic-formula-484419-k8.firebaseapp.com",
+            databaseURL: "https://basic-formula-484419-k8-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "basic-formula-484419-k8",
+            storageBucket: "basic-formula-484419-k8.firebasestorage.app",
+            messagingSenderId: "629679926764",
+            appId: "1:629679926764:web:0cff483e9c4752fbd024c9"
+        };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); const db = firebase.database();
+        const auth = firebase.auth();
+        const db = firebase.database();
 
-        let currentUser = null, currentAvatar = null, allRooms = [], searchQuery = '', editingRoomId = null;
+      let currentUser = null;
+let currentAvatar = null;
+let allRooms = [];
+let searchQuery = '';
+let editingRoomId = null;  // ⬅️ BU QATORNI QO'SHING
+        // User cache
         const userCache = new Map();
 
-        async function getUserData(uid) { if (userCache.has(uid)) return userCache.get(uid); const snap = await db.ref(`users/${uid}`).once('value'); const data = snap.val() || {}; userCache.set(uid, data); return data; }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.section-page').forEach(s => s.classList.remove('active'));
-            document.getElementById(`${tabId}Section`).classList.add('active');
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.tab-item[data-tab="${tabId}"]`).classList.add('active');
-            if (tabId === 'home') loadPublicRooms();
-            if (tabId === 'myrooms') loadMyRooms();
-            if (tabId === 'profile') loadProfile();
+        async function getUserData(uid) {
+            if (userCache.has(uid)) return userCache.get(uid);
+            const snap = await db.ref(`users/${uid}`).once('value');
+            const data = snap.val() || {};
+            userCache.set(uid, data);
+            return data;
         }
 
+        // Tab Switch - FIXED
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.section-page').forEach(section => {
+                section.classList.remove('active');
+            });
+            // Show selected section
+            const targetSection = document.getElementById(`${tabId}Section`);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            const activeTab = document.querySelector(`.tab-item[data-tab="${tabId}"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+            
+            // Load data based on tab
+            if (tabId === 'home') {
+                loadPublicRooms();
+            } else if (tabId === 'myrooms') {
+                loadMyRooms();
+            } else if (tabId === 'profile') {
+                loadProfile();
+            }
+        }
+
+        // Load Public Rooms
         async function loadPublicRooms() {
             const container = document.getElementById('roomsList');
-            container.innerHTML = '<div class="empty-state">Yuklanmoqda...</div>';
+            container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i> Yuklanmoqda...</div>';
             try {
-                const snap = await db.ref('rooms').once('value');
-                const rooms = snap.val() || {};
-                allRooms = Object.entries(rooms).filter(([id, r]) => r.isActive !== false && r.isPublic === true).sort((a,b)=>b[1].createdAt - a[1].createdAt).map(([id,r])=>({id,...r}));
+                const snapshot = await db.ref('rooms').once('value');
+                const rooms = snapshot.val() || {};
+                allRooms = Object.entries(rooms)
+                    .filter(([id, room]) => room.isActive !== false && room.isPublic === true)
+                    .sort((a, b) => b[1].createdAt - a[1].createdAt)
+                    .map(([id, room]) => ({ id, ...room }));
                 renderRoomsWithSearch();
-            } catch(e) { container.innerHTML = '<div class="empty-state">❌ Xatolik</div>'; }
+            } catch(e) {
+                container.innerHTML = '<div class="empty-state">❌ Xatolik yuz berdi</div>';
+            }
         }
 
-        function filterRooms(rooms) { if (!searchQuery) return rooms; const q = searchQuery.toLowerCase(); return rooms.filter(r => r.name?.toLowerCase().includes(q) || r.createdByName?.toLowerCase().includes(q) || r.id?.toLowerCase().includes(q)); }
+        function filterRooms(rooms) {
+            if (!searchQuery) return rooms;
+            const query = searchQuery.toLowerCase();
+            return rooms.filter(room => 
+                room.name?.toLowerCase().includes(query) ||
+                room.createdByName?.toLowerCase().includes(query) ||
+                room.id?.toLowerCase().includes(query)
+            );
+        }
 
         async function renderRoomsWithSearch() {
             const container = document.getElementById('roomsList');
             const filtered = filterRooms(allRooms);
-            if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">🔍 Hech narsa topilmadi</div>'; return; }
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state">🔍 Hech narsa topilmadi</div>';
+                return;
+            }
             let html = '';
             for (const room of filtered) {
                 const userData = await getUserData(room.createdBy);
                 const avatarLetter = (userData.fullName || userData.username || 'U').charAt(0).toUpperCase();
                 const userCount = room.users ? Object.keys(room.users).length : 0;
-                const avatarStyle = userData.avatarBase64 ? `background-image: url('${userData.avatarBase64}'); background-size: cover;` : `background-color: var(--brand-primary);`;
-                html += `<div class="room-card"><div class="room-card-header"><span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span><span class="room-badge ${userCount>0?'active':''}">${userCount>0?'🟢 Faol':'⚫ Faol emas'}</span></div>
-                <div class="creator-info"><div class="creator-avatar" onclick="event.stopPropagation(); showUserProfile('${room.createdBy}')" style="${avatarStyle}">${!userData.avatarBase64 ? avatarLetter : ''}</div><span class="creator-name" onclick="event.stopPropagation(); showUserProfile('${room.createdBy}')">${escapeHtml(userData.fullName || userData.username || room.createdByName || 'Foydalanuvchi')}</span></div>
-                <div class="room-meta"><span>👥 ${userCount} kishi</span><span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span></div>
-                <button class="room-btn room-join-btn" onclick="goToRoom('${room.id}')">Kirish →</button></div>`;
+                const isActive = userCount > 0;
+                const avatarStyle = userData.avatarBase64 ? 
+                    `background-image: url('${userData.avatarBase64}'); background-size: cover; background-position: center;` : 
+                    `background-color: var(--brand-primary);`;
+                html += `
+                    <div class="room-card" onclick="goToRoom('${room.id}')">
+                        <div class="room-card-header">
+                            <span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span>
+                            <span class="room-badge ${isActive ? 'active' : ''}">${isActive ? '🟢 Faol' : '⚫ Faol emas'}</span>
+                        </div>
+                        <div class="creator-info">
+                            <div class="creator-avatar" onclick="event.stopPropagation(); showUserProfile('${room.createdBy}')" style="${avatarStyle}">
+                                ${!userData.avatarBase64 ? avatarLetter : ''}
+                            </div>
+                            <span class="creator-name" onclick="event.stopPropagation(); showUserProfile('${room.createdBy}')">${escapeHtml(userData.fullName || userData.username || room.createdByName || 'Foydalanuvchi')}</span>
+                        </div>
+                        <div class="room-meta">
+                            <span>👥 ${userCount} kishi</span>
+                            <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <button class="room-join-btn" onclick="event.stopPropagation(); joinRoom('${room.id}', ${room.hasPassword})">Kirish →</button>
+                    </div>
+                `;
             }
-            container.innerHTML = html; lucide.createIcons();
+            container.innerHTML = html;
+            lucide.createIcons();
         }
 
-        // MY ROOMS with EDIT & DELETE
-        async function loadMyRooms() {
-            if (!currentUser) return;
-            const container = document.getElementById('myRoomsList');
-            container.innerHTML = '<div class="empty-state">Yuklanmoqda...</div>';
-            try {
-                const snap = await db.ref('rooms').orderByChild('createdBy').equalTo(currentUser.uid).once('value');
-                const rooms = snap.val() || {};
-                const roomsArray = Object.entries(rooms).filter(([id,r])=>r.isActive!==false).sort((a,b)=>b[1].createdAt - a[1].createdAt).map(([id,r])=>({id,...r}));
-                if (roomsArray.length === 0) { container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top:16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>'; document.getElementById('emptyCreateBtn')?.addEventListener('click', openCreateModal); lucide.createIcons(); return; }
-                let html = '';
-                for (const room of roomsArray) {
-                    const userCount = room.users ? Object.keys(room.users).length : 0;
-                    html += `<div class="room-card"><div class="room-card-header"><span class="room-name">${escapeHtml(room.name || 'Nomsiz xona')}</span><span class="room-badge ${room.isPublic?'':'private'}">${room.isPublic?'🌍 Public':'🔒 Private'}</span></div>
-                    <div class="creator-info"><div class="creator-avatar" style="background: var(--brand-primary);">${(currentUser.displayName || 'U').charAt(0).toUpperCase()}</div><span class="creator-name">Siz</span></div>
-                    <div class="room-meta"><span>👥 ${userCount} kishi</span><span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span><span>🔑 ${room.hasPassword ? 'Parol bor' : 'Parolsiz'}</span></div>
-                    <div class="room-actions"><button class="room-btn room-join-btn" onclick="goToRoom('${room.id}')">Kirish →</button><button class="room-btn room-edit-btn" onclick="openEditRoom('${room.id}', '${escapeHtml(room.name)}', ${room.isPublic}, '${room.password || ''}')">✏️ Tahrirlash</button><button class="room-btn room-delete-btn" onclick="deleteRoom('${room.id}', '${escapeHtml(room.name)}')">🗑 O'chirish</button></div></div>`;
-                }
-                container.innerHTML = html; lucide.createIcons();
-            } catch(e) { container.innerHTML = '<div class="empty-state">❌ Xatolik</div>'; }
-        }
-
-        function openEditRoom(roomId, roomName, isPublic, password) {
-            editingRoomId = roomId;
-            document.getElementById('editRoomName').value = roomName;
-            if (isPublic) { document.getElementById('editPublicBtn').classList.add('active'); document.getElementById('editPrivateBtn').classList.remove('active'); document.getElementById('editPasswordGroup').style.display = 'none'; }
-            else { document.getElementById('editPrivateBtn').classList.add('active'); document.getElementById('editPublicBtn').classList.remove('active'); document.getElementById('editPasswordGroup').style.display = 'block'; document.getElementById('editRoomPassword').value = password; }
-            document.getElementById('editRoomModal').classList.add('active');
-            document.getElementById('modalOverlay').classList.add('active');
-        }
-
-        async function saveEditRoom() {
-            if (!editingRoomId) return;
-            const newName = document.getElementById('editRoomName').value.trim();
-            if (!newName) { showToast('Xona nomini kiriting!', 'error'); return; }
-            const isPublic = document.getElementById('editPublicBtn').classList.contains('active');
-            const newPassword = document.getElementById('editRoomPassword').value;
-            await db.ref(`rooms/${editingRoomId}`).update({ name: newName, isPublic: isPublic, hasPassword: !isPublic && newPassword ? true : false, password: !isPublic ? newPassword || null : null });
-            closeEditModal();
-            showToast('✅ Xona yangilandi!', 'success');
-            loadMyRooms();
-            loadPublicRooms();
-        }
-
-        async function deleteRoom(roomId, roomName) {
-            if (confirm(`"${roomName}" xonasini o\'chirishni xohlaysizmi? Bu amal qaytarilmaydi!`)) {
-                await db.ref(`rooms/${roomId}`).update({ isActive: false });
-                showToast(`❌ "${roomName}" xonasi o\'chirildi`, 'success');
-                loadMyRooms();
-                loadPublicRooms();
+      // ========== LOAD MY ROOMS ==========
+async function loadMyRooms() {
+    if (!currentUser) return;
+    const container = document.getElementById('myRoomsList');
+    if (!container) return;
+    
+    container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i> Yuklanmoqda...</div>';
+    
+    try {
+        const snapshot = await db.ref('rooms').once('value');
+        const rooms = snapshot.val() || {};
+        
+        const myRoomsArray = [];
+        for (const [roomId, roomData] of Object.entries(rooms)) {
+            if (roomData.isActive !== false && roomData.createdBy === currentUser.uid) {
+                myRoomsArray.push({ id: roomId, ...roomData });
             }
         }
+        myRoomsArray.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        
+        if (myRoomsArray.length === 0) {
+            container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top: 16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>';
+            const emptyBtn = document.getElementById('emptyCreateBtn');
+            if (emptyBtn) emptyBtn.addEventListener('click', openCreateModal);
+            lucide.createIcons();
+            return;
+        }
+        
+        let html = '';
+        for (const room of myRoomsArray) {
+            const userCount = room.users ? Object.keys(room.users).length : 0;
+            const roomName = escapeHtml(room.name || 'Nomsiz xona');
+            html += `
+                <div class="room-card" onclick="goToRoom('${room.id}')">
+                    <div class="room-card-header">
+                        <span class="room-name">${roomName}</span>
+                        <span class="room-badge ${room.isPublic ? '' : 'private'}">${room.isPublic ? '🌍 Public' : '🔒 Private'}</span>
+                    </div>
+                    <div class="creator-info">
+                        <div class="creator-avatar" style="background: var(--brand-primary);">${(currentUser.displayName || 'U').charAt(0).toUpperCase()}</div>
+                        <span class="creator-name">Siz</span>
+                    </div>
+                    <div class="room-meta">
+                        <span>👥 ${userCount} kishi</span>
+                        <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
+                        <span>${room.hasPassword ? '🔒 Parol bor' : '🔓 Parolsiz'}</span>
+                    </div>
+                    <div class="room-actions">
+                        <button class="room-btn room-join-btn" onclick="event.stopPropagation(); goToRoom('${room.id}')">Kirish →</button>
+                        <button class="room-btn room-edit-btn" onclick="event.stopPropagation(); openEditRoom('${room.id}', '${roomName.replace(/'/g, "\\'")}', ${room.isPublic}, '${(room.password || '').replace(/'/g, "\\'")}')">✏️ Tahrirlash</button>
+                        <button class="room-btn room-delete-btn" onclick="event.stopPropagation(); deleteRoom('${room.id}', '${roomName.replace(/'/g, "\\'")}')">🗑 O'chirish</button>
+                    </div>
+                </div>
+            `;
+        }
+        container.innerHTML = html;
+        lucide.createIcons();
+    } catch(e) {
+        console.error(e);
+        container.innerHTML = '<div class="empty-state">❌ Xatolik yuz berdi</div>';
+    }
+}
+        async function showUserProfile(uid) {
+            const userData = await getUserData(uid);
+            const modal = document.getElementById('userProfileModal');
+            const avatarDiv = document.getElementById('modalAvatar');
+            if (userData.avatarBase64) {
+                avatarDiv.style.backgroundImage = `url(${userData.avatarBase64})`;
+                avatarDiv.style.backgroundSize = 'cover';
+                avatarDiv.innerHTML = '';
+            } else {
+                avatarDiv.style.backgroundImage = 'none';
+                avatarDiv.style.backgroundColor = 'var(--brand-primary)';
+                avatarDiv.innerHTML = `<span>${(userData.fullName || userData.username || 'U').charAt(0).toUpperCase()}</span>`;
+            }
+            document.getElementById('modalFullname').textContent = userData.fullName || 'Ism kiritilmagan';
+            document.getElementById('modalUsername').textContent = `@${userData.username || 'username'}`;
+            document.getElementById('modalBio').textContent = userData.bio || 'Bio mavjud emas';
+            modal.classList.add('active');
+        }
 
-        function closeEditModal() {
-            document.getElementById('editRoomModal').classList.remove('active');
-            document.getElementById('modalOverlay').classList.remove('active');
-            editingRoomId = null;
+        function closeUserProfile() {
+            document.getElementById('userProfileModal').classList.remove('active');
+        }
+
+        function joinRoom(roomId, hasPassword) {
+            if (hasPassword) {
+                document.getElementById('joinCodeInput').value = roomId;
+                document.getElementById('joinPasswordGroup').style.display = 'block';
+                document.getElementById('joinRoomModal').classList.add('active');
+                document.getElementById('modalOverlay').classList.add('active');
+            } else {
+                goToRoom(roomId);
+            }
+        }
+
+        function goToRoom(roomId) {
+            localStorage.setItem('lastRoomId', roomId);
+            window.location.href = `board.html?room=${roomId}`;
         }
 
         // Profile
@@ -744,7 +1091,6 @@
             document.getElementById('profileFullname').value = data.fullName || '';
             document.getElementById('profileLastname').value = data.lastName || '';
             document.getElementById('profileUsername').value = data.username || currentUser.email?.split('@')[0] || '';
-            document.getElementById('profileEmail').value = currentUser.email || '';
             document.getElementById('profileBio').value = data.bio || '';
             currentAvatar = data.avatarBase64 || null;
             updateAvatarUI(currentAvatar, data.fullName || currentUser.displayName);
@@ -755,11 +1101,19 @@
             const profileAvatar = document.getElementById('profileAvatar');
             const letter = (name || 'U').charAt(0).toUpperCase();
             if (avatar && avatar.startsWith('data:image')) {
-                avatarDiv.style.backgroundImage = `url(${avatar})`; avatarDiv.style.backgroundSize = 'cover'; avatarDiv.innerHTML = '';
-                profileAvatar.style.backgroundImage = `url(${avatar})`; profileAvatar.style.backgroundSize = 'cover'; profileAvatar.innerHTML = '';
+                avatarDiv.style.backgroundImage = `url(${avatar})`;
+                avatarDiv.style.backgroundSize = 'cover';
+                avatarDiv.innerHTML = '';
+                profileAvatar.style.backgroundImage = `url(${avatar})`;
+                profileAvatar.style.backgroundSize = 'cover';
+                profileAvatar.innerHTML = '';
             } else {
-                avatarDiv.style.backgroundImage = 'none'; avatarDiv.style.backgroundColor = 'var(--brand-primary)'; avatarDiv.innerHTML = letter;
-                profileAvatar.style.backgroundImage = 'none'; profileAvatar.style.backgroundColor = 'var(--brand-primary)'; profileAvatar.innerHTML = `<span>${letter}</span>`;
+                avatarDiv.style.backgroundImage = 'none';
+                avatarDiv.style.backgroundColor = 'var(--brand-primary)';
+                avatarDiv.innerHTML = letter;
+                profileAvatar.style.backgroundImage = 'none';
+                profileAvatar.style.backgroundColor = 'var(--brand-primary)';
+                profileAvatar.innerHTML = `<span id="avatarText">${letter}</span>`;
             }
         }
 
@@ -782,75 +1136,190 @@
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = (ev) => { currentAvatar = ev.target.result; updateAvatarUI(currentAvatar, document.getElementById('profileFullname').value); showToast('Avatar yangilandi. Saqlash tugmasini bosing!', 'success'); };
+            reader.onload = (ev) => {
+                currentAvatar = ev.target.result;
+                updateAvatarUI(currentAvatar, document.getElementById('profileFullname').value);
+                showToast('Avatar yangilandi. Saqlash tugmasini bosing!', 'success');
+            };
             reader.readAsDataURL(file);
         });
 
-        // User Profile Modal with Large Avatar
-        let currentProfileUser = null;
-        async function showUserProfile(uid) {
-            currentProfileUser = await getUserData(uid);
-            const modal = document.getElementById('userProfileModal');
-            const avatarDiv = document.getElementById('modalAvatar');
-            if (currentProfileUser.avatarBase64) {
-                avatarDiv.style.backgroundImage = `url(${currentProfileUser.avatarBase64})`;
-                avatarDiv.style.backgroundSize = 'cover';
-                avatarDiv.innerHTML = '';
-            } else {
-                avatarDiv.style.backgroundImage = 'none';
-                avatarDiv.style.backgroundColor = 'var(--brand-primary)';
-                avatarDiv.innerHTML = `<span>${(currentProfileUser.fullName || currentProfileUser.username || 'U').charAt(0).toUpperCase()}</span>`;
-            }
-            document.getElementById('modalFullname').textContent = currentProfileUser.fullName || 'Ism kiritilmagan';
-            document.getElementById('modalUsername').textContent = `@${currentProfileUser.username || 'username'}`;
-            document.getElementById('modalBio').textContent = currentProfileUser.bio || 'Bio mavjud emas';
-            modal.classList.add('active');
-        }
-
-        function showLargeAvatar() {
-            if (!currentProfileUser || !currentProfileUser.avatarBase64) { showToast('Rasm mavjud emas', 'error'); return; }
-            const modal = document.getElementById('avatarModal');
-            const img = document.getElementById('largeAvatarImg');
-            img.src = currentProfileUser.avatarBase64;
-            modal.classList.add('active');
-        }
-        function closeLargeAvatar() { document.getElementById('avatarModal').classList.remove('active'); }
-        function closeUserProfile() { document.getElementById('userProfileModal').classList.remove('active'); currentProfileUser = null; }
-
-        function goToRoom(roomId) { localStorage.setItem('lastRoomId', roomId); window.location.href = `board.html?room=${roomId}`; }
-        function joinRoom(roomId, hasPassword) { if (hasPassword) { document.getElementById('joinCodeInput').value = roomId; document.getElementById('joinPasswordGroup').style.display = 'block'; document.getElementById('joinRoomModal').classList.add('active'); document.getElementById('modalOverlay').classList.add('active'); } else { goToRoom(roomId); } }
-        async function confirmJoin() { const code = document.getElementById('joinCodeInput').value.trim().toUpperCase(); if (!code) { showToast('Xona kodini kiriting!', 'error'); return; } const password = document.getElementById('joinPassword').value; const snap = await db.ref(`rooms/${code}`).once('value'); const room = snap.val(); if (!room) { showToast('Xona topilmadi!', 'error'); return; } if (room.hasPassword && room.password !== password) { showToast('Parol noto\'g\'ri!', 'error'); return; } closeModals(); goToRoom(code); }
-
+        // Create Room
         let roomType = 'public';
-        async function createRoom() { const name = document.getElementById('roomNameInput').value.trim(); if (!name) { showToast('Xona nomini kiriting!', 'error'); return; } const password = document.getElementById('roomPassword').value; const roomCode = Math.random().toString(36).substr(2, 6).toUpperCase(); const teacherSecret = Math.random().toString(36).substr(2, 16); const userData = await getUserData(currentUser.uid); await db.ref(`rooms/${roomCode}`).set({ name, createdBy: currentUser.uid, createdByName: userData.fullName || userData.username || currentUser.email?.split('@')[0], createdAt: Date.now(), isPublic: roomType === 'public', hasPassword: roomType === 'private' && password ? true : false, password: roomType === 'private' ? password || null : null, isActive: true, teacherSecret, elements: {} }); closeModals(); showToast(`✅ "${name}" xonasi yaratildi! Kod: ${roomCode}`, 'success'); loadMyRooms(); setTimeout(() => goToRoom(roomCode), 1000); }
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                roomType = btn.dataset.type;
+                document.getElementById('passwordGroup').style.display = roomType === 'private' ? 'block' : 'none';
+            };
+        });
 
-        function openCreateModal() { document.getElementById('roomNameInput').value = ''; document.getElementById('roomPassword').value = ''; document.getElementById('passwordGroup').style.display = 'none'; document.querySelector('.type-btn.active')?.classList.remove('active'); document.querySelector('.type-btn[data-type="public"]')?.classList.add('active'); roomType = 'public'; document.getElementById('createRoomModal').classList.add('active'); document.getElementById('modalOverlay').classList.add('active'); }
-        function openJoinModal() { document.getElementById('joinCodeInput').value = ''; document.getElementById('joinPassword').value = ''; document.getElementById('joinPasswordGroup').style.display = 'none'; document.getElementById('joinRoomModal').classList.add('active'); document.getElementById('modalOverlay').classList.add('active'); }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); document.getElementById('modalOverlay').classList.remove('active'); }
+        async function createRoom() {
+            const name = document.getElementById('roomNameInput').value.trim();
+            if (!name) { showToast('Xona nomini kiriting!', 'error'); return; }
+            const password = document.getElementById('roomPassword').value;
+            const roomCode = Math.random().toString(36).substr(2, 6).toUpperCase();
+            const teacherSecret = Math.random().toString(36).substr(2, 16);
+            const userData = await getUserData(currentUser.uid);
+            await db.ref(`rooms/${roomCode}`).set({
+                name, createdBy: currentUser.uid,
+                createdByName: userData.fullName || userData.username || currentUser.email?.split('@')[0],
+                createdAt: Date.now(), isPublic: roomType === 'public',
+                hasPassword: roomType === 'private' && password ? true : false,
+                password: roomType === 'private' ? password || null : null,
+                isActive: true, teacherSecret, elements: {}
+            });
+            closeModals();
+            showToast(`✅ "${name}" xonasi yaratildi! Kod: ${roomCode}`, 'success');
+            loadMyRooms();
+            setTimeout(() => goToRoom(roomCode), 1000);
+        }
 
-        function showToast(msg, type) { const container = document.getElementById('toastWrapper'); const toast = document.createElement('div'); toast.className = `toast-item`; toast.innerHTML = `<span>${msg}</span>`; container.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+        async function confirmJoin() {
+            const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+            if (!code) { showToast('Xona kodini kiriting!', 'error'); return; }
+            const password = document.getElementById('joinPassword').value;
+            const snap = await db.ref(`rooms/${code}`).once('value');
+            const room = snap.val();
+            if (!room) { showToast('Xona topilmadi!', 'error'); return; }
+            if (room.hasPassword && room.password !== password) { showToast('Parol noto\'g\'ri!', 'error'); return; }
+            closeModals();
+            goToRoom(code);
+        }
 
-        document.getElementById('searchInput')?.addEventListener('input', (e) => { searchQuery = e.target.value; if (document.getElementById('homeSection').classList.contains('active')) renderRoomsWithSearch(); });
-        document.getElementById('quickCreateBtn')?.addEventListener('click', openCreateModal);
-        document.getElementById('quickJoinBtn')?.addEventListener('click', openJoinModal);
-        document.getElementById('cancelCreateBtn')?.addEventListener('click', closeModals);
-        document.getElementById('confirmCreateBtn')?.addEventListener('click', createRoom);
-        document.getElementById('cancelJoinBtn')?.addEventListener('click', closeModals);
-        document.getElementById('confirmJoinBtn')?.addEventListener('click', confirmJoin);
-        document.getElementById('refreshRoomsBtn')?.addEventListener('click', () => { if (document.getElementById('homeSection').classList.contains('active')) loadPublicRooms(); });
-        document.getElementById('refreshMyRoomsBtn')?.addEventListener('click', () => { if (document.getElementById('myRoomsSection').classList.contains('active')) loadMyRooms(); });
-        document.getElementById('saveProfileBtn')?.addEventListener('click', saveProfile);
-        document.getElementById('logoutBtn')?.addEventListener('click', () => auth.signOut());
-        document.getElementById('modalOverlay')?.addEventListener('click', closeModals);
-        document.getElementById('currentUserInfo')?.addEventListener('click', () => switchTab('profile'));
+        function openCreateModal() {
+            document.getElementById('roomNameInput').value = '';
+            document.getElementById('roomPassword').value = '';
+            document.getElementById('passwordGroup').style.display = 'none';
+            document.querySelector('.type-btn.active')?.classList.remove('active');
+            document.querySelector('.type-btn[data-type="public"]')?.classList.add('active');
+            roomType = 'public';
+            document.getElementById('createRoomModal').classList.add('active');
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        function openJoinModal() {
+            document.getElementById('joinCodeInput').value = '';
+            document.getElementById('joinPassword').value = '';
+            document.getElementById('joinPasswordGroup').style.display = 'none';
+            document.getElementById('joinRoomModal').classList.add('active');
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        function closeModals() {
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastWrapper');
+            const toast = document.createElement('div');
+            toast.className = `toast-item`;
+            toast.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+          // ========== EDIT ROOM ==========
+function openEditRoom(roomId, roomName, isPublic, password) {
+    editingRoomId = roomId;
+    document.getElementById('editRoomName').value = roomName;
+    
+    // Edit modal ni ko'rsatish
+    if (!document.getElementById('editRoomModal')) {
+        const modalHTML = `
+            <div class="edit-room-modal" id="editRoomModal">
+                <div class="modal-header">✏️ Xonani tahrirlash</div>
+                <div class="form-group"><label>Xona nomi</label><input type="text" id="editRoomName" class="form-input"></div>
+                <div class="form-group">
+                    <label>Xona turi</label>
+                    <div class="room-type-selector">
+                        <button class="type-btn" data-type="public" id="editPublicBtn">🌍 Public</button>
+                        <button class="type-btn" data-type="private" id="editPrivateBtn">🔒 Private</button>
+                    </div>
+                </div>
+                <div class="form-group" id="editPasswordGroup" style="display: none;"><label>Parol</label><input type="password" id="editRoomPassword" class="form-input" placeholder="Parol"></div>
+                <div class="modal-actions"><button class="btn btn-ghost" id="cancelEditBtn">Bekor</button><button class="btn btn-primary" id="saveEditBtn">Saqlash</button></div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
         document.getElementById('cancelEditBtn')?.addEventListener('click', closeEditModal);
         document.getElementById('saveEditBtn')?.addEventListener('click', saveEditRoom);
-        document.getElementById('editPublicBtn')?.addEventListener('click', () => { document.getElementById('editPublicBtn').classList.add('active'); document.getElementById('editPrivateBtn').classList.remove('active'); document.getElementById('editPasswordGroup').style.display = 'none'; });
-        document.getElementById('editPrivateBtn')?.addEventListener('click', () => { document.getElementById('editPrivateBtn').classList.add('active'); document.getElementById('editPublicBtn').classList.remove('active'); document.getElementById('editPasswordGroup').style.display = 'block'; });
-        document.querySelectorAll('.type-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); roomType = btn.dataset.type; document.getElementById('passwordGroup').style.display = roomType === 'private' ? 'block' : 'none'; }; });
-        document.querySelectorAll('.tab-item').forEach(tab => tab.addEventListener('click', () => switchTab(tab.dataset.tab)));
+        document.getElementById('editPublicBtn')?.addEventListener('click', () => {
+            document.getElementById('editPublicBtn').classList.add('active');
+            document.getElementById('editPrivateBtn').classList.remove('active');
+            document.getElementById('editPasswordGroup').style.display = 'none';
+        });
+        document.getElementById('editPrivateBtn')?.addEventListener('click', () => {
+            document.getElementById('editPrivateBtn').classList.add('active');
+            document.getElementById('editPublicBtn').classList.remove('active');
+            document.getElementById('editPasswordGroup').style.display = 'block';
+        });
+    }
+    
+    if (isPublic) {
+        document.getElementById('editPublicBtn').classList.add('active');
+        document.getElementById('editPrivateBtn').classList.remove('active');
+        document.getElementById('editPasswordGroup').style.display = 'none';
+    } else {
+        document.getElementById('editPrivateBtn').classList.add('active');
+        document.getElementById('editPublicBtn').classList.remove('active');
+        document.getElementById('editPasswordGroup').style.display = 'block';
+        document.getElementById('editRoomPassword').value = password;
+    }
+    
+    document.getElementById('editRoomModal').classList.add('active');
+    document.getElementById('modalOverlay').classList.add('active');
+}
 
+async function saveEditRoom() {
+    if (!editingRoomId) return;
+    const newName = document.getElementById('editRoomName').value.trim();
+    if (!newName) { showToast('Xona nomini kiriting!', 'error'); return; }
+    const isPublic = document.getElementById('editPublicBtn').classList.contains('active');
+    const newPassword = document.getElementById('editRoomPassword').value;
+    
+    await db.ref(`rooms/${editingRoomId}`).update({
+        name: newName,
+        isPublic: isPublic,
+        hasPassword: !isPublic && newPassword ? true : false,
+        password: !isPublic ? newPassword || null : null
+    });
+    closeEditModal();
+    showToast('✅ Xona yangilandi!', 'success');
+    loadMyRooms();
+    loadPublicRooms();
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editRoomModal');
+    if (modal) modal.classList.remove('active');
+    document.getElementById('modalOverlay').classList.remove('active');
+    editingRoomId = null;
+}
+
+async function deleteRoom(roomId, roomName) {
+    if (confirm(`"${roomName}" xonasini o'chirishni xohlaysizmi? Bu amal qaytarilmaydi!`)) {
+        await db.ref(`rooms/${roomId}`).update({ isActive: false });
+        showToast(`❌ "${roomName}" xonasi o'chirildi`, 'success');
+        loadMyRooms();
+        loadPublicRooms();
+    }
+}
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+        }
+
+        // Search listener
+        document.getElementById('searchInput')?.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            if (document.getElementById('homeSection').classList.contains('active')) {
+                renderRoomsWithSearch();
+            }
+        });
+
+        // Auth
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
@@ -861,14 +1330,50 @@
                 document.getElementById('userName').textContent = username;
                 document.getElementById('welcomeMessage').textContent = `Assalomu alaykum, ${fullName}!`;
                 updateAvatarUI(data.avatarBase64, fullName);
-                loadPublicRooms(); loadMyRooms(); loadProfile(); lucide.createIcons();
-            } else { window.location.href = 'board.html'; }
+                loadPublicRooms();
+                loadMyRooms();
+                loadProfile();
+                lucide.createIcons();
+            } else {
+                window.location.href = 'board.html';
+            }
         });
 
-        window.goToRoom = goToRoom; window.joinRoom = joinRoom; window.switchTab = switchTab;
-        window.showUserProfile = showUserProfile; window.closeUserProfile = closeUserProfile;
-        window.showLargeAvatar = showLargeAvatar; window.closeLargeAvatar = closeLargeAvatar;
-        window.openEditRoom = openEditRoom; window.deleteRoom = deleteRoom;
+        // Event Listeners
+        document.getElementById('quickCreateBtn')?.addEventListener('click', openCreateModal);
+        document.getElementById('quickJoinBtn')?.addEventListener('click', openJoinModal);
+        document.getElementById('cancelCreateBtn')?.addEventListener('click', closeModals);
+        document.getElementById('confirmCreateBtn')?.addEventListener('click', createRoom);
+        document.getElementById('cancelJoinBtn')?.addEventListener('click', closeModals);
+        document.getElementById('confirmJoinBtn')?.addEventListener('click', confirmJoin);
+        document.getElementById('refreshRoomsBtn')?.addEventListener('click', () => {
+            if (document.getElementById('homeSection').classList.contains('active')) {
+                loadPublicRooms();
+            }
+        });
+        document.getElementById('refreshMyRoomsBtn')?.addEventListener('click', () => {
+            if (document.getElementById('myRoomsSection').classList.contains('active')) {
+                loadMyRooms();
+            }
+        });
+        document.getElementById('saveProfileBtn')?.addEventListener('click', saveProfile);
+        document.getElementById('logoutBtn')?.addEventListener('click', () => auth.signOut());
+        document.getElementById('modalOverlay')?.addEventListener('click', closeModals);
+        document.getElementById('currentUserInfo')?.addEventListener('click', () => switchTab('profile'));
+        
+        // Tab buttons - FIXED
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                switchTab(tabId);
+            });
+        });
+
+        window.joinRoom = joinRoom;
+        window.goToRoom = goToRoom;
+        window.switchTab = switchTab;
+        window.showUserProfile = showUserProfile;
+        window.closeUserProfile = closeUserProfile;
     </script>
 </body>
 </html>
