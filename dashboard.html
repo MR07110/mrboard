@@ -30,7 +30,6 @@
             --brand-primary: #007aff;
             --brand-primary-dark: #0056b3;
             --brand-alpha: rgba(0,122,255,0.1);
-            --brand-alpha-hover: rgba(0,122,255,0.2);
             --state-danger: #ff3b30;
             --state-success: #34c759;
             --state-warning: #ffcc00;
@@ -58,7 +57,6 @@
             --brand-primary: #0a84ff;
             --brand-primary-dark: #007aff;
             --brand-alpha: rgba(10,132,255,0.15);
-            --brand-alpha-hover: rgba(10,132,255,0.25);
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
             --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
             --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.4);
@@ -73,7 +71,6 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: background var(--transition-normal), color var(--transition-normal);
         }
 
         /* Header */
@@ -100,7 +97,6 @@
             color: var(--text-main);
             transition: transform var(--transition-fast) var(--ease-spring);
         }
-
         .logo:hover { transform: scale(1.02); }
         .logo span { color: var(--brand-primary); }
 
@@ -110,11 +106,9 @@
             gap: 12px;
         }
 
-        /* Search Bar */
         .search-container {
             position: relative;
         }
-
         .search-input {
             background: var(--bg-panel);
             border: 1px solid var(--border-subtle);
@@ -125,13 +119,11 @@
             transition: all var(--transition-fast);
             color: var(--text-main);
         }
-
         .search-input:focus {
             outline: none;
             border-color: var(--brand-primary);
             width: 280px;
         }
-
         .search-icon {
             position: absolute;
             left: 12px;
@@ -151,7 +143,6 @@
             gap: 8px;
             transition: all var(--transition-fast) var(--ease-spring);
         }
-
         .theme-toggle:hover {
             transform: scale(1.05);
             background: var(--brand-alpha);
@@ -163,7 +154,6 @@
             gap: 12px;
             cursor: pointer;
         }
-
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -178,12 +168,10 @@
             transition: all var(--transition-fast) var(--ease-spring);
             overflow: hidden;
         }
-
         .user-avatar:hover {
             transform: scale(1.05);
             box-shadow: 0 0 0 3px var(--brand-alpha);
         }
-
         .user-name {
             font-weight: 600;
             font-size: 14px;
@@ -206,12 +194,10 @@
             margin-bottom: 24px;
             animation: slideDown 0.5s var(--ease-spring);
         }
-
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .welcome-card h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
         .welcome-card p { font-size: 14px; opacity: 0.9; }
 
@@ -223,7 +209,6 @@
             overflow-x: auto;
             padding-bottom: 4px;
         }
-
         .quick-action {
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
@@ -239,12 +224,10 @@
             white-space: nowrap;
             color: var(--text-main);
         }
-
         .quick-action:hover {
             transform: translateY(-3px);
             border-color: var(--brand-primary);
         }
-
         .quick-action.create {
             background: var(--brand-primary);
             color: white;
@@ -258,7 +241,6 @@
             align-items: center;
             margin: 24px 0 16px;
         }
-
         .section-title {
             font-size: 18px;
             font-weight: 800;
@@ -266,7 +248,6 @@
             align-items: center;
             gap: 8px;
         }
-
         .refresh-btn {
             background: none;
             border: none;
@@ -276,7 +257,6 @@
             border-radius: 50%;
             transition: all var(--transition-fast);
         }
-
         .refresh-btn:hover {
             background: var(--brand-alpha);
             color: var(--brand-primary);
@@ -289,7 +269,6 @@
             overflow-y: auto;
             padding-right: 4px;
         }
-
         .rooms-container::-webkit-scrollbar {
             width: 4px;
         }
@@ -313,7 +292,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .room-card::before {
             content: '';
             position: absolute;
@@ -325,7 +303,6 @@
             opacity: 0;
             transition: opacity var(--transition-normal);
         }
-
         .room-card:hover {
             transform: translateY(-4px);
             border-color: var(--brand-primary);
@@ -339,9 +316,7 @@
             align-items: start;
             margin-bottom: 12px;
         }
-
         .room-name { font-size: 16px; font-weight: 700; }
-        
         .room-badge {
             font-size: 11px;
             padding: 4px 10px;
@@ -358,7 +333,6 @@
             color: var(--state-danger);
         }
 
-        /* Creator Info */
         .creator-info {
             display: flex;
             align-items: center;
@@ -378,6 +352,8 @@
             font-weight: 600;
             cursor: pointer;
             transition: all var(--transition-fast);
+            background-size: cover;
+            background-position: center;
         }
         .creator-avatar:hover {
             transform: scale(1.1);
@@ -389,9 +365,7 @@
             color: var(--text-main);
             cursor: pointer;
         }
-        .creator-name:hover {
-            color: var(--brand-primary);
-        }
+        .creator-name:hover { color: var(--brand-primary); }
 
         .room-meta {
             display: flex;
@@ -439,7 +413,6 @@
             padding: 10px 20px 20px;
             z-index: 100;
         }
-
         .tab-item {
             display: flex;
             flex-direction: column;
@@ -492,9 +465,7 @@
             transition: transform var(--transition-normal) var(--ease-spring);
             border: 1px solid var(--border-subtle);
         }
-        .profile-modal.active .profile-modal-content {
-            transform: scale(1);
-        }
+        .profile-modal.active .profile-modal-content { transform: scale(1); }
         .modal-avatar {
             width: 100px;
             height: 100px;
@@ -508,28 +479,12 @@
             font-size: 40px;
             font-weight: 800;
             overflow: hidden;
+            background-size: cover;
+            background-position: center;
         }
-        .modal-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .modal-fullname {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-        .modal-username {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-        }
-        .modal-bio {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            padding: 0 16px;
-        }
+        .modal-fullname { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+        .modal-username { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
+        .modal-bio { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; padding: 0 16px; }
         .modal-close {
             background: var(--brand-primary);
             color: white;
@@ -561,6 +516,8 @@
             font-weight: 800;
             cursor: pointer;
             transition: all var(--transition-normal);
+            background-size: cover;
+            background-position: center;
         }
         .profile-avatar:hover { transform: scale(1.05); box-shadow: 0 0 0 4px var(--brand-alpha); }
         .profile-field { margin-bottom: 20px; text-align: left; }
@@ -855,10 +812,9 @@
         let allRooms = [];
         let searchQuery = '';
 
-        // User cache for profile info
+        // User cache
         const userCache = new Map();
 
-        // Get user data by ID
         async function getUserData(uid) {
             if (userCache.has(uid)) return userCache.get(uid);
             const snap = await db.ref(`users/${uid}`).once('value');
@@ -867,15 +823,35 @@
             return data;
         }
 
-        // Tab Switch
+        // Tab Switch - FIXED
         function switchTab(tabId) {
-            document.querySelectorAll('.section-page').forEach(s => s.classList.remove('active'));
-            document.getElementById(`${tabId}Section`).classList.add('active');
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-            if (tabId === 'home') loadPublicRooms();
-            if (tabId === 'myrooms') loadMyRooms();
-            if (tabId === 'profile') loadProfile();
+            // Hide all sections
+            document.querySelectorAll('.section-page').forEach(section => {
+                section.classList.remove('active');
+            });
+            // Show selected section
+            const targetSection = document.getElementById(`${tabId}Section`);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            const activeTab = document.querySelector(`.tab-item[data-tab="${tabId}"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+            
+            // Load data based on tab
+            if (tabId === 'home') {
+                loadPublicRooms();
+            } else if (tabId === 'myrooms') {
+                loadMyRooms();
+            } else if (tabId === 'profile') {
+                loadProfile();
+            }
         }
 
         // Load Public Rooms
@@ -895,7 +871,6 @@
             }
         }
 
-        // Search filter
         function filterRooms(rooms) {
             if (!searchQuery) return rooms;
             const query = searchQuery.toLowerCase();
@@ -919,6 +894,9 @@
                 const avatarLetter = (userData.fullName || userData.username || 'U').charAt(0).toUpperCase();
                 const userCount = room.users ? Object.keys(room.users).length : 0;
                 const isActive = userCount > 0;
+                const avatarStyle = userData.avatarBase64 ? 
+                    `background-image: url('${userData.avatarBase64}'); background-size: cover; background-position: center;` : 
+                    `background-color: var(--brand-primary);`;
                 html += `
                     <div class="room-card" onclick="goToRoom('${room.id}')">
                         <div class="room-card-header">
@@ -926,7 +904,7 @@
                             <span class="room-badge ${isActive ? 'active' : ''}">${isActive ? '🟢 Faol' : '⚫ Faol emas'}</span>
                         </div>
                         <div class="creator-info">
-                            <div class="creator-avatar" onclick="event.stopPropagation(); showUserProfile('${room.createdBy}')" style="background-image: ${userData.avatarBase64 ? `url('${userData.avatarBase64}')` : 'none'}; background-size: cover; background-position: center; ${!userData.avatarBase64 ? `background-color: var(--brand-primary)` : ''}">
+                            <div class="creator-avatar" onclick="event.stopPropagation(); showUserProfile('${room.createdBy}')" style="${avatarStyle}">
                                 ${!userData.avatarBase64 ? avatarLetter : ''}
                             </div>
                             <span class="creator-name" onclick="event.stopPropagation(); showUserProfile('${room.createdBy}')">${escapeHtml(userData.fullName || userData.username || room.createdByName || 'Foydalanuvchi')}</span>
@@ -943,7 +921,7 @@
             lucide.createIcons();
         }
 
-        // Load My Rooms
+        // Load My Rooms - FIXED
         async function loadMyRooms() {
             if (!currentUser) return;
             const container = document.getElementById('myRoomsList');
@@ -951,13 +929,19 @@
             try {
                 const snapshot = await db.ref('rooms').orderByChild('createdBy').equalTo(currentUser.uid).once('value');
                 const rooms = snapshot.val() || {};
-                const roomsArray = Object.entries(rooms).filter(([id, room]) => room.isActive !== false).map(([id, room]) => ({ id, ...room }));
+                const roomsArray = Object.entries(rooms)
+                    .filter(([id, room]) => room.isActive !== false)
+                    .sort((a, b) => b[1].createdAt - a[1].createdAt)
+                    .map(([id, room]) => ({ id, ...room }));
+                
                 if (roomsArray.length === 0) {
                     container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top: 16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>';
-                    document.getElementById('emptyCreateBtn')?.addEventListener('click', openCreateModal);
+                    const emptyBtn = document.getElementById('emptyCreateBtn');
+                    if (emptyBtn) emptyBtn.addEventListener('click', openCreateModal);
                     lucide.createIcons();
                     return;
                 }
+                
                 let html = '';
                 for (const room of roomsArray) {
                     const userCount = room.users ? Object.keys(room.users).length : 0;
@@ -981,7 +965,10 @@
                 }
                 container.innerHTML = html;
                 lucide.createIcons();
-            } catch(e) { container.innerHTML = '<div class="empty-state">❌ Xatolik</div>'; }
+            } catch(e) {
+                console.error(e);
+                container.innerHTML = '<div class="empty-state">❌ Xatolik yuz berdi</div>';
+            }
         }
 
         // Show User Profile Modal
@@ -989,7 +976,6 @@
             const userData = await getUserData(uid);
             const modal = document.getElementById('userProfileModal');
             const avatarDiv = document.getElementById('modalAvatar');
-            const avatarText = document.getElementById('modalAvatarText');
             if (userData.avatarBase64) {
                 avatarDiv.style.backgroundImage = `url(${userData.avatarBase64})`;
                 avatarDiv.style.backgroundSize = 'cover';
@@ -997,7 +983,7 @@
             } else {
                 avatarDiv.style.backgroundImage = 'none';
                 avatarDiv.style.backgroundColor = 'var(--brand-primary)';
-                avatarDiv.innerHTML = `<span id="modalAvatarText">${(userData.fullName || userData.username || 'U').charAt(0).toUpperCase()}</span>`;
+                avatarDiv.innerHTML = `<span>${(userData.fullName || userData.username || 'U').charAt(0).toUpperCase()}</span>`;
             }
             document.getElementById('modalFullname').textContent = userData.fullName || 'Ism kiritilmagan';
             document.getElementById('modalUsername').textContent = `@${userData.username || 'username'}`;
@@ -1169,7 +1155,9 @@
         // Search listener
         document.getElementById('searchInput')?.addEventListener('input', (e) => {
             searchQuery = e.target.value;
-            renderRoomsWithSearch();
+            if (document.getElementById('homeSection').classList.contains('active')) {
+                renderRoomsWithSearch();
+            }
         });
 
         // Auth
@@ -1199,15 +1187,27 @@
         document.getElementById('confirmCreateBtn')?.addEventListener('click', createRoom);
         document.getElementById('cancelJoinBtn')?.addEventListener('click', closeModals);
         document.getElementById('confirmJoinBtn')?.addEventListener('click', confirmJoin);
-        document.getElementById('refreshRoomsBtn')?.addEventListener('click', loadPublicRooms);
-        document.getElementById('refreshMyRoomsBtn')?.addEventListener('click', loadMyRooms);
+        document.getElementById('refreshRoomsBtn')?.addEventListener('click', () => {
+            if (document.getElementById('homeSection').classList.contains('active')) {
+                loadPublicRooms();
+            }
+        });
+        document.getElementById('refreshMyRoomsBtn')?.addEventListener('click', () => {
+            if (document.getElementById('myRoomsSection').classList.contains('active')) {
+                loadMyRooms();
+            }
+        });
         document.getElementById('saveProfileBtn')?.addEventListener('click', saveProfile);
         document.getElementById('logoutBtn')?.addEventListener('click', () => auth.signOut());
         document.getElementById('modalOverlay')?.addEventListener('click', closeModals);
         document.getElementById('currentUserInfo')?.addEventListener('click', () => switchTab('profile'));
         
+        // Tab buttons - FIXED
         document.querySelectorAll('.tab-item').forEach(tab => {
-            tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                switchTab(tabId);
+            });
         });
 
         window.joinRoom = joinRoom;
