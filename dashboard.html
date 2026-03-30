@@ -269,12 +269,6 @@
             box-shadow: var(--shadow-hover);
         }
 
-        .quick-action.ai {
-            background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark));
-            color: white;
-            border: none;
-        }
-
         /* Section Header */
         .section-header {
             display: flex;
@@ -307,7 +301,7 @@
             transform: rotate(180deg);
         }
 
-        /* Rooms Grid with SCROLL (max 3 items visible, rest scroll) */
+        /* Rooms Container with SCROLL (max 3 visible) */
         .rooms-container {
             max-height: 420px;
             overflow-y: auto;
@@ -796,7 +790,7 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Home Section -->
+        <!-- Home Section (Barcha xonalar) -->
         <div class="section-page active" id="homeSection">
             <div class="welcome-card">
                 <h1 id="welcomeMessage">Assalomu alaykum!</h1>
@@ -810,9 +804,6 @@
                 <button class="quick-action" id="quickJoinBtn">
                     <i data-lucide="log-in"></i> Kod bilan kirish
                 </button>
-                <a href="ai.html" class="quick-action ai" style="text-decoration: none;">
-                    <i data-lucide="bot"></i> AI Yordamchi
-                </a>
             </div>
 
             <div class="section-header">
@@ -822,7 +813,7 @@
                 </button>
             </div>
             
-            <!-- Scrollable Container - max 3 items visible, rest scroll -->
+            <!-- Scrollable Container - max 3 visible -->
             <div class="rooms-container" id="roomsContainer">
                 <div id="roomsList" class="rooms-grid">
                     <div class="empty-state">Yuklanmoqda...</div>
@@ -830,7 +821,7 @@
             </div>
         </div>
 
-        <!-- My Rooms Section (NO LIMIT - all visible with scroll) -->
+        <!-- My Rooms Section (Mening xonalarim) -->
         <div class="section-page" id="myRoomsSection">
             <div class="section-header">
                 <h2 class="section-title">⭐ Mening xonalarim</h2>
@@ -1009,7 +1000,7 @@
             if (tabId === 'profile') loadProfile();
         }
 
-        // ========== LOAD PUBLIC ROOMS (with SCROLL - max 3 visible) ==========
+        // ========== LOAD PUBLIC ROOMS ==========
         async function loadPublicRooms() {
             const container = document.getElementById('roomsList');
             container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i> Yuklanmoqda...</div>';
@@ -1027,7 +1018,6 @@
                     return;
                 }
                 
-                // Show ALL rooms in scrollable container (max 3 visible, rest scroll)
                 container.innerHTML = roomsArray.map(room => `
                     <div class="room-card" onclick="joinRoom('${room.id}', ${room.hasPassword})">
                         <div class="room-card-header">
@@ -1048,7 +1038,7 @@
             }
         }
 
-        // ========== LOAD MY ROOMS (ALL rooms, scrollable) ==========
+        // ========== LOAD MY ROOMS ==========
         async function loadMyRooms() {
             if (!currentUser) return;
             const container = document.getElementById('myRoomsList');
@@ -1069,7 +1059,6 @@
                     return;
                 }
                 
-                // Show ALL rooms (no limit, scrollable)
                 container.innerHTML = roomsArray.map(room => `
                     <div class="room-card" onclick="goToRoom('${room.id}')">
                         <div class="room-card-header">
