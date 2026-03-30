@@ -14,6 +14,28 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <style>
+        /* Fix for missing styles */
+        .action-btn a {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        .action-btn.ai-btn {
+            background: linear-gradient(135deg, #007aff, #5856d6);
+        }
+        .action-btn.ai-btn i {
+            color: white;
+        }
+        .action-btn.ai-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,122,255,0.4);
+        }
+    </style>
 </head>
 <body>
 
@@ -23,7 +45,6 @@
     <!-- ==================== LOGIN/REGISTER PANEL ==================== -->
     <div id="auth-gateway">
         <div class="auth-gateway-container">
-            <!-- Chap tomondagi ma'lumot -->
             <div class="auth-info">
                 <div class="auth-info-content">
                     <div class="auth-logo">
@@ -45,7 +66,6 @@
                 </div>
             </div>
             
-            <!-- O'ng tomondagi forma (Login/Register) -->
             <div class="auth-form-container">
                 <div class="auth-tabs">
                     <button class="auth-tab active" data-tab="login">Kirish</button>
@@ -101,7 +121,7 @@
                             <input type="password" id="reg-password" class="form-input" placeholder="••••••••">
                         </div>
                         <div class="form-group">
-                            <label><i数据-lucide="lock"></i> Parolni tasdiqlang</label>
+                            <label><i data-lucide="lock"></i> Parolni tasdiqlang</label>
                             <input type="password" id="reg-confirm" class="form-input" placeholder="••••••••">
                         </div>
                         <div class="error-message" id="register-error"></div>
@@ -145,7 +165,7 @@
         </div>
     </div>
 
-    <!-- ==================== XONAGA KIRISH MODAL (PAROL UCHUN) ==================== -->
+    <!-- ==================== XONAGA KIRISH MODAL ==================== -->
     <div class="modal-box" id="modal-join-room" style="max-width: 360px;">
         <h3 style="text-align: center; font-size: 20px; margin-bottom: 20px;">🔐 Xonaga kirish</h3>
         <div id="join-room-info" style="margin-bottom: 16px; text-align: center;">
@@ -258,6 +278,12 @@
                 <button class="action-btn" id="btn-open-users"><i data-lucide="users"></i><div class="badge-counter" id="badge-users-count">0</div></button>
                 <div class="dock-sep"></div>
                 <button class="action-btn" id="btn-action-fullscreen"><i data-lucide="maximize"></i></button>
+                
+                <!-- ✅ AI Assistant Tugmasi QO'SHILDI -->
+                <div class="dock-sep"></div>
+                <a href="ai.html" class="action-btn ai-btn" style="text-decoration: none; background: linear-gradient(135deg, #007aff, #5856d6);">
+                    <i data-lucide="bot" style="color: white;"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -289,7 +315,7 @@
                 <button class="setting-card" id="act-undo"><i data-lucide="undo-2"></i>Bekor</button>
                 <button class="setting-card" id="act-image"><i data-lucide="image"></i>Rasm</button>
                 <button class="setting-card" id="act-export"><i data-lucide="download"></i>PNG</button>
-                <button class="setting-card" id="act-save-json"><i数据-lucide="save"></i>Saqlash</button>
+                <button class="setting-card" id="act-save-json"><i data-lucide="save"></i>Saqlash</button>
                 <button class="setting-card" id="act-load-json"><i data-lucide="folder-open"></i>Yuklash</button>
             </div>
             
@@ -391,6 +417,13 @@
         if (roomIdFromUrl) {
             localStorage.setItem('pendingRoomId', roomIdFromUrl);
         }
+        
+        // Fix for AI button icon
+        setTimeout(() => {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }, 100);
     </script>
 </body>
-</html> 
+</html>
