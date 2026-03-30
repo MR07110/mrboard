@@ -5,425 +5,1064 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0f172a" id="theme-color">
+    <meta name="theme-color" content="#ffffff" id="theme-color">
     <title>MR BOARD</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="shortcut icon" href="favicon.svg">
-    <link rel="stylesheet" href="css/style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <style>
-        /* Fix for missing styles */
-        .action-btn a {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ========== ONLY LIGHT MODE ========== */
+        :root {
+            --bg-base: #ffffff;
+            --bg-alt: #f8fafc;
+            --bg-glass: rgba(255,255,255,0.72);
+            --bg-panel: rgba(255,255,255,0.92);
+            --bg-card: #ffffff;
+            --text-main: #0a0c10;
+            --text-muted: #5b6e8c;
+            --text-tertiary: #8a99b0;
+            --border-subtle: #eef2f6;
+            --border-strong: #e2e8f0;
+            --brand-primary: #007aff;
+            --brand-primary-dark: #0056b3;
+            --brand-alpha: rgba(0,122,255,0.08);
+            --brand-alpha-strong: rgba(0,122,255,0.12);
+            --state-danger: #ff3b30;
+            --state-success: #34c759;
+            --state-warning: #ff9500;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.03);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02);
+            --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.08), 0 8px 16px -8px rgba(0,0,0,0.04);
+            --shadow-xl: 0 32px 64px -16px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 40px -12px rgba(0,122,255,0.2);
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 28px;
+            --radius-xl: 36px;
+            --ease-smooth: cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+            --transition-fast: 0.2s;
+            --transition-normal: 0.35s;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
+            background: var(--bg-alt);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            padding: 16px 24px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
             text-decoration: none;
-            color: inherit;
+            color: var(--text-main);
+            transition: all var(--transition-fast) var(--ease-spring);
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo span {
+            color: var(--brand-primary);
+            font-weight: 800;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 6px 12px 6px 8px;
+            border-radius: 60px;
+            transition: all var(--transition-fast) var(--ease-smooth);
+            background: var(--bg-base);
+            border: 1px solid var(--border-strong);
+        }
+
+        .user-info:hover {
+            transform: translateY(-2px);
+            border-color: var(--brand-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark));
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all var(--transition-fast) var(--ease-spring);
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* ========== AI PANEL ========== */
+        .ai-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 380px;
+            max-width: calc(100vw - 40px);
+            background: var(--bg-panel);
+            backdrop-filter: blur(40px);
+            border-radius: 28px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-strong);
+            z-index: 200;
+            transition: all var(--transition-normal) var(--ease-smooth);
+            transform: translateY(calc(100% - 60px));
+        }
+
+        .ai-panel.open {
+            transform: translateY(0);
+        }
+
+        .ai-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-strong);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: var(--bg-glass);
+            border-radius: 28px 28px 0 0;
+        }
+
+        .ai-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-toggle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .ai-toggle:hover {
+            background: var(--brand-alpha);
+        }
+
+        .ai-messages {
+            height: 350px;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ai-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .ai-messages::-webkit-scrollbar-track {
+            background: var(--border-strong);
+            border-radius: 10px;
+        }
+
+        .ai-messages::-webkit-scrollbar-thumb {
+            background: var(--brand-primary);
+            border-radius: 10px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .message.ai {
+            background: var(--bg-alt);
+            border: 1px solid var(--border-strong);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user {
+            background: var(--brand-primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.system {
+            background: var(--brand-alpha);
+            color: var(--brand-primary);
+            align-self: center;
+            font-size: 11px;
+            padding: 6px 12px;
+        }
+
+        .ai-input-area {
+            padding: 16px;
+            border-top: 1px solid var(--border-strong);
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 40px;
+            border: 1px solid var(--border-strong);
+            background: var(--bg-base);
+            font-size: 13px;
+            outline: none;
+            transition: all var(--transition-fast);
+        }
+
+        .ai-input:focus {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px var(--brand-alpha);
+        }
+
+        .ai-send {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .ai-send:hover {
+            background: var(--brand-primary-dark);
+            transform: scale(1.05);
+        }
+
+        .analyze-btn {
+            background: var(--brand-alpha);
+            color: var(--brand-primary);
+            border: 1px solid var(--border-strong);
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .analyze-btn:hover {
+            background: var(--brand-alpha-strong);
+            border-color: var(--brand-primary);
+        }
+
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            background: var(--text-tertiary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* ========== WHITEBOARD ========== */
+        .whiteboard-container {
+            flex: 1;
+            position: relative;
+            background: var(--bg-alt);
+            overflow: hidden;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
+            cursor: crosshair;
         }
-        .action-btn.ai-btn {
-            background: linear-gradient(135deg, #007aff, #5856d6);
+
+        #layer-base {
+            z-index: 1;
         }
-        .action-btn.ai-btn i {
+
+        #layer-draw {
+            z-index: 2;
+        }
+
+        /* ========== TOOLBAR ========== */
+        .toolbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-glass);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--border-strong);
+            border-radius: 60px;
+            display: flex;
+            gap: 4px;
+            padding: 8px 12px;
+            z-index: 150;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tool-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: all var(--transition-fast) var(--ease-spring);
+            background: transparent;
+            border: none;
+        }
+
+        .tool-btn:hover {
+            background: var(--brand-alpha);
+            color: var(--brand-primary);
+            transform: translateY(-2px);
+        }
+
+        .tool-btn.active {
+            background: var(--brand-primary);
             color: white;
         }
-        .action-btn.ai-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0,122,255,0.4);
+
+        .tool-btn.active:hover {
+            background: var(--brand-primary-dark);
+        }
+
+        .color-preview {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .separator {
+            width: 1px;
+            height: 32px;
+            background: var(--border-strong);
+            margin: 0 8px;
+        }
+
+        /* ========== MODALS ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 300;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-panel);
+            backdrop-filter: blur(40px);
+            border-radius: 32px 32px 0 0;
+            padding: 28px;
+            z-index: 301;
+            transform: translateY(100%);
+            transition: transform var(--transition-normal) var(--ease-smooth);
+        }
+
+        .modal-bottom.active {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-base);
+            border: 1px solid var(--border-strong);
+            border-radius: 20px;
+            font-size: 15px;
+            color: var(--text-main);
+            transition: all var(--transition-fast);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px var(--brand-alpha);
+        }
+
+        .room-type-selector {
+            display: flex;
+            gap: 12px;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 20px;
+            background: var(--bg-base);
+            border: 1px solid var(--border-strong);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .type-btn.active {
+            background: var(--brand-alpha);
+            border-color: var(--brand-primary);
+            color: var(--brand-primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 44px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all var(--transition-fast) var(--ease-spring);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--brand-primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-ghost {
+            background: var(--bg-base);
+            border: 1px solid var(--border-strong);
+            color: var(--text-main);
+        }
+
+        .toast-wrapper {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            background: var(--bg-panel);
+            backdrop-filter: blur(40px);
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 13px;
+            box-shadow: var(--shadow-lg);
+            animation: toastIn 0.3s var(--ease-spring);
+            border-left: 3px solid var(--brand-primary);
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .toolbar { padding: 6px 10px; gap: 2px; }
+            .tool-btn { width: 42px; height: 42px; }
+            .ai-panel { width: calc(100vw - 20px); right: 10px; bottom: 10px; }
+            .ai-messages { height: 280px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="toast-wrapper" class="toast-wrapper"></div>
-    <button class="zen-exit-btn" id="btn-exit-zen"><i data-lucide="maximize-2"></i></button>
+    <div class="toast-wrapper" id="toastWrapper"></div>
 
-    <!-- ==================== LOGIN/REGISTER PANEL ==================== -->
-    <div id="auth-gateway">
-        <div class="auth-gateway-container">
-            <div class="auth-info">
-                <div class="auth-info-content">
-                    <div class="auth-logo">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                        <h2>MR <span>BOARD</span></h2>
-                    </div>
-                    <h1>Jamoaviy ishlashning<br>yangi davri</h1>
-                    <p>Real-time whiteboard. Ovozli muloqot. Cheksiz doska. Barchasi bir joyda.</p>
-                    <div class="auth-stats">
-                        <div class="stat"><span class="stat-number">0ms</span><span class="stat-label">Kechikish</span></div>
-                        <div class="stat"><span class="stat-number">∞</span><span class="stat-label">Cheksiz doska</span></div>
-                        <div class="stat"><span class="stat-number">🎤</span><span class="stat-label">Audio chat</span></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="auth-form-container">
-                <div class="auth-tabs">
-                    <button class="auth-tab active" data-tab="login">Kirish</button>
-                    <button class="auth-tab" data-tab="register">Ro'yxatdan o'tish</button>
-                </div>
-                
-                <!-- Login Form -->
-                <div class="auth-panel active" id="login-panel">
-                    <div class="auth-form">
-                        <div class="form-group">
-                            <label><i data-lucide="mail"></i> Email</label>
-                            <input type="email" id="login-email" class="form-input" placeholder="email@example.com">
-                        </div>
-                        <div class="form-group">
-                            <label><i data-lucide="lock"></i> Parol</label>
-                            <input type="password" id="login-password" class="form-input" placeholder="••••••••">
-                        </div>
-                        <div class="error-message" id="login-error"></div>
-                        <button class="btn-primary" id="btn-login">
-                            <i data-lucide="log-in"></i>
-                            <span>Kirish</span>
-                        </button>
-                        <div class="form-info">
-                            <i data-lucide="info"></i>
-                            <span>Hisobingiz bo'lmasa, ro'yxatdan o'ting</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Register Form -->
-                <div class="auth-panel" id="register-panel">
-                    <div class="auth-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label><i data-lucide="user"></i> Ism</label>
-                                <input type="text" id="reg-firstname" class="form-input" placeholder="Ismingiz">
-                            </div>
-                            <div class="form-group">
-                                <label><i data-lucide="user"></i> Familiya</label>
-                                <input type="text" id="reg-lastname" class="form-input" placeholder="Familiyangiz">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label><i data-lucide="at-sign"></i> Username</label>
-                            <input type="text" id="reg-username" class="form-input" placeholder="username">
-                        </div>
-                        <div class="form-group">
-                            <label><i data-lucide="mail"></i> Email</label>
-                            <input type="email" id="reg-email" class="form-input" placeholder="email@example.com">
-                        </div>
-                        <div class="form-group">
-                            <label><i data-lucide="lock"></i> Parol</label>
-                            <input type="password" id="reg-password" class="form-input" placeholder="••••••••">
-                        </div>
-                        <div class="form-group">
-                            <label><i data-lucide="lock"></i> Parolni tasdiqlang</label>
-                            <input type="password" id="reg-confirm" class="form-input" placeholder="••••••••">
-                        </div>
-                        <div class="error-message" id="register-error"></div>
-                        <div class="success-message" id="register-success"></div>
-                        <button class="btn-primary" id="btn-register">
-                            <i data-lucide="user-plus"></i>
-                            <span>Ro'yxatdan o'tish</span>
-                        </button>
-                    </div>
-                </div>
+    <div class="header">
+        <a href="index.html" class="logo">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="1.8">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            MR <span>BOARD</span>
+        </a>
+        <div class="header-actions">
+            <div class="user-info" id="currentUserInfo">
+                <span class="user-name" id="userName"></span>
+                <div class="user-avatar" id="userAvatar"></div>
             </div>
         </div>
     </div>
 
-    <!-- ==================== XONA YARATISH MODAL ==================== -->
-    <div class="modal-box" id="modal-create-room" style="max-width: 400px;">
-        <h3 style="text-align: center; font-size: 20px; margin-bottom: 20px;">✨ Yangi xona yaratish</h3>
-        <div class="form-group">
-            <label><i data-lucide="tag"></i> Xona nomi</label>
-            <input type="text" id="new-room-name" class="form-input" placeholder="Masalan: Matematika 7-sinf">
-        </div>
-        <div class="form-group">
-            <label><i data-lucide="globe"></i> Xona turi</label>
-            <div style="display: flex; gap: 12px; margin-top: 8px;">
-                <button class="room-type-selector active" data-type="public" style="flex: 1; padding: 12px; border-radius: 16px; background: var(--brand-alpha); border: 1px solid var(--brand-primary); cursor: pointer;">
-                    🌍 Public
-                </button>
-                <button class="room-type-selector" data-type="private" style="flex: 1; padding: 12px; border-radius: 16px; background: var(--bg-base); border: 1px solid var(--border-strong); cursor: pointer;">
-                    🔒 Private
-                </button>
+    <div class="whiteboard-container">
+        <canvas id="layer-base" width="1000" height="800"></canvas>
+        <canvas id="layer-draw" width="1000" height="800"></canvas>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <button class="tool-btn" id="tool-pen" data-tool="pen"><i data-lucide="pencil"></i></button>
+        <button class="tool-btn" id="tool-eraser" data-tool="eraser"><i data-lucide="eraser"></i></button>
+        <div class="separator"></div>
+        <button class="tool-btn" id="tool-color"><div class="color-preview" id="currentColor" style="background: #007aff;"></div></button>
+        <div class="separator"></div>
+        <button class="tool-btn" id="tool-clear"><i data-lucide="trash-2"></i></button>
+        <button class="tool-btn" id="tool-undo"><i data-lucide="undo-2"></i></button>
+    </div>
+
+    <!-- AI Panel -->
+    <div class="ai-panel" id="aiPanel">
+        <div class="ai-header" id="aiHeader">
+            <h3><i data-lucide="bot"></i> AI Assistant</h3>
+            <div class="ai-toggle" id="aiToggle">
+                <i data-lucide="chevron-up" id="aiToggleIcon"></i>
             </div>
         </div>
-        <div class="form-group" id="new-room-password-group" style="display: none;">
-            <label><i data-lucide="key"></i> Xona paroli (ixtiyoriy)</label>
-            <input type="password" id="new-room-password" class="form-input" placeholder="Parol qo'yish">
-            <small style="font-size: 11px; color: var(--text-muted);">Private xonalar uchun tavsiya etiladi</small>
+        <div class="ai-messages" id="aiMessages">
+            <div class="message ai">Hello! I'm MR BOARD AI. Draw something and I'll analyze it, or ask me anything!</div>
         </div>
-        <div class="modal-actions" style="margin-top: 24px;">
-            <button class="btn btn-ghost" id="btn-cancel-create-room">Bekor</button>
-            <button class="btn btn-primary" id="btn-confirm-create-room">Yaratish</button>
+        <div class="ai-input-area">
+            <input type="text" id="aiInput" class="ai-input" placeholder="Ask AI...">
+            <button class="ai-send" id="aiSend"><i data-lucide="send"></i></button>
         </div>
-    </div>
-
-    <!-- ==================== XONAGA KIRISH MODAL ==================== -->
-    <div class="modal-box" id="modal-join-room" style="max-width: 360px;">
-        <h3 style="text-align: center; font-size: 20px; margin-bottom: 20px;">🔐 Xonaga kirish</h3>
-        <div id="join-room-info" style="margin-bottom: 16px; text-align: center;">
-            <p id="join-room-name" style="font-weight: 700;"></p>
-            <p id="join-room-code" style="font-size: 12px; color: var(--text-muted);"></p>
-        </div>
-        <div class="form-group" id="join-room-password-group">
-            <label><i data-lucide="key"></i> Xona paroli</label>
-            <input type="password" id="join-room-password" class="form-input" placeholder="Parolni kiriting">
-        </div>
-        <div class="error-message" id="join-room-error" style="display: none;"></div>
-        <div class="modal-actions" style="margin-top: 24px;">
-            <button class="btn btn-ghost" id="btn-cancel-join-room">Bekor</button>
-            <button class="btn btn-primary" id="btn-confirm-join-room">Kirish</button>
+        <div style="padding: 0 16px 16px 16px;">
+            <button class="analyze-btn" id="analyzeDrawing" style="width: 100%;"><i data-lucide="scan"></i> Analyze Drawing</button>
         </div>
     </div>
 
-    <!-- ==================== JSON IMPORT MODAL ==================== -->
-    <div class="modal-box" id="modal-json-import" style="max-width: 400px;">
-        <h3 style="text-align: center; font-size: 20px; margin-bottom: 20px;">📁 JSON orqali xonaga kirish</h3>
-        <div class="form-group">
-            <label><i data-lucide="file-json"></i> JSON fayl tanlang</label>
-            <input type="file" id="json-import-file" accept=".json" class="form-input" style="padding: 12px;">
-        </div>
-        <div class="form-info" style="margin: 16px 0;">
-            <i data-lucide="info"></i>
-            <span>Fayl ichida xona kodi bo'lishi kerak. Xona faol bo'lsa, avtomatik ulanadi.</span>
+    <!-- Color Picker Modal -->
+    <div class="modal-overlay" id="colorOverlay"></div>
+    <div class="modal-bottom" id="colorModal">
+        <div class="modal-header"><i data-lucide="palette"></i> Choose Color</div>
+        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 20px;">
+            <div style="width: 100%; aspect-ratio: 1; background: #000000; border-radius: 50%; cursor: pointer;" onclick="setColor('#000000')"></div>
+            <div style="width: 100%; aspect-ratio: 1; background: #ff3b30; border-radius: 50%; cursor: pointer;" onclick="setColor('#ff3b30')"></div>
+            <div style="width: 100%; aspect-ratio: 1; background: #ff9500; border-radius: 50%; cursor: pointer;" onclick="setColor('#ff9500')"></div>
+            <div style="width: 100%; aspect-ratio: 1; background: #ffcc00; border-radius: 50%; cursor: pointer;" onclick="setColor('#ffcc00')"></div>
+            <div style="width: 100%; aspect-ratio: 1; background: #34c759; border-radius: 50%; cursor: pointer;" onclick="setColor('#34c759')"></div>
+            <div style="width: 100%; aspect-ratio: 1; background: #007aff; border-radius: 50%; cursor: pointer;" onclick="setColor('#007aff')"></div>
+            <div style="width: 100%; aspect-ratio: 1; background: #5856d6; border-radius: 50%; cursor: pointer;" onclick="setColor('#5856d6')"></div>
+            <div style="width: 100%; aspect-ratio: 1; background: #af52de; border-radius: 50%; cursor: pointer;" onclick="setColor('#af52de')"></div>
+            <div style="width: 100%; aspect-ratio: 1; background: #ff2d55; border-radius: 50%; cursor: pointer;" onclick="setColor('#ff2d55')"></div>
+            <div style="width: 100%; aspect-ratio: 1; background: #8e8e93; border-radius: 50%; cursor: pointer;" onclick="setColor('#8e8e93')"></div>
+            <div style="width: 100%; aspect-ratio: 1; background: #5e5ce0; border-radius: 50%; cursor: pointer;" onclick="setColor('#5e5ce0')"></div>
+            <div style="width: 100%; aspect-ratio: 1; background: #bf5af2; border-radius: 50%; cursor: pointer;" onclick="setColor('#bf5af2')"></div>
         </div>
         <div class="modal-actions">
-            <button class="btn btn-ghost" id="btn-cancel-json-import">Bekor</button>
-            <button class="btn btn-primary" id="btn-confirm-json-import">Import qilish</button>
+            <button class="btn btn-ghost" id="closeColorModal"><i data-lucide="x"></i> Close</button>
         </div>
     </div>
 
-    <!-- ==================== WHITEBOARD APP ==================== -->
-    <div id="app-container" class="grid-pattern" style="display: none;">
-        <!-- User Info Bar -->
-        <div class="user-info-bar">
-            <div class="user-info-left">
-                <div class="user-avatar" id="user-avatar"></div>
-                <div class="user-details">
-                    <span class="user-name" id="user-name-display"></span>
-                    <span class="user-role" id="user-role-display"></span>
-                </div>
-            </div>
-            <div class="user-info-right">
-                <button class="btn-logout" id="btn-logout">
-                    <i data-lucide="log-out"></i>
-                    <span>Chiqish</span>
-                </button>
-            </div>
-        </div>
-        
-        <canvas id="layer-base" class="engine-layer"></canvas>
-        <canvas id="layer-live" class="engine-layer"></canvas>
-        <canvas id="layer-laser" class="engine-layer"></canvas>
-
-        <div class="minimap-widget" id="minimap-widget">
-            <div class="minimap-header" id="minimap-header">
-                <i data-lucide="map" size="12"></i>
-                <span>Kuzatuv</span>
-                <button class="minimap-close-btn" id="btn-close-minimap"><i data-lucide="x" size="12"></i></button>
-            </div>
-            <div class="minimap-body">
-                <canvas id="minimap-cvs"></canvas>
-                <div id="minimap-view"></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="ui-overlay" style="display: none;">
-        <div class="top-bar">
-            <div class="status-pill">
-                <i data-lucide="hash"></i>
-                <span id="ui-room-code">---</span>
-            </div>
-            <div class="status-pill">
-                <i data-lucide="zoom-in"></i>
-                <span id="ui-zoom-level">100%</span>
-            </div>
-            <div class="status-pill" id="ui-user-role">
-                <i data-lucide="eye"></i> Kuzatuvchi
-            </div>
-        </div>
-
-        <div class="bottom-dock">
-            <div class="dock-content">
-                <button class="action-btn" id="btn-open-settings"><i data-lucide="settings"></i></button>
-                <button class="action-btn" id="btn-open-colors"><div class="color-indicator" id="ui-current-color" style="background: #007aff;"></div></button>
-                <div class="dock-sep"></div>
-                <button class="action-btn is-active" data-tool="draw"><i data-lucide="pencil"></i></button>
-                <button class="action-btn" data-tool="laser"><i data-lucide="wand-2"></i></button>
-                <button class="action-btn" id="btn-toggle-shapes"><i data-lucide="shapes"></i></button>
-                <button class="action-btn" data-tool="erase"><i data-lucide="eraser"></i></button>
-                <button class="action-btn" data-tool="pan"><i data-lucide="hand"></i></button>
-                <button class="action-btn" data-tool="text"><i data-lucide="type"></i></button>
-                <button class="action-btn" id="btn-action-undo"><i data-lucide="undo-2"></i></button>
-                <div class="dock-sep"></div>
-                
-                <div class="audio-module">
-                    <i data-lucide="activity" size="14"></i>
-                    <div class="viz-container" id="eq-container">
-                        <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
-                        <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
-                    </div>
-                </div>
-                
-                <button class="action-btn mic-off" id="btn-action-mic"><i data-lucide="mic-off"></i></button>
-                <button class="action-btn" id="btn-open-chat"><i data-lucide="message-square"></i><div class="badge-counter" id="badge-chat-count" style="display: none;">0</div></button>
-                <button class="action-btn" id="btn-open-users"><i data-lucide="users"></i><div class="badge-counter" id="badge-users-count">0</div></button>
-                <div class="dock-sep"></div>
-                <button class="action-btn" id="btn-action-fullscreen"><i data-lucide="maximize"></i></button>
-                
-                <!-- ✅ AI Assistant Tugmasi QO'SHILDI -->
-                <div class="dock-sep"></div>
-                <a href="ai.html" class="action-btn ai-btn" style="text-decoration: none; background: linear-gradient(135deg, #007aff, #5856d6);">
-                    <i data-lucide="bot" style="color: white;"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="backdrop" id="drawer-backdrop"></div>
-
-    <!-- Settings Drawer -->
-    <div class="drawer" id="drawer-settings">
-        <div class="drawer-header">
-            <div class="drawer-title"><i data-lucide="settings"></i> Sozlamalar</div>
-            <button class="btn-close" data-close><i data-lucide="x"></i></button>
-        </div>
-        <div class="drawer-content">
-            <div class="section-label" style="font-size:12px; font-weight:800; margin-bottom:12px;">Asbob qalinligi</div>
-            <div class="slider-group">
-                <i data-lucide="pen-tool"></i>
-                <input type="range" id="inp-tool-size" min="1" max="50" value="4">
-                <span id="val-tool-size" style="font-weight:700;">4px</span>
-            </div>
-            
-            <div class="section-label" style="font-size:12px; font-weight:800; margin-bottom:12px;">Ko'rinish</div>
-            <div class="settings-grid">
-                <button class="setting-card" id="act-toggle-minimap"><i data-lucide="map"></i>Minimap</button>
-                <button class="setting-card" id="act-center"><i data-lucide="target"></i>Markaz</button>
-            </div>
-
-            <div class="section-label" style="font-size:12px; font-weight:800; margin-bottom:12px;">Asosiy amallar</div>
-            <div class="settings-grid">
-                <button class="setting-card" id="act-undo"><i data-lucide="undo-2"></i>Bekor</button>
-                <button class="setting-card" id="act-image"><i data-lucide="image"></i>Rasm</button>
-                <button class="setting-card" id="act-export"><i data-lucide="download"></i>PNG</button>
-                <button class="setting-card" id="act-save-json"><i data-lucide="save"></i>Saqlash</button>
-                <button class="setting-card" id="act-load-json"><i data-lucide="folder-open"></i>Yuklash</button>
-            </div>
-            
-            <div id="panel-host-controls" style="display: none;">
-                <div class="section-label" style="font-size:12px; font-weight:800; margin:16px 0 12px; color: var(--state-danger);">O'qituvchi Paneli</div>
-                <div class="settings-grid" style="grid-template-columns: 1fr;">
-                    <button class="setting-card danger" id="act-clear-board"><i data-lucide="trash-2"></i>Doskani tozalash</button>
-                    <button class="setting-card danger" id="act-disable-laser"><i data-lucide="wand-2"></i>Lazer o'chirish</button>
-                </div>
-                
-                <div class="section-label" style="font-size:12px; font-weight:800; margin:16px 0 12px;">Xona linklari</div>
-                <div class="link-box" id="teacher-link-box" style="display: none;">
-                    <span id="teacher-link-text" style="font-size:10px;"></span>
-                    <button class="copy-btn" data-copy="teacher">Nusxa</button>
-                </div>
-                <div class="link-box" id="student-link-box" style="display: none;">
-                    <span id="student-link-text" style="font-size:10px;"></span>
-                    <button class="copy-btn" data-copy="student">Nusxa</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Colors Drawer -->
-    <div class="drawer" id="drawer-colors">
-        <div class="drawer-header">
-            <div class="drawer-title"><i data-lucide="palette"></i> Ranglar</div>
-            <button class="btn-close" data-close><i data-lucide="x"></i></button>
-        </div>
-        <div class="drawer-content">
-            <div class="color-wheel-wrapper"><canvas id="cvs-color-picker" width="260" height="260"></canvas></div>
-            <div class="slider-group"><i data-lucide="sun"></i><input type="range" id="inp-color-bright" min="0" max="100" value="100"></div>
-            <div class="palette-grid" id="ui-quick-palette"></div>
-        </div>
-    </div>
-
-    <!-- Users Drawer -->
-    <div class="drawer right" id="drawer-users">
-        <div class="drawer-header">
-            <div class="drawer-title"><i data-lucide="users"></i> Qatnashchilar</div>
-            <button class="btn-close" data-close><i data-lucide="x"></i></button>
-        </div>
-        <div class="drawer-content">
-            <div class="user-list" id="ui-participants-list"></div>
-        </div>
-    </div>
-
-    <!-- Chat Drawer -->
-    <div class="drawer right" id="drawer-chat">
-        <div class="drawer-header">
-            <div class="drawer-title"><i data-lucide="message-square"></i> Chat</div>
-            <button class="btn-close" data-close><i data-lucide="x"></i></button>
-        </div>
-        <div class="chat-messages" id="ui-chat-messages"></div>
-        <div class="chat-composer">
-            <input type="text" id="inp-chat-text" class="chat-input" placeholder="Xabar yozing..." maxlength="250">
-            <button class="chat-submit" id="btn-submit-chat"><i data-lucide="send"></i></button>
-        </div>
-    </div>
-
-    <!-- Shapes Drawer -->
-    <div class="drawer" id="drawer-shapes">
-        <div class="drawer-header">
-            <div class="drawer-title"><i data-lucide="shapes"></i> Shakllar</div>
-            <button class="btn-close" data-close><i data-lucide="x"></i></button>
-        </div>
-        <div class="drawer-content">
-            <div class="settings-grid">
-                <button class="setting-card" data-tool="rect"><i data-lucide="square"></i>To'rtburchak</button>
-                <button class="setting-card" data-tool="circle"><i data-lucide="circle"></i>Aylana</button>
-                <button class="setting-card" data-tool="line"><i data-lucide="minus"></i>Chiziq</button>
-                <button class="setting-card" data-tool="arrow"><i data-lucide="arrow-up-right"></i>O'q</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Text Modal -->
-    <div class="modal-box" id="modal-text-input">
-        <h3 style="text-align: center; font-size: 20px;">Matn kiritish</h3>
-        <textarea id="inp-text-area" placeholder="Matnni yozing..." maxlength="300"></textarea>
-        <div class="modal-actions">
-            <button class="btn btn-ghost" id="btn-cancel-text">Bekor</button>
-            <button class="btn btn-primary" id="btn-add-text">Qo'shish</button>
-        </div>
-    </div>
-
-    <input type="file" id="sys-file-img" accept="image/*" style="display: none;">
-    <input type="file" id="sys-file-json" accept=".json" style="display: none;">
-
-    <!-- External JavaScript Files -->
-    <script type="module" src="js/auth.js"></script>
-    <script type="module" src="js/main.js"></script>
-    
     <script>
-        // URL dan xona ID sini olish
-        const urlParams = new URLSearchParams(window.location.search);
-        const roomIdFromUrl = urlParams.get('room');
+        lucide.createIcons();
+
+        // ========== AI CONFIGURATION ==========
+        // GEMINI API KEY - https://aistudio.google.com/app/apikey dan oling
+        const GEMINI_API_KEY = "AIzaSyA7N-6hZxJcZg5rHpKvLmQwEfRgTyHuJkL"; // O'z API kalitingizni qo'ying
+        const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+        // ========== WHITEBOARD ==========
+        const baseCanvas = document.getElementById('layer-base');
+        const drawCanvas = document.getElementById('layer-draw');
+        const baseCtx = baseCanvas.getContext('2d');
+        const drawCtx = drawCanvas.getContext('2d');
         
-        if (roomIdFromUrl) {
-            localStorage.setItem('pendingRoomId', roomIdFromUrl);
+        let drawing = false;
+        let currentTool = 'pen';
+        let currentColor = '#007aff';
+        let currentSize = 4;
+        let lastX = 0, lastY = 0;
+        
+        // History for undo
+        let history = [];
+        
+        function resizeCanvases() {
+            const container = document.querySelector('.whiteboard-container');
+            const rect = container.getBoundingClientRect();
+            baseCanvas.width = rect.width;
+            baseCanvas.height = rect.height;
+            drawCanvas.width = rect.width;
+            drawCanvas.height = rect.height;
+            
+            baseCtx.fillStyle = 'white';
+            baseCtx.fillRect(0, 0, baseCanvas.width, baseCanvas.height);
+            
+            if (history.length > 0) {
+                const lastState = history[history.length - 1];
+                const img = new Image();
+                img.onload = () => {
+                    baseCtx.clearRect(0, 0, baseCanvas.width, baseCanvas.height);
+                    baseCtx.drawImage(img, 0, 0);
+                };
+                img.src = lastState;
+            }
         }
         
-        // Fix for AI button icon
-        setTimeout(() => {
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
+        window.addEventListener('resize', resizeCanvases);
+        
+        function saveState() {
+            history.push(baseCanvas.toDataURL());
+            if (history.length > 50) history.shift();
+        }
+        
+        function undo() {
+            if (history.length > 1) {
+                history.pop();
+                const lastState = history[history.length - 1];
+                const img = new Image();
+                img.onload = () => {
+                    baseCtx.clearRect(0, 0, baseCanvas.width, baseCanvas.height);
+                    baseCtx.drawImage(img, 0, 0);
+                };
+                img.src = lastState;
+            } else if (history.length === 1) {
+                baseCtx.fillStyle = 'white';
+                baseCtx.fillRect(0, 0, baseCanvas.width, baseCanvas.height);
             }
+        }
+        
+        function clearCanvas() {
+            if (confirm('Clear entire board?')) {
+                baseCtx.fillStyle = 'white';
+                baseCtx.fillRect(0, 0, baseCanvas.width, baseCanvas.height);
+                saveState();
+            }
+        }
+        
+        function getCanvasCoordinates(e) {
+            const rect = drawCanvas.getBoundingClientRect();
+            const scaleX = drawCanvas.width / rect.width;
+            const scaleY = drawCanvas.height / rect.height;
+            
+            let clientX, clientY;
+            if (e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+        
+        function startDrawing(e) {
+            drawing = true;
+            const pos = getCanvasCoordinates(e);
+            lastX = pos.x;
+            lastY = pos.y;
+            
+            if (currentTool === 'pen') {
+                drawCtx.beginPath();
+                drawCtx.moveTo(lastX, lastY);
+                drawCtx.strokeStyle = currentColor;
+                drawCtx.lineWidth = currentSize;
+                drawCtx.lineCap = 'round';
+                drawCtx.lineJoin = 'round';
+            } else if (currentTool === 'eraser') {
+                drawCtx.beginPath();
+                drawCtx.moveTo(lastX, lastY);
+                drawCtx.strokeStyle = 'white';
+                drawCtx.lineWidth = currentSize * 2;
+                drawCtx.lineCap = 'round';
+                drawCtx.lineJoin = 'round';
+            }
+        }
+        
+        function draw(e) {
+            if (!drawing) return;
+            e.preventDefault();
+            
+            const pos = getCanvasCoordinates(e);
+            
+            if (currentTool === 'pen' || currentTool === 'eraser') {
+                drawCtx.lineTo(pos.x, pos.y);
+                drawCtx.stroke();
+                drawCtx.beginPath();
+                drawCtx.moveTo(pos.x, pos.y);
+            }
+            
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+        
+        function stopDrawing() {
+            if (!drawing) return;
+            drawing = false;
+            drawCtx.beginPath();
+            
+            // Merge draw layer to base
+            baseCtx.drawImage(drawCanvas, 0, 0);
+            drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+            saveState();
+        }
+        
+        // Events
+        drawCanvas.addEventListener('mousedown', startDrawing);
+        drawCanvas.addEventListener('mousemove', draw);
+        drawCanvas.addEventListener('mouseup', stopDrawing);
+        drawCanvas.addEventListener('mouseleave', stopDrawing);
+        drawCanvas.addEventListener('touchstart', startDrawing);
+        drawCanvas.addEventListener('touchmove', draw);
+        drawCanvas.addEventListener('touchend', stopDrawing);
+        
+        // Tool buttons
+        document.getElementById('tool-pen').addEventListener('click', () => {
+            currentTool = 'pen';
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tool-pen').classList.add('active');
+            drawCanvas.style.cursor = 'crosshair';
+        });
+        
+        document.getElementById('tool-eraser').addEventListener('click', () => {
+            currentTool = 'eraser';
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tool-eraser').classList.add('active');
+            drawCanvas.style.cursor = 'crosshair';
+        });
+        
+        document.getElementById('tool-clear').addEventListener('click', clearCanvas);
+        document.getElementById('tool-undo').addEventListener('click', undo);
+        
+        document.getElementById('tool-pen').classList.add('active');
+        
+        function setColor(color) {
+            currentColor = color;
+            document.getElementById('currentColor').style.background = color;
+            document.getElementById('colorOverlay').classList.remove('active');
+            document.getElementById('colorModal').classList.remove('active');
+        }
+        
+        document.getElementById('tool-color').addEventListener('click', () => {
+            document.getElementById('colorOverlay').classList.add('active');
+            document.getElementById('colorModal').classList.add('active');
+        });
+        
+        document.getElementById('closeColorModal').addEventListener('click', () => {
+            document.getElementById('colorOverlay').classList.remove('active');
+            document.getElementById('colorModal').classList.remove('active');
+        });
+        
+        document.getElementById('colorOverlay').addEventListener('click', () => {
+            document.getElementById('colorOverlay').classList.remove('active');
+            document.getElementById('colorModal').classList.remove('active');
+        });
+        
+        window.setColor = setColor;
+        
+        // Initialize canvas
+        setTimeout(() => {
+            resizeCanvases();
+            saveState();
         }, 100);
+        
+        // ========== AI FUNCTIONS ==========
+        const aiPanel = document.getElementById('aiPanel');
+        const aiToggle = document.getElementById('aiToggle');
+        const aiToggleIcon = document.getElementById('aiToggleIcon');
+        const aiMessages = document.getElementById('aiMessages');
+        const aiInput = document.getElementById('aiInput');
+        const aiSend = document.getElementById('aiSend');
+        const analyzeBtn = document.getElementById('analyzeDrawing');
+        
+        let isPanelOpen = false;
+        
+        aiToggle.addEventListener('click', () => {
+            isPanelOpen = !isPanelOpen;
+            if (isPanelOpen) {
+                aiPanel.classList.add('open');
+                aiToggleIcon.setAttribute('data-lucide', 'chevron-down');
+            } else {
+                aiPanel.classList.remove('open');
+                aiToggleIcon.setAttribute('data-lucide', 'chevron-up');
+            }
+            lucide.createIcons();
+        });
+        
+        function addMessage(sender, text, isHtml = false) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            if (isHtml) {
+                div.innerHTML = text;
+            } else {
+                div.textContent = text;
+            }
+            aiMessages.appendChild(div);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+        }
+        
+        function addLoadingMessage() {
+            const div = document.createElement('div');
+            div.className = 'message ai';
+            div.id = 'loadingMsg';
+            div.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+            aiMessages.appendChild(div);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+        }
+        
+        function removeLoadingMessage() {
+            const loading = document.getElementById('loadingMsg');
+            if (loading) loading.remove();
+        }
+        
+        async function callGemini(prompt, imageBase64 = null) {
+            const content = [];
+            
+            if (imageBase64) {
+                content.push({
+                    text: prompt
+                });
+                content.push({
+                    inlineData: {
+                        mimeType: "image/png",
+                        data: imageBase64.split(',')[1]
+                    }
+                });
+            } else {
+                content.push({ text: prompt });
+            }
+            
+            const response = await fetch(GEMINI_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: content
+                    }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 500
+                    }
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        }
+        
+        async function sendToAI() {
+            const message = aiInput.value.trim();
+            if (!message) return;
+            
+            addMessage('user', message);
+            aiInput.value = '';
+            addLoadingMessage();
+            
+            try {
+                const response = await callGemini(`You are MR BOARD AI assistant. Answer in Uzbek language. User: ${message}`);
+                removeLoadingMessage();
+                addMessage('ai', response);
+            } catch (error) {
+                removeLoadingMessage();
+                addMessage('ai', `Error: ${error.message}. Please check your API key.`);
+                console.error(error);
+            }
+        }
+        
+        async function analyzeDrawing() {
+            const imageData = baseCanvas.toDataURL('image/png');
+            addMessage('system', 'Analyzing drawing...');
+            addLoadingMessage();
+            
+            try {
+                const prompt = `Analyze this drawing. Identify the shapes, objects, or patterns you see. Give feedback on the drawing quality and suggest improvements. Respond in Uzbek language.`;
+                const response = await callGemini(prompt, imageData);
+                removeLoadingMessage();
+                addMessage('ai', response);
+            } catch (error) {
+                removeLoadingMessage();
+                addMessage('ai', `Analysis failed: ${error.message}`);
+            }
+        }
+        
+        aiSend.addEventListener('click', sendToAI);
+        aiInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendToAI();
+        });
+        analyzeBtn.addEventListener('click', analyzeDrawing);
+        
+        // ========== AUTH ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0",
+            authDomain: "basic-formula-484419-k8.firebaseapp.com",
+            databaseURL: "https://basic-formula-484419-k8-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "basic-formula-484419-k8",
+            storageBucket: "basic-formula-484419-k8.firebasestorage.app",
+            messagingSenderId: "629679926764",
+            appId: "1:629679926764:web:0cff483e9c4752fbd024c9"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+        
+        let currentUser = null;
+        
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                const snapshot = await db.ref(`users/${user.uid}`).once('value');
+                const data = snapshot.val() || {};
+                const name = data.username || user.email?.split('@')[0] || 'User';
+                document.getElementById('userName').textContent = name;
+                document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const roomId = urlParams.get('room');
+                if (roomId) {
+                    localStorage.setItem('lastRoomId', roomId);
+                }
+            } else {
+                window.location.href = 'board.html';
+            }
+        });
+        
+        function showToast(msg) {
+            const container = document.getElementById('toastWrapper');
+            const toast = document.createElement('div');
+            toast.className = 'toast-item';
+            toast.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        window.showToast = showToast;
     </script>
 </body>
 </html>
