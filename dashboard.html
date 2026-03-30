@@ -775,4 +775,155 @@
             if (!name) { showToast('Xona nomini kiriting!', 'error'); return; }
             const password = document.getElementById('roomPassword').value;
             const roomCode = Math.random().toString(36).substr(2, 6).toUpperCase();
-            const teacherSecret
+            const teacherSecret = Math.random().toString(36).substr(2, 16);
+            const userData = await getUserData(currentUser.uid);
+            await db.ref(`rooms/${roomCode}`).set({
+                name, createdBy: currentUser.uid,
+                createdByName: userData.fullName || userData.username || currentUser.email?.split('@')[0],
+                createdAt: Date.now(), isPublic: roomType === 'public',
+                hasPassword: roomType === 'private' && password ? true : false,
+                password: roomType === 'private' ? password || null : null,
+                isActive: true, teacherSecret, elements: {}
+            });
+            closeModals();
+            showToast(`✅ "${name}" xonasi yaratildi! Kod: ${roomCode}`, 'success');
+            loadPublicRooms();
+            setTimeout(() => goToRoom(roomCode), 1000);
+        }
+
+        // ========== JOIN ROOM ==========
+        async function confirmJoin() {
+            const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+            if (!code) { showToast('Xona kodini kiriting!', 'error'); return; }
+            const password = document.getElementById('joinPassword').value;
+            const snap = await db.ref(`rooms/${code}`).once('value');
+            const room = snap.val();
+            if (!room) { showToast('Xona topilmadi!', 'error'); return; }
+            if (room.hasPassword && room.password !== password) { showToast('Parol noto\'g\'ri!', 'error'); return; }
+            closeModals();
+            goToRoom(code);
+        }
+
+        // ========== PROFILE UPDATE ==========
+        async function updateProfileData() {
+            if (!currentUser) return;
+            const snap = await db.ref(`users/${currentUser.uid}`).once('value');
+            const data = snap.val() || {};
+            const username = data.username || currentUser.email?.split('@')[0] || 'User';
+            const fullName = data.fullName || username;
+            document.getElementById('userName').textContent = username;
+            document.getElementById('welcomeMessage').textContent = `Assalomu alaykum, ${fullName}!`;
+            updateAvatarUI(data.avatarBase64, fullName);
+        }
+
+        function updateAvatarUI(avatar, name) {
+            const avatarDiv = document.getElementById('userAvatar');
+            const letter = (name || 'U').charAt(0).toUpperCase();
+            if (avatar && avatar.startsWith('data:image')) {
+                avatarDiv.style.backgroundImage = `url(${avatar})`;
+                avatarDiv.style.backgroundSize = 'cover';
+                avatarDiv.innerHTML = '';
+            } else {
+                avatarDiv.style.backgroundImage = 'none';
+                avatarDiv.style.backgroundColor = 'var(--brand-primary)';
+                avatarDiv.innerHTML = letter;
+            }
+        }
+
+        // ========== MODALS ==========
+        function openCreateModal() {
+            document.getElementById('roomNameInput').value = '';
+            document.getElementById('roomPassword').value = '';
+            document.getElementById('passwordGroup').style.display = 'none';
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.type-btn[data-type="public"]')?.classList.add('active');
+            roomType = 'public';
+            document.getElementById('createRoomModal').classList.add('active');
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        function openJoinModal() {
+            document.getElementById('joinCodeInput').value = '';
+            document.getElementById('joinPassword').value = '';
+            document.getElementById('joinPasswordGroup').style.display = 'none';
+            document.getElementById('joinRoomModal').classList.add('active');
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        function closeModals() {
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        function showToast(msg, type) {
+            const container = document.getElementById('toastWrapper');
+            const toast = document.createElement('div');
+            toast.className = `toast-item`;
+            toast.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+        }
+
+        // ========== EVENT LISTENERS ==========
+        document.getElementById('searchInput')?.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            if (document.getElementById('homeSection').classList.contains('active')) renderPublicRooms();
+        });
+        document.getElementById('quickCreateBtn')?.addEventListener('click', openCreateModal);
+        document.getElementById('quickJoinBtn')?.addEventListener('click', openJoinModal);
+        document.getElementById('cancelCreateBtn')?.addEventListener('click', closeModals);
+        document.getElementById('confirmCreateBtn')?.addEventListener('click', createRoom);
+        document.getElementById('cancelJoinBtn')?.addEventListener('click', closeModals);
+        document.getElementById('confirmJoinBtn')?.addEventListener('click', confirmJoin);
+        document.getElementById('refreshRoomsBtn')?.addEventListener('click', () => { if (document.getElementById('homeSection').classList.contains('active')) loadPublicRooms(); });
+        document.getElementById('modalOverlay')?.addEventListener('click', closeModals);
+        document.getElementById('currentUserInfo')?.addEventListener('click', () => switchTab('profile'));
+        
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                roomType = btn.dataset.type;
+                document.getElementById('passwordGroup').style.display = roomType === 'private' ? 'block' : 'none';
+            };
+        });
+        
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+        });
+
+        // Listen for profile updates from iframe
+        window.addEventListener('message', (e) => {
+            if (e.data === 'profileUpdated') {
+                updateProfileData();
+            }
+            if (e.data === 'roomsUpdated') {
+                // rooms iframe yangilanganda, home dagi xonalarni ham yangilash
+                loadPublicRooms();
+            }
+        });
+
+        // ========== AUTH ==========
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                await updateProfileData();
+                loadPublicRooms();
+                lucide.createIcons();
+            } else {
+                window.location.href = 'board.html';
+            }
+        });
+
+        window.goToRoom = goToRoom;
+        window.switchTab = switchTab;
+        window.showUserProfile = showUserProfile;
+        window.closeUserProfile = closeUserProfile;
+        window.showLargeAvatar = showLargeAvatar;
+        window.closeLargeAvatar = closeLargeAvatar;
+    </script>
+</body>
+</html>
