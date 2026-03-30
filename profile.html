@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>MR BOARD · Profil</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-base: #ffffff;
+            --bg-alt: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-subtle: #e2e8f0;
+            --border-strong: rgba(0,0,0,0.05);
+            --brand-primary: #007aff;
+            --brand-primary-dark: #0056b3;
+            --brand-alpha: rgba(0,122,255,0.1);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-base: #020617;
+            --bg-alt: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-subtle: rgba(255,255,255,0.1);
+            --brand-primary: #0a84ff;
+            --brand-alpha: rgba(10,132,255,0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background: var(--bg-alt);
+            color: var(--text-main);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .profile-card {
+            background: var(--bg-card);
+            border-radius: 28px;
+            padding: 24px;
+            text-align: center;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: 800;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+        }
+        .profile-avatar:hover { transform: scale(1.05); }
+
+        .profile-field { margin-bottom: 20px; text-align: left; }
+        .profile-field label { font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; }
+        .profile-field input, .profile-field textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-alt);
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+        .profile-field input:focus, .profile-field textarea:focus {
+            border-color: var(--brand-primary);
+            outline: none;
+        }
+        .profile-field input:disabled {
+            background: var(--border-strong);
+            color: var(--text-muted);
+        }
+
+        .profile-actions { display: flex; gap: 12px; margin-top: 24px; }
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-primary { background: var(--brand-primary); color: white; border: none; }
+        .btn-primary:hover { background: var(--brand-primary-dark); }
+        .btn-ghost { background: var(--bg-alt); border: 1px solid var(--border-strong); color: var(--text-main); }
+
+        .toast-wrapper {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast-item {
+            background: var(--bg-card);
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 13px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            animation: toastIn 0.3s var(--ease-spring);
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-wrapper" id="toastWrapper"></div>
+
+    <div class="profile-card">
+        <div class="profile-avatar" id="profileAvatar" onclick="document.getElementById('avatarInput').click()">
+            <span id="avatarText">U</span>
+        </div>
+        <input type="file" id="avatarInput" style="display: none;" accept="image/*">
+        
+        <div class="profile-field"><label>Ism</label><input type="text" id="profileFullname" placeholder="Ismingiz"></div>
+        <div class="profile-field"><label>Familiya</label><input type="text" id="profileLastname" placeholder="Familiyangiz"></div>
+        <div class="profile-field"><label>Username</label><input type="text" id="profileUsername" placeholder="username"></div>
+        <div class="profile-field"><label>Email</label><input type="email" id="profileEmail" disabled></div>
+        <div class="profile-field"><label>Bio</label><textarea id="profileBio" rows="3" placeholder="O'zingiz haqingizda..."></textarea></div>
+        
+        <div class="profile-actions">
+            <button class="btn btn-primary" id="saveProfileBtn">💾 Saqlash</button>
+            <button class="btn btn-ghost" id="logoutBtn">🚪 Chiqish</button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const parentTheme = document.documentElement.getAttribute('data-theme');
+        if (parentTheme) document.body.setAttribute('data-theme', parentTheme);
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0",
+            authDomain: "basic-formula-484419-k8.firebaseapp.com",
+            databaseURL: "https://basic-formula-484419-k8-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "basic-formula-484419-k8",
+            storageBucket: "basic-formula-484419-k8.firebasestorage.app",
+            messagingSenderId: "629679926764",
+            appId: "1:629679926764:web:0cff483e9c4752fbd024c9"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentUser = null;
+        let currentAvatar = null;
+
+        async function loadProfile() {
+            if (!currentUser) return;
+            const snap = await db.ref(`users/${currentUser.uid}`).once('value');
+            const data = snap.val() || {};
+            document.getElementById('profileFullname').value = data.fullName || '';
+            document.getElementById('profileLastname').value = data.lastName || '';
+            document.getElementById('profileUsername').value = data.username || currentUser.email?.split('@')[0] || '';
+            document.getElementById('profileEmail').value = currentUser.email || '';
+            document.getElementById('profileBio').value = data.bio || '';
+            currentAvatar = data.avatarBase64 || null;
+            updateAvatarUI(currentAvatar, data.fullName || currentUser.displayName);
+        }
+
+        function updateAvatarUI(avatar, name) {
+            const avatarDiv = document.getElementById('profileAvatar');
+            const avatarText = document.getElementById('avatarText');
+            const letter = (name || 'U').charAt(0).toUpperCase();
+            if (avatar && avatar.startsWith('data:image')) {
+                avatarDiv.style.backgroundImage = `url(${avatar})`;
+                avatarDiv.style.backgroundSize = 'cover';
+                avatarDiv.innerHTML = '';
+            } else {
+                avatarDiv.style.backgroundImage = 'none';
+                avatarDiv.style.backgroundColor = 'var(--brand-primary)';
+                avatarDiv.innerHTML = `<span>${letter}</span>`;
+            }
+        }
+
+        async function saveProfile() {
+            if (!currentUser) return;
+            const fullName = document.getElementById('profileFullname').value.trim();
+            const lastName = document.getElementById('profileLastname').value.trim();
+            const username = document.getElementById('profileUsername').value.trim();
+            const bio = document.getElementById('profileBio').value.trim();
+            const updateData = { fullName, lastName, username, bio, updatedAt: Date.now() };
+            if (currentAvatar) updateData.avatarBase64 = currentAvatar;
+            await db.ref(`users/${currentUser.uid}`).update(updateData);
+            if (fullName) await currentUser.updateProfile({ displayName: fullName });
+            showToast('✅ Profil saqlandi!', 'success');
+            window.parent.postMessage('profileUpdated', '*');
+        }
+
+        document.getElementById('avatarInput')?.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                currentAvatar = ev.target.result;
+                updateAvatarUI(currentAvatar, document.getElementById('profileFullname').value);
+                showToast('Avatar yangilandi. Saqlash tugmasini bosing!', 'success');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function showToast(msg, type) {
+            const container = document.getElementById('toastWrapper');
+            const toast = document.createElement('div');
+            toast.className = `toast-item`;
+            toast.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        document.getElementById('saveProfileBtn')?.addEventListener('click', saveProfile);
+        document.getElementById('logoutBtn')?.addEventListener('click', () => auth.signOut());
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                loadProfile();
+            } else {
+                window.parent.location.href = 'board.html';
+            }
+        });
+    </script>
+</body>
+</html>
