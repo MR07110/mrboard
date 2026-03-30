@@ -57,7 +57,7 @@
         .section-title { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
         .refresh-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 8px; border-radius: 50%; transition: all var(--transition-fast); }
         .refresh-btn:hover { background: var(--brand-alpha); color: var(--brand-primary); transform: rotate(180deg); }
-        .rooms-container { max-height: 420px; overflow-y: auto; padding-right: 4px; }
+        .rooms-container { max-height: calc(100vh - 280px); overflow-y: auto; padding-right: 4px; }
         .rooms-container::-webkit-scrollbar { width: 4px; }
         .rooms-container::-webkit-scrollbar-track { background: var(--border-strong); border-radius: 10px; }
         .rooms-container::-webkit-scrollbar-thumb { background: var(--brand-primary); border-radius: 10px; }
@@ -131,7 +131,7 @@
         .room-delete-btn:hover { background: rgba(255,59,48,0.2); transform: translateY(-2px); }
         .edit-room-modal { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-panel); backdrop-filter: blur(40px); border-radius: 28px 28px 0 0; padding: 24px; z-index: 250; transform: translateY(100%); transition: transform var(--transition-normal) var(--ease-spring); }
         .edit-room-modal.active { transform: translateY(0); }
-        @media (max-width: 768px) { .search-input { width: 140px; } .search-input:focus { width: 180px; } .user-name { display: none; } .rooms-container { max-height: 360px; } }
+        @media (max-width: 768px) { .search-input { width: 140px; } .search-input:focus { width: 180px; } .user-name { display: none; } .rooms-container { max-height: calc(100vh - 320px); } }
     </style>
 </head>
 <body>
@@ -182,7 +182,7 @@
     <div class="bottom-tab-bar">
         <button class="tab-item active" data-tab="home"><i data-lucide="home"></i><span>Bosh sahifa</span></button>
         <button class="tab-item" data-tab="myrooms"><i data-lucide="star"></i><span>Mening xonalar</span></button>
-        <button class="tab-item" data-tab="profile"><i data-lucide="user"></i><span>Profil</span></button>
+        <button class="tab-item" data-tab="profile"><i数据-lucide="user"></i><span>Profil</span></button>
     </div>
 
     <div class="profile-modal" id="userProfileModal">
@@ -262,32 +262,20 @@
             return data;
         }
 
- // ========== TAB SWITCH ==========
-function switchTab(tabId) {
-    console.log("Tab switch to:", tabId);
-    
-    document.querySelectorAll('.section-page').forEach(s => s.classList.remove('active'));
-    const targetSection = document.getElementById(`${tabId}Section`);
-    if (targetSection) targetSection.classList.add('active');
-    
-    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-    const activeTab = document.querySelector(`.tab-item[data-tab="${tabId}"]`);
-    if (activeTab) activeTab.classList.add('active');
-    
-    if (tabId === 'home') {
-        loadPublicRooms();
-    } else if (tabId === 'myrooms') {
-        console.log("Loading my rooms, currentUser:", currentUser);
-        if (currentUser) {
-            loadMyRooms();
-        } else {
-            console.log("currentUser yo'q, kutish kerak");
-            document.getElementById('myRoomsList').innerHTML = '<div class="empty-state">Kuting, foydalanuvchi yuklanmoqda...</div>';
+        // ========== TAB SWITCH ==========
+        function switchTab(tabId) {
+            document.querySelectorAll('.section-page').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(`${tabId}Section`);
+            if (target) target.classList.add('active');
+            
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            const activeTab = document.querySelector(`.tab-item[data-tab="${tabId}"]`);
+            if (activeTab) activeTab.classList.add('active');
+            
+            if (tabId === 'home') loadPublicRooms();
+            else if (tabId === 'myrooms') loadMyRooms();
+            else if (tabId === 'profile') loadProfile();
         }
-    } else if (tabId === 'profile') {
-        loadProfile();
-    }
-}
 
         // ========== PUBLIC ROOMS ==========
         async function loadPublicRooms() {
@@ -329,90 +317,74 @@ function switchTab(tabId) {
             lucide.createIcons();
         }
 
-        // ========== MY ROOMS ==========
-       // ========== LOAD MY ROOMS ==========
-async function loadMyRooms() {
-    if (!currentUser) {
-        console.log("No current user");
-        return;
-    }
-    const container = document.getElementById('myRoomsList');
-    if (!container) return;
-    
-    container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i> Yuklanmoqda...</div>';
-    
-    try {
-        // orderByChild ISHLATMAYMIZ - barcha xonalarni olib, filter qilamiz
-        const snapshot = await db.ref('rooms').once('value');
-        const rooms = snapshot.val() || {};
-        
-        console.log("=== MY ROOMS DEBUG ===");
-        console.log("Current user UID:", currentUser.uid);
-        
-        const myRoomsArray = [];
-        for (const [roomId, roomData] of Object.entries(rooms)) {
-            // createdBy ni string sifatida solishtirish
-            const createdByStr = String(roomData.createdBy || '');
-            const currentUidStr = String(currentUser.uid);
+        // ========== MY ROOMS (TO'G'RI ISHLAYDI) ==========
+        async function loadMyRooms() {
+            if (!currentUser) return;
+            const container = document.getElementById('myRoomsList');
+            if (!container) return;
             
-            console.log(`Room: ${roomId}, createdBy: "${createdByStr}", current: "${currentUidStr}", match: ${createdByStr === currentUidStr}`);
+            container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i> Yuklanmoqda...</div>';
             
-            if (roomData.isActive !== false && createdByStr === currentUidStr) {
-                myRoomsArray.push({ id: roomId, ...roomData });
-                console.log(`✅ Added: ${roomId} - ${roomData.name}`);
+            try {
+                const snapshot = await db.ref('rooms').once('value');
+                const rooms = snapshot.val() || {};
+                
+                const myRoomsArray = [];
+                for (const [roomId, roomData] of Object.entries(rooms)) {
+                    if (roomData.isActive !== false && roomData.createdBy === currentUser.uid) {
+                        myRoomsArray.push({ id: roomId, ...roomData });
+                    }
+                }
+                myRoomsArray.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                
+                if (myRoomsArray.length === 0) {
+                    container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top: 16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>';
+                    const emptyBtn = document.getElementById('emptyCreateBtn');
+                    if (emptyBtn) emptyBtn.addEventListener('click', openCreateModal);
+                    lucide.createIcons();
+                    return;
+                }
+                
+                let html = '';
+                for (const room of myRoomsArray) {
+                    const userCount = room.users ? Object.keys(room.users).length : 0;
+                    const roomName = escapeHtml(room.name || 'Nomsiz xona');
+                    html += `
+                        <div class="room-card" onclick="goToRoom('${room.id}')">
+                            <div class="room-card-header">
+                                <span class="room-name">${roomName}</span>
+                                <span class="room-badge ${room.isPublic ? '' : 'private'}">${room.isPublic ? '🌍 Public' : '🔒 Private'}</span>
+                            </div>
+                            <div class="creator-info">
+                                <div class="creator-avatar" style="background: var(--brand-primary);">${(currentUser.displayName || 'U').charAt(0).toUpperCase()}</div>
+                                <span class="creator-name">Siz</span>
+                            </div>
+                            <div class="room-meta">
+                                <span>👥 ${userCount} kishi</span>
+                                <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
+                                <span>${room.hasPassword ? '🔒 Parol bor' : '🔓 Parolsiz'}</span>
+                            </div>
+                            <div class="room-actions">
+                                <button class="room-btn room-join-btn" onclick="event.stopPropagation(); goToRoom('${room.id}')">Kirish →</button>
+                                <button class="room-btn room-edit-btn" onclick="event.stopPropagation(); openEditRoom('${room.id}', '${roomName.replace(/'/g, "\\'")}', ${room.isPublic}, '${(room.password || '').replace(/'/g, "\\'")}')">✏️ Tahrirlash</button>
+                                <button class="room-btn room-delete-btn" onclick="event.stopPropagation(); deleteRoom('${room.id}', '${roomName.replace(/'/g, "\\'")}')">🗑 O'chirish</button>
+                            </div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+                lucide.createIcons();
+                console.log("✅ My rooms loaded:", myRoomsArray.length);
+            } catch(e) {
+                console.error("Error loading my rooms:", e);
+                container.innerHTML = '<div class="empty-state">❌ Xatolik: ' + e.message + '</div>';
             }
         }
-        myRoomsArray.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-        
-        console.log("My rooms found:", myRoomsArray.length);
-        
-        if (myRoomsArray.length === 0) {
-            container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top: 16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>';
-            const emptyBtn = document.getElementById('emptyCreateBtn');
-            if (emptyBtn) emptyBtn.addEventListener('click', openCreateModal);
-            lucide.createIcons();
-            return;
-        }
-        
-        let html = '';
-        for (const room of myRoomsArray) {
-            const userCount = room.users ? Object.keys(room.users).length : 0;
-            const roomName = escapeHtml(room.name || 'Nomsiz xona');
-            html += `
-                <div class="room-card" onclick="goToRoom('${room.id}')">
-                    <div class="room-card-header">
-                        <span class="room-name">${roomName}</span>
-                        <span class="room-badge ${room.isPublic ? '' : 'private'}">${room.isPublic ? '🌍 Public' : '🔒 Private'}</span>
-                    </div>
-                    <div class="creator-info">
-                        <div class="creator-avatar" style="background: var(--brand-primary);">${(currentUser.displayName || 'U').charAt(0).toUpperCase()}</div>
-                        <span class="creator-name">Siz</span>
-                    </div>
-                    <div class="room-meta">
-                        <span>👥 ${userCount} kishi</span>
-                        <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
-                        <span>${room.hasPassword ? '🔒 Parol bor' : '🔓 Parolsiz'}</span>
-                    </div>
-                    <div class="room-actions">
-                        <button class="room-btn room-join-btn" onclick="event.stopPropagation(); goToRoom('${room.id}')">Kirish →</button>
-                        <button class="room-btn room-edit-btn" onclick="event.stopPropagation(); openEditRoom('${room.id}', '${roomName.replace(/'/g, "\\'")}', ${room.isPublic}, '${(room.password || '').replace(/'/g, "\\'")}')">✏️ Tahrirlash</button>
-                        <button class="room-btn room-delete-btn" onclick="event.stopPropagation(); deleteRoom('${room.id}', '${roomName.replace(/'/g, "\\'")}')">🗑 O'chirish</button>
-                    </div>
-                </div>
-            `;
-        }
-        container.innerHTML = html;
-        lucide.createIcons();
-    } catch(e) {
-        console.error("Error loading my rooms:", e);
-        container.innerHTML = '<div class="empty-state">❌ Xatolik: ' + e.message + '</div>';
-    }
-}
-        // ========== OPEN EDIT ROOM ==========
+
+        // ========== EDIT & DELETE ==========
         function openEditRoom(roomId, roomName, isPublic, password) {
             editingRoomId = roomId;
             
-            // Edit modal HTML ni yaratish (agar mavjud bo'lmasa)
             if (!document.getElementById('editRoomModal')) {
                 const modalHTML = `
                     <div class="edit-room-modal" id="editRoomModal">
@@ -445,7 +417,6 @@ async function loadMyRooms() {
                 });
             }
             
-            // Inputlarni to'ldirish
             document.getElementById('editRoomName').value = roomName;
             
             if (isPublic) {
@@ -462,6 +433,7 @@ async function loadMyRooms() {
             document.getElementById('editRoomModal').classList.add('active');
             document.getElementById('modalOverlay').classList.add('active');
         }
+
         async function saveEditRoom() {
             if (!editingRoomId) return;
             const newName = document.getElementById('editRoomName').value.trim();
