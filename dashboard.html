@@ -822,7 +822,7 @@
         <div class="modal-actions"><button class="btn btn-ghost" id="cancelJoinBtn">Bekor</button><button class="btn btn-primary" id="confirmJoinBtn">Kirish</button></div>
     </div>
 
-    <script>
+  <script>
         lucide.createIcons();
 
         // Theme
@@ -868,12 +868,11 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-      let currentUser = null;
-let currentAvatar = null;
-let allRooms = [];
-let searchQuery = '';
-let editingRoomId = null;  // ⬅️ BU QATORNI QO'SHING
-        // User cache
+        let currentUser = null;
+        let currentAvatar = null;
+        let allRooms = [];
+        let searchQuery = '';
+        let editingRoomId = null;
         const userCache = new Map();
 
         async function getUserData(uid) {
@@ -884,19 +883,16 @@ let editingRoomId = null;  // ⬅️ BU QATORNI QO'SHING
             return data;
         }
 
-        // Tab Switch - FIXED
+        // Tab Switch
         function switchTab(tabId) {
-            // Hide all sections
             document.querySelectorAll('.section-page').forEach(section => {
                 section.classList.remove('active');
             });
-            // Show selected section
             const targetSection = document.getElementById(`${tabId}Section`);
             if (targetSection) {
                 targetSection.classList.add('active');
             }
             
-            // Update tab buttons
             document.querySelectorAll('.tab-item').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -905,7 +901,6 @@ let editingRoomId = null;  // ⬅️ BU QATORNI QO'SHING
                 activeTab.classList.add('active');
             }
             
-            // Load data based on tab
             if (tabId === 'home') {
                 loadPublicRooms();
             } else if (tabId === 'myrooms') {
@@ -982,68 +977,156 @@ let editingRoomId = null;  // ⬅️ BU QATORNI QO'SHING
             lucide.createIcons();
         }
 
-      // ========== LOAD MY ROOMS ==========
-async function loadMyRooms() {
-    if (!currentUser) return;
-    const container = document.getElementById('myRoomsList');
-    if (!container) return;
-    
-    container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i> Yuklanmoqda...</div>';
-    
-    try {
-        const snapshot = await db.ref('rooms').once('value');
-        const rooms = snapshot.val() || {};
-        
-        const myRoomsArray = [];
-        for (const [roomId, roomData] of Object.entries(rooms)) {
-            if (roomData.isActive !== false && roomData.createdBy === currentUser.uid) {
-                myRoomsArray.push({ id: roomId, ...roomData });
+        // ========== LOAD MY ROOMS ==========
+        async function loadMyRooms() {
+            if (!currentUser) return;
+            const container = document.getElementById('myRoomsList');
+            if (!container) return;
+            
+            container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i> Yuklanmoqda...</div>';
+            
+            try {
+                const snapshot = await db.ref('rooms').once('value');
+                const rooms = snapshot.val() || {};
+                
+                const myRoomsArray = [];
+                for (const [roomId, roomData] of Object.entries(rooms)) {
+                    if (roomData.isActive !== false && roomData.createdBy === currentUser.uid) {
+                        myRoomsArray.push({ id: roomId, ...roomData });
+                    }
+                }
+                myRoomsArray.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                
+                if (myRoomsArray.length === 0) {
+                    container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top: 16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>';
+                    const emptyBtn = document.getElementById('emptyCreateBtn');
+                    if (emptyBtn) emptyBtn.addEventListener('click', openCreateModal);
+                    lucide.createIcons();
+                    return;
+                }
+                
+                let html = '';
+                for (const room of myRoomsArray) {
+                    const userCount = room.users ? Object.keys(room.users).length : 0;
+                    const roomName = escapeHtml(room.name || 'Nomsiz xona');
+                    html += `
+                        <div class="room-card" onclick="goToRoom('${room.id}')">
+                            <div class="room-card-header">
+                                <span class="room-name">${roomName}</span>
+                                <span class="room-badge ${room.isPublic ? '' : 'private'}">${room.isPublic ? '🌍 Public' : '🔒 Private'}</span>
+                            </div>
+                            <div class="creator-info">
+                                <div class="creator-avatar" style="background: var(--brand-primary);">${(currentUser.displayName || 'U').charAt(0).toUpperCase()}</div>
+                                <span class="creator-name">Siz</span>
+                            </div>
+                            <div class="room-meta">
+                                <span>👥 ${userCount} kishi</span>
+                                <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
+                                <span>${room.hasPassword ? '🔒 Parol bor' : '🔓 Parolsiz'}</span>
+                            </div>
+                            <div class="room-actions">
+                                <button class="room-btn room-join-btn" onclick="event.stopPropagation(); goToRoom('${room.id}')">Kirish →</button>
+                                <button class="room-btn room-edit-btn" onclick="event.stopPropagation(); openEditRoom('${room.id}', '${roomName.replace(/'/g, "\\'")}', ${room.isPublic}, '${(room.password || '').replace(/'/g, "\\'")}')">✏️ Tahrirlash</button>
+                                <button class="room-btn room-delete-btn" onclick="event.stopPropagation(); deleteRoom('${room.id}', '${roomName.replace(/'/g, "\\'")}')">🗑 O'chirish</button>
+                            </div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+                lucide.createIcons();
+            } catch(e) {
+                console.error(e);
+                container.innerHTML = '<div class="empty-state">❌ Xatolik yuz berdi</div>';
             }
         }
-        myRoomsArray.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-        
-        if (myRoomsArray.length === 0) {
-            container.innerHTML = '<div class="empty-state">⭐ Siz hali xona yaratmagansiz<br><button class="quick-action create" id="emptyCreateBtn" style="margin-top: 16px;"><i data-lucide="plus-circle"></i> Birinchi xonani yarating</button></div>';
-            const emptyBtn = document.getElementById('emptyCreateBtn');
-            if (emptyBtn) emptyBtn.addEventListener('click', openCreateModal);
-            lucide.createIcons();
-            return;
+
+        // ========== EDIT & DELETE ROOM ==========
+        function openEditRoom(roomId, roomName, isPublic, password) {
+            editingRoomId = roomId;
+            document.getElementById('editRoomName').value = roomName;
+            
+            if (!document.getElementById('editRoomModal')) {
+                const modalHTML = `
+                    <div class="edit-room-modal" id="editRoomModal">
+                        <div class="modal-header">✏️ Xonani tahrirlash</div>
+                        <div class="form-group"><label>Xona nomi</label><input type="text" id="editRoomName" class="form-input"></div>
+                        <div class="form-group">
+                            <label>Xona turi</label>
+                            <div class="room-type-selector">
+                                <button class="type-btn" data-type="public" id="editPublicBtn">🌍 Public</button>
+                                <button class="type-btn" data-type="private" id="editPrivateBtn">🔒 Private</button>
+                            </div>
+                        </div>
+                        <div class="form-group" id="editPasswordGroup" style="display: none;"><label>Parol</label><input type="password" id="editRoomPassword" class="form-input" placeholder="Parol"></div>
+                        <div class="modal-actions"><button class="btn btn-ghost" id="cancelEditBtn">Bekor</button><button class="btn btn-primary" id="saveEditBtn">Saqlash</button></div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                document.getElementById('cancelEditBtn')?.addEventListener('click', closeEditModal);
+                document.getElementById('saveEditBtn')?.addEventListener('click', saveEditRoom);
+                document.getElementById('editPublicBtn')?.addEventListener('click', () => {
+                    document.getElementById('editPublicBtn').classList.add('active');
+                    document.getElementById('editPrivateBtn').classList.remove('active');
+                    document.getElementById('editPasswordGroup').style.display = 'none';
+                });
+                document.getElementById('editPrivateBtn')?.addEventListener('click', () => {
+                    document.getElementById('editPrivateBtn').classList.add('active');
+                    document.getElementById('editPublicBtn').classList.remove('active');
+                    document.getElementById('editPasswordGroup').style.display = 'block';
+                });
+            }
+            
+            if (isPublic) {
+                document.getElementById('editPublicBtn').classList.add('active');
+                document.getElementById('editPrivateBtn').classList.remove('active');
+                document.getElementById('editPasswordGroup').style.display = 'none';
+            } else {
+                document.getElementById('editPrivateBtn').classList.add('active');
+                document.getElementById('editPublicBtn').classList.remove('active');
+                document.getElementById('editPasswordGroup').style.display = 'block';
+                document.getElementById('editRoomPassword').value = password;
+            }
+            
+            document.getElementById('editRoomModal').classList.add('active');
+            document.getElementById('modalOverlay').classList.add('active');
         }
-        
-        let html = '';
-        for (const room of myRoomsArray) {
-            const userCount = room.users ? Object.keys(room.users).length : 0;
-            const roomName = escapeHtml(room.name || 'Nomsiz xona');
-            html += `
-                <div class="room-card" onclick="goToRoom('${room.id}')">
-                    <div class="room-card-header">
-                        <span class="room-name">${roomName}</span>
-                        <span class="room-badge ${room.isPublic ? '' : 'private'}">${room.isPublic ? '🌍 Public' : '🔒 Private'}</span>
-                    </div>
-                    <div class="creator-info">
-                        <div class="creator-avatar" style="background: var(--brand-primary);">${(currentUser.displayName || 'U').charAt(0).toUpperCase()}</div>
-                        <span class="creator-name">Siz</span>
-                    </div>
-                    <div class="room-meta">
-                        <span>👥 ${userCount} kishi</span>
-                        <span>📅 ${new Date(room.createdAt).toLocaleDateString()}</span>
-                        <span>${room.hasPassword ? '🔒 Parol bor' : '🔓 Parolsiz'}</span>
-                    </div>
-                    <div class="room-actions">
-                        <button class="room-btn room-join-btn" onclick="event.stopPropagation(); goToRoom('${room.id}')">Kirish →</button>
-                        <button class="room-btn room-edit-btn" onclick="event.stopPropagation(); openEditRoom('${room.id}', '${roomName.replace(/'/g, "\\'")}', ${room.isPublic}, '${(room.password || '').replace(/'/g, "\\'")}')">✏️ Tahrirlash</button>
-                        <button class="room-btn room-delete-btn" onclick="event.stopPropagation(); deleteRoom('${room.id}', '${roomName.replace(/'/g, "\\'")}')">🗑 O'chirish</button>
-                    </div>
-                </div>
-            `;
+
+        async function saveEditRoom() {
+            if (!editingRoomId) return;
+            const newName = document.getElementById('editRoomName').value.trim();
+            if (!newName) { showToast('Xona nomini kiriting!', 'error'); return; }
+            const isPublic = document.getElementById('editPublicBtn').classList.contains('active');
+            const newPassword = document.getElementById('editRoomPassword').value;
+            
+            await db.ref(`rooms/${editingRoomId}`).update({
+                name: newName,
+                isPublic: isPublic,
+                hasPassword: !isPublic && newPassword ? true : false,
+                password: !isPublic ? newPassword || null : null
+            });
+            closeEditModal();
+            showToast('✅ Xona yangilandi!', 'success');
+            loadMyRooms();
+            loadPublicRooms();
         }
-        container.innerHTML = html;
-        lucide.createIcons();
-    } catch(e) {
-        console.error(e);
-        container.innerHTML = '<div class="empty-state">❌ Xatolik yuz berdi</div>';
-    }
-}
+
+        function closeEditModal() {
+            const modal = document.getElementById('editRoomModal');
+            if (modal) modal.classList.remove('active');
+            document.getElementById('modalOverlay').classList.remove('active');
+            editingRoomId = null;
+        }
+
+        async function deleteRoom(roomId, roomName) {
+            if (confirm(`"${roomName}" xonasini o'chirishni xohlaysizmi? Bu amal qaytarilmaydi!`)) {
+                await db.ref(`rooms/${roomId}`).update({ isActive: false });
+                showToast(`❌ "${roomName}" xonasi o'chirildi`, 'success');
+                loadMyRooms();
+                loadPublicRooms();
+            }
+        }
+
         async function showUserProfile(uid) {
             const userData = await getUserData(uid);
             const modal = document.getElementById('userProfileModal');
@@ -1198,6 +1281,7 @@ async function loadMyRooms() {
             document.getElementById('createRoomModal').classList.add('active');
             document.getElementById('modalOverlay').classList.add('active');
         }
+        
         function openJoinModal() {
             document.getElementById('joinCodeInput').value = '';
             document.getElementById('joinPassword').value = '';
@@ -1205,6 +1289,7 @@ async function loadMyRooms() {
             document.getElementById('joinRoomModal').classList.add('active');
             document.getElementById('modalOverlay').classList.add('active');
         }
+        
         function closeModals() {
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
             document.getElementById('modalOverlay').classList.remove('active');
@@ -1217,93 +1302,6 @@ async function loadMyRooms() {
             toast.innerHTML = `<span>${msg}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
-          // ========== EDIT ROOM ==========
-function openEditRoom(roomId, roomName, isPublic, password) {
-    editingRoomId = roomId;
-    document.getElementById('editRoomName').value = roomName;
-    
-    // Edit modal ni ko'rsatish
-    if (!document.getElementById('editRoomModal')) {
-        const modalHTML = `
-            <div class="edit-room-modal" id="editRoomModal">
-                <div class="modal-header">✏️ Xonani tahrirlash</div>
-                <div class="form-group"><label>Xona nomi</label><input type="text" id="editRoomName" class="form-input"></div>
-                <div class="form-group">
-                    <label>Xona turi</label>
-                    <div class="room-type-selector">
-                        <button class="type-btn" data-type="public" id="editPublicBtn">🌍 Public</button>
-                        <button class="type-btn" data-type="private" id="editPrivateBtn">🔒 Private</button>
-                    </div>
-                </div>
-                <div class="form-group" id="editPasswordGroup" style="display: none;"><label>Parol</label><input type="password" id="editRoomPassword" class="form-input" placeholder="Parol"></div>
-                <div class="modal-actions"><button class="btn btn-ghost" id="cancelEditBtn">Bekor</button><button class="btn btn-primary" id="saveEditBtn">Saqlash</button></div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
-        
-        document.getElementById('cancelEditBtn')?.addEventListener('click', closeEditModal);
-        document.getElementById('saveEditBtn')?.addEventListener('click', saveEditRoom);
-        document.getElementById('editPublicBtn')?.addEventListener('click', () => {
-            document.getElementById('editPublicBtn').classList.add('active');
-            document.getElementById('editPrivateBtn').classList.remove('active');
-            document.getElementById('editPasswordGroup').style.display = 'none';
-        });
-        document.getElementById('editPrivateBtn')?.addEventListener('click', () => {
-            document.getElementById('editPrivateBtn').classList.add('active');
-            document.getElementById('editPublicBtn').classList.remove('active');
-            document.getElementById('editPasswordGroup').style.display = 'block';
-        });
-    }
-    
-    if (isPublic) {
-        document.getElementById('editPublicBtn').classList.add('active');
-        document.getElementById('editPrivateBtn').classList.remove('active');
-        document.getElementById('editPasswordGroup').style.display = 'none';
-    } else {
-        document.getElementById('editPrivateBtn').classList.add('active');
-        document.getElementById('editPublicBtn').classList.remove('active');
-        document.getElementById('editPasswordGroup').style.display = 'block';
-        document.getElementById('editRoomPassword').value = password;
-    }
-    
-    document.getElementById('editRoomModal').classList.add('active');
-    document.getElementById('modalOverlay').classList.add('active');
-}
-
-async function saveEditRoom() {
-    if (!editingRoomId) return;
-    const newName = document.getElementById('editRoomName').value.trim();
-    if (!newName) { showToast('Xona nomini kiriting!', 'error'); return; }
-    const isPublic = document.getElementById('editPublicBtn').classList.contains('active');
-    const newPassword = document.getElementById('editRoomPassword').value;
-    
-    await db.ref(`rooms/${editingRoomId}`).update({
-        name: newName,
-        isPublic: isPublic,
-        hasPassword: !isPublic && newPassword ? true : false,
-        password: !isPublic ? newPassword || null : null
-    });
-    closeEditModal();
-    showToast('✅ Xona yangilandi!', 'success');
-    loadMyRooms();
-    loadPublicRooms();
-}
-
-function closeEditModal() {
-    const modal = document.getElementById('editRoomModal');
-    if (modal) modal.classList.remove('active');
-    document.getElementById('modalOverlay').classList.remove('active');
-    editingRoomId = null;
-}
-
-async function deleteRoom(roomId, roomName) {
-    if (confirm(`"${roomName}" xonasini o'chirishni xohlaysizmi? Bu amal qaytarilmaydi!`)) {
-        await db.ref(`rooms/${roomId}`).update({ isActive: false });
-        showToast(`❌ "${roomName}" xonasi o'chirildi`, 'success');
-        loadMyRooms();
-        loadPublicRooms();
-    }
-}
         }
 
         function escapeHtml(str) {
@@ -1361,7 +1359,6 @@ async function deleteRoom(roomId, roomName) {
         document.getElementById('modalOverlay')?.addEventListener('click', closeModals);
         document.getElementById('currentUserInfo')?.addEventListener('click', () => switchTab('profile'));
         
-        // Tab buttons - FIXED
         document.querySelectorAll('.tab-item').forEach(tab => {
             tab.addEventListener('click', () => {
                 const tabId = tab.getAttribute('data-tab');
