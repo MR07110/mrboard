@@ -194,14 +194,11 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ========== FLOATING BUTTONS (AI + DONATE) ========== */
+        /* ========== FLOATING BUTTONS (faqat AI) ========== */
         .floating-buttons {
             position: fixed;
             bottom: 24px;
             right: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
             z-index: 1000;
         }
 
@@ -230,31 +227,6 @@
             color: white;
         }
 
-        /* Donate Button */
-        .floating-donate {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #34c759, #2b8c3e);
-            box-shadow: 0 8px 24px rgba(52,199,89,0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: none;
-            animation: floatPulse 2s ease-in-out infinite;
-        }
-        .floating-donate:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 32px rgba(52,199,89,0.6);
-        }
-        .floating-donate svg {
-            width: 28px;
-            height: 28px;
-            color: white;
-        }
-
         @keyframes floatPulse {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-6px); }
@@ -264,13 +236,12 @@
             .floating-buttons {
                 bottom: 16px;
                 right: 16px;
-                gap: 12px;
             }
-            .floating-ai, .floating-donate {
+            .floating-ai {
                 width: 48px;
                 height: 48px;
             }
-            .floating-ai svg, .floating-donate svg {
+            .floating-ai svg {
                 width: 24px;
                 height: 24px;
             }
@@ -367,9 +338,8 @@
         <div style="display: flex; gap: 32px; font-weight: 600;"><a href="dashboard.html" style="color: var(--text-muted); text-decoration: none;">Doska</a><a href="doc.html" style="color: var(--text-muted); text-decoration: none;">Dokumentatsiya</a><a href="https://github.com/" target="_blank" style="color: var(--text-muted); text-decoration: none;">GitHub</a></div>
     </footer>
 
-    <!-- ========== FLOATING BUTTONS (AI + DONATE) ========== -->
+    <!-- ========== AI BUTTON (Donate button donate-modal.js tomonidan yaratiladi) ========== -->
     <div class="floating-buttons">
-        <!-- AI Button -->
         <button class="floating-ai" id="floatingAiBtn">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 8V4H8"/>
@@ -378,41 +348,6 @@
                 <path d="M12 8v8"/>
             </svg>
         </button>
-
-        <!-- Donate Button -->
-        <button class="floating-donate" id="floatingDonateBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                <path d="M12 2v4M12 22v-4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M22 12h-4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                <circle cx="12" cy="12" r="3"/>
-            </svg>
-        </button>
-    </div>
-
-    <!-- Donate Modal -->
-    <div class="donate-modal" id="donateModal">
-        <div class="donate-modal-overlay" id="donateModalClose"></div>
-        <div class="donate-modal-container card-only">
-            <div class="card-3d-container">
-                <div class="card-3d">
-                    <div class="card-shine"></div>
-                    <div class="card-watermark">VISA</div>
-                    <div class="card-bank-name">MR BOARD</div>
-                    <div class="card-chip-area">
-                        <div class="card-chip"></div>
-                        <div class="card-contactless">)))</div>
-                    </div>
-                    <div class="card-number">8600 1234 5678 9012</div>
-                    <div class="card-footer">
-                        <div class="card-holder-name">MUHAMMADRASUL QOSIMOV</div>
-                        <div class="card-expiry-box">
-                            <span class="expiry-label">Valid Thru</span>
-                            <span class="expiry-date">12/28</span>
-                        </div>
-                        <div class="card-visa-logo">VISA</div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -442,29 +377,20 @@
             }
         });
 
-        // Donate modal
-        const floatingDonate = document.getElementById('floatingDonateBtn');
-        const donateModal = document.getElementById('donateModal');
-        const closeModal = document.getElementById('donateModalClose');
-        if (floatingDonate) floatingDonate.addEventListener('click', () => donateModal.classList.add('is-visible'));
-        if (closeModal) closeModal.addEventListener('click', () => donateModal.classList.remove('is-visible'));
-        if (donateModal) donateModal.addEventListener('click', e => { if (e.target === donateModal) donateModal.classList.remove('is-visible'); });
-
         // AI Modal
         const floatingAi = document.getElementById('floatingAiBtn');
         if (floatingAi) {
             floatingAi.addEventListener('click', () => {
-                // AI modal ochish uchun (ai-modal.js orqali)
                 if (typeof openAIModal === 'function') {
                     openAIModal();
                 } else {
-                    // Agar ai-modal.js yuklanmagan bo'lsa, dashboard ga o'tish
                     window.location.href = 'dashboard.html';
                 }
             });
         }
     </script>
-        <!-- Donate Modal -->
+
+    <!-- Donate Modal JS (o'zi button va modal yaratadi) -->
     <script src="js/donate-modal.js"></script>
     <!-- AI Modal JS -->
     <script src="js/ai-modal.js"></script>
