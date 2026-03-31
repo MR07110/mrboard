@@ -194,11 +194,14 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ========== FLOATING BUTTONS (faqat AI) ========== */
+        /* ========== FLOATING BUTTONS (AI + DONATE) ========== */
         .floating-buttons {
             position: fixed;
             bottom: 24px;
             right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
             z-index: 1000;
         }
 
@@ -227,6 +230,31 @@
             color: white;
         }
 
+        /* Donate Button */
+        .floating-donate {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #34c759, #2b8c3e);
+            box-shadow: 0 8px 24px rgba(52,199,89,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: none;
+            animation: floatPulse 2s ease-in-out infinite;
+        }
+        .floating-donate:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(52,199,89,0.6);
+        }
+        .floating-donate svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+
         @keyframes floatPulse {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-6px); }
@@ -236,12 +264,13 @@
             .floating-buttons {
                 bottom: 16px;
                 right: 16px;
+                gap: 12px;
             }
-            .floating-ai {
+            .floating-ai, .floating-donate {
                 width: 48px;
                 height: 48px;
             }
-            .floating-ai svg {
+            .floating-ai svg, .floating-donate svg {
                 width: 24px;
                 height: 24px;
             }
@@ -338,8 +367,9 @@
         <div style="display: flex; gap: 32px; font-weight: 600;"><a href="dashboard.html" style="color: var(--text-muted); text-decoration: none;">Doska</a><a href="doc.html" style="color: var(--text-muted); text-decoration: none;">Dokumentatsiya</a><a href="https://github.com/" target="_blank" style="color: var(--text-muted); text-decoration: none;">GitHub</a></div>
     </footer>
 
-    <!-- ========== AI BUTTON (Donate button donate-modal.js tomonidan yaratiladi) ========== -->
+    <!-- ========== FLOATING BUTTONS (AI + DONATE) ========== -->
     <div class="floating-buttons">
+        <!-- AI Button -->
         <button class="floating-ai" id="floatingAiBtn">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 8V4H8"/>
@@ -348,7 +378,211 @@
                 <path d="M12 8v8"/>
             </svg>
         </button>
+
+        <!-- Donate Button -->
+        <button class="floating-donate" id="floatingDonateBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <path d="M12 2v4M12 22v-4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M22 12h-4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </button>
     </div>
+
+    <!-- Donate Modal -->
+    <div class="donate-modal" id="donateModal">
+        <div class="donate-modal-overlay" id="donateModalClose"></div>
+        <div class="donate-modal-container card-only">
+            <div class="card-3d-container">
+                <div class="card-3d">
+                    <div class="card-shine"></div>
+                    <div class="card-watermark">VISA</div>
+                    <div class="card-bank-name">MR BOARD</div>
+                    <div class="card-chip-area">
+                        <div class="card-chip"></div>
+                        <div class="card-contactless">)))</div>
+                    </div>
+                    <div class="card-number">8600 1234 5678 9012</div>
+                    <div class="card-footer">
+                        <div class="card-holder-name">MUHAMMADRASUL QOSIMOV</div>
+                        <div class="card-expiry-box">
+                            <span class="expiry-label">Valid Thru</span>
+                            <span class="expiry-date">12/28</span>
+                        </div>
+                        <div class="card-visa-logo">VISA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .donate-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .donate-modal.is-visible {
+            visibility: visible;
+            opacity: 1;
+        }
+        .donate-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+        }
+        .donate-modal-container.card-only {
+            position: relative;
+            width: auto;
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .donate-modal.is-visible .donate-modal-container.card-only {
+            transform: scale(1);
+        }
+        .card-3d-container {
+            width: 450px;
+            height: 284px;
+            transform-style: preserve-3d;
+            animation: autoRotateCard 8s ease-in-out infinite;
+            cursor: pointer;
+        }
+        @keyframes autoRotateCard {
+            0% { transform: rotateY(-15deg) rotateX(10deg); }
+            50% { transform: rotateY(15deg) rotateX(-10deg); }
+            100% { transform: rotateY(-15deg) rotateX(10deg); }
+        }
+        .card-3d {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #007aff, #0056b3);
+            border-radius: 20px;
+            padding: 25px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .card-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(110deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+            animation: moveShine 4s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes moveShine {
+            0% { transform: translateX(-150%); }
+            100% { transform: translateX(150%); }
+        }
+        .card-watermark {
+            position: absolute;
+            top: -40px;
+            right: -20px;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 220px;
+            font-weight: 900;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.08);
+            letter-spacing: -12px;
+            pointer-events: none;
+        }
+        .card-bank-name {
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+        }
+        .card-chip-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .card-chip {
+            width: 58px;
+            height: 42px;
+            background: linear-gradient(135deg, #f1c40f, #d4af37, #f1c40f);
+            border-radius: 8px;
+            border: 0.5px solid rgba(0,0,0,0.2);
+        }
+        .card-contactless {
+            transform: rotate(90deg);
+            font-size: 20px;
+            color: rgba(255,255,255,0.5);
+            font-family: sans-serif;
+        }
+        .card-number {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 28px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .card-holder-name {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .card-expiry-box {
+            text-align: center;
+            margin-right: 30px;
+        }
+        .expiry-label {
+            display: block;
+            font-size: 7px;
+            font-family: Arial;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .expiry-date {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .card-visa-logo {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 42px;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -2px;
+            line-height: 0.8;
+        }
+        @media (max-width: 768px) {
+            .card-3d-container {
+                width: 320px;
+                height: 202px;
+            }
+            .card-bank-name { font-size: 18px; }
+            .card-chip-area { margin: 15px 0; }
+            .card-chip { width: 42px; height: 30px; }
+            .card-number { font-size: 20px; letter-spacing: 1px; margin-bottom: 12px; }
+            .card-holder-name { font-size: 11px; }
+            .expiry-date { font-size: 12px; }
+            .card-visa-logo { font-size: 30px; }
+            .card-watermark { font-size: 150px; top: -20px; right: -10px; }
+        }
+    </style>
 
     <script>
         lucide.createIcons();
@@ -377,21 +611,29 @@
             }
         });
 
-        // AI Modal
+        // Donate modal
+        const floatingDonate = document.getElementById('floatingDonateBtn');
+        const donateModal = document.getElementById('donateModal');
+        const closeModal = document.getElementById('donateModalClose');
+        if (floatingDonate) floatingDonate.addEventListener('click', () => donateModal.classList.add('is-visible'));
+        if (closeModal) closeModal.addEventListener('click', () => donateModal.classList.remove('is-visible'));
+        if (donateModal) donateModal.addEventListener('click', e => { if (e.target === donateModal) donateModal.classList.remove('is-visible'); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') donateModal.classList.remove('is-visible'); });
+
+        // AI Modal - js/ai-modal.js ga ulanadi
         const floatingAi = document.getElementById('floatingAiBtn');
         if (floatingAi) {
             floatingAi.addEventListener('click', () => {
                 if (typeof openAIModal === 'function') {
                     openAIModal();
                 } else {
+                    console.log('AI modal yuklanmagan, dashboardga otish');
                     window.location.href = 'dashboard.html';
                 }
             });
         }
     </script>
 
-    <!-- Donate Modal JS (o'zi button va modal yaratadi) -->
-    <script src="js/donate-modal.js"></script>
     <!-- AI Modal JS -->
     <script src="js/ai-modal.js"></script>
 </body>
