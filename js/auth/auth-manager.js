@@ -115,5 +115,49 @@ export class AuthManager {
     }
 }
 
+export function formatAuthError(err) {
+    if (!err) return "Noma'lum xatolik yuz berdi";
+    const msg = (typeof err === 'string' ? err : (err.message || '')).toLowerCase();
+    const code = (err.code || '').toLowerCase();
+
+    if (code.includes('invalid-credential') || msg.includes('invalid_login_credentials') || code.includes('wrong-password')) {
+        return "Email yoki parol noto'g'ri kiritildi!";
+    }
+    if (code.includes('user-not-found') || msg.includes('user_not_found')) {
+        return "Ushbu email bilan ro'yxatdan o'tilmagan. Avval ro'yxatdan o'ting!";
+    }
+    if (code.includes('email-already-in-use') || msg.includes('email_exists')) {
+        return "Bu email allaqachon ro'yxatdan o'tgan! Tizimga kiring.";
+    }
+    if (code.includes('weak-password') || msg.includes('weak_password')) {
+        return "Parol juda oddiy. Kamida 6 ta belgi kiriting!";
+    }
+    if (code.includes('invalid-email') || msg.includes('invalid_email')) {
+        return "Email manzili noto'g'ri kiritildi!";
+    }
+    if (code.includes('too-many-requests') || msg.includes('too_many_attempts')) {
+        return "Ko'p marta xato urinish bo'ldi. Biroz kuting va qayta urinib ko'ring.";
+    }
+    if (code.includes('network-request-failed')) {
+        return "Internet aloqasida xatolik yuz berdi. Tarmoqni tekshiring.";
+    }
+
+    try {
+        const jsonMatch = err.message?.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            const subMsg = (parsed.error?.message || '').toUpperCase();
+            if (subMsg.includes('INVALID_LOGIN_CREDENTIALS')) {
+                return "Email yoki parol noto'g'ri kiritildi!";
+            }
+            if (subMsg.includes('EMAIL_EXISTS')) {
+                return "Bu email allaqachon ro'yxatdan o'tgan! Tizimga kiring.";
+            }
+        }
+    } catch (_) {}
+
+    return err.message || "Xatolik yuz berdi. Qayta urinib ko'ring.";
+}
+
 export const authManager = new AuthManager();
 export default authManager;

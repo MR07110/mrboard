@@ -6,7 +6,7 @@ import { DB, RoomAPI } from '../api/firebase.js';
 import { Utils } from '../utils.js';
 import { CanvasEngine } from '../engine/canvas-engine.js';
 import { camera } from '../engine/camera.js';
-import { authManager } from '../auth/auth-manager.js';
+import { authManager, formatAuthError } from '../auth/auth-manager.js';
 import { ColorPickerComponent } from '../components/color-picker.js';
 import { MinimapComponent } from '../components/minimap.js';
 import { ChatComponent } from '../components/chat.js';
@@ -236,7 +236,7 @@ export class BoardPage {
                 await authManager.login(email, password);
                 window.location.reload();
             } catch (err) {
-                if (errEl) errEl.innerText = err.message || "Kirishda xatolik yuz berdi";
+                if (errEl) errEl.innerText = formatAuthError(err);
             }
         });
 
@@ -255,6 +255,11 @@ export class BoardPage {
                 return;
             }
 
+            if (password.length < 6) {
+                if (errEl) errEl.innerText = "Parol kamida 6 ta belgidan iborat bo'lishi kerak";
+                return;
+            }
+
             if (password !== confirm) {
                 if (errEl) errEl.innerText = "Parollar bir-biriga mos kelmadi";
                 return;
@@ -265,7 +270,7 @@ export class BoardPage {
                 await authManager.register(email, password, { firstName, lastName, username });
                 window.location.reload();
             } catch (err) {
-                if (errEl) errEl.innerText = err.message || "Ro'yxatdan o'tishda xatolik";
+                if (errEl) errEl.innerText = formatAuthError(err);
             }
         });
 

@@ -555,11 +555,11 @@
 
 /* Panel Bodies */
 .auth-panel-body {
-    display: none;
+    display: none !important;
 }
 
 .auth-panel-body.active {
-    display: block;
+    display: block !important;
     animation: authPanelFade 0.25s ease-out;
 }
 

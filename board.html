@@ -6,13 +6,16 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a" id="theme-color">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>MR BOARD · Interactive Collaboration</title>
     
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="shortcut icon" href="favicon.svg">
     
     <!-- Modular Production Styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=2.3.0">
 
     <!-- External Libraries -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -113,7 +116,7 @@
                 </div>
 
                 <!-- 2. REGISTER PANEL -->
-                <div class="auth-panel-body" id="register-panel" style="display:none;">
+                <div class="auth-panel-body" id="register-panel">
                     <div class="auth-panel-header">
                         <h2>Ro'yxatdan o'tish</h2>
                         <p>Akkauntingizni yarating va barcha imkoniyatlardan foydalaning.</p>
@@ -161,7 +164,7 @@
                 </div>
 
                 <!-- 3. GUEST / QUICK ROOM JOIN PANEL -->
-                <div class="auth-panel-body" id="guest-panel" style="display:none;">
+                <div class="auth-panel-body" id="guest-panel">
                     <div class="auth-panel-header">
                         <h2>Tezkor kirish</h2>
                         <p>Akkauntsiz, to'g'ridan-to'g'ri dars yoki xonaga ulaning.</p>
@@ -410,6 +413,6 @@
     <input type="file" id="sys-file-json" accept=".json" style="display:none;">
 
     <!-- Whiteboard Page Master Script -->
-    <script type="module" src="js/pages/board.js"></script>
+    <script type="module" src="js/pages/board.js?v=2.3.0"></script>
 </body>
 </html>
