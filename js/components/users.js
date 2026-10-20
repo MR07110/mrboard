@@ -55,7 +55,10 @@ export class UsersComponent {
             } else if (!Store.isTeacher && p.t) {
                 html += `<span style="font-size:11px; color:var(--text-muted);">O'qituvchi</span>`;
             } else if (!Store.isTeacher) {
-                html += `<span style="font-size:12px;">${p.d ? '✏️' : '👁️'} ${p.s ? '🎤' : '🔇'}</span>`;
+                html += `<span style="display:inline-flex; align-items:center; gap:6px; opacity:0.8;">
+                    <i data-lucide="${p.d ? 'pencil' : 'eye'}" size="14"></i>
+                    <i data-lucide="${p.s ? 'mic' : 'mic-off'}" size="14"></i>
+                </span>`;
             }
 
             html += `</div></div>`;

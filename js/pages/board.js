@@ -132,7 +132,7 @@ export class BoardPage {
         // Update UI displays
         document.getElementById('ui-room-code')?.replaceChildren(document.createTextNode(roomId));
         document.getElementById('user-name-display')?.replaceChildren(document.createTextNode(Store.name));
-        document.getElementById('user-role-display')?.replaceChildren(document.createTextNode(Store.isTeacher ? "O'qituvchi 👑" : "O'quvchi 🎓"));
+        document.getElementById('user-role-display')?.replaceChildren(document.createTextNode(Store.isTeacher ? "O'qituvchi" : "O'quvchi"));
 
         const userAvatar = document.getElementById('user-avatar');
         if (userAvatar) userAvatar.innerText = Store.name.charAt(0).toUpperCase();

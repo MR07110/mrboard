@@ -1,4 +1,4 @@
-# 🎨 MR BOARD · ENTERPRISE · 2.0
+# MR BOARD · ENTERPRISE · 2.0
 
 <p align="center">
   <img src="favicon.svg" width="100" alt="MR Board Logo">
@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Professional darajadagi real-vaqt interaktiv onlayn doska va jamoaviy ta'lim platformasi.</strong><br>
-  Nol kechikish (Zero-latency), o'rnatilgan Web Audio ekvalayzer, sun'iy intellekt yordamchisi va 60FPS multi-layer canvas dvigateli.
+  Nol kechikish (Zero-latency), o'rnatilgan Web Audio ekvalayzer va 60FPS multi-layer canvas dvigateli.
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@
 
 ---
 
-## 🏗 Arxitektura va Komponentlar Tizimi
+## Arxitektura va Komponentlar Tizimi
 
 Loyiha to'liq modulli komponentlarga ajratilgan va toza monolitik ES arxitekturasiga ega:
 
@@ -28,7 +28,6 @@ mrboard/
 ├── board.html               # Interaktiv whiteboard ilovasi
 ├── dashboard.html           # Xonalarni boshqarish & shaxsiy kabinet
 ├── doc.html                 # To'liq hujjatlar va qo'llanma
-├── ai.html                  # MR BOARD AI suhbat oynasi
 ├── favicon.svg              # Brend SVG belgisi
 ├── vercel.json              # Vercel production xavfsizlik va kesh sozlamalari
 ├── package.json             # Loyiha boshqaruvi va skriptlar
@@ -80,14 +79,14 @@ mrboard/
 
 ---
 
-## ✨ Asosiy Imkoniyatlar (Features)
+## Asosiy Imkoniyatlar (Features)
 
-### 🎨 3-Qatlamli Canvas Dvigateli
+### 3-Qatlamli Canvas Dvigateli
 1. **Base Layer:** Doimiy saqlanadigan vektor chizmalar (qalam, shakllar, matn, rasmlar).
 2. **Live Layer:** Real-vaqtda chizilayotgan faol chiziqlar va boshqa qatnashchilarning jonli kursorlari.
 3. **Laser Wand Layer:** O'qituvchilar va ma'ruzachilar uchun diqqatni tortuvchi, avtomatik ravishda so'nuvchi lazer izlari.
 
-### 👥 Rollar va Xavfsizlik
+### Rollar va Xavfsizlik
 * **O'qituvchi (Host):**
   - Xona linklari (`#t-SECRET` va `#s-ROOMCODE`).
   - Har bir o'quvchiga chizish yoki mikrofon ruxsatini berish / bekor qilish.
@@ -96,12 +95,12 @@ mrboard/
 * **O'quvchi (Student):**
   - O'qituvchi ruxsat berganida erkin chizish, mikrofonni yoqish va chatda muloqot qilish.
 
-### 🎙 Web Audio & Ekvalayzer
+### Web Audio & Ekvalayzer
 * Web Audio API orqali mikrofon chastotasini tahlil qiluvchi va quyi dockda jonli to'lqinlanuvchi audio vizualizator.
 
 ---
 
-## ⌨️ Klaviatura Qisqartmalari (Shortcuts)
+## Klaviatura Qisqartmalari (Shortcuts)
 
 | Tugma | Vazifasi |
 | :--- | :--- |
@@ -120,7 +119,7 @@ mrboard/
 
 ---
 
-## 🚀 Ishga Tushirish va O'rnatish
+## Ishga Tushirish va O'rnatish
 
 ### 1. Mahalliy Serverda Ishga Tushirish
 ```bash
@@ -143,10 +142,10 @@ npx vercel --prod
 
 ---
 
-## 👨‍💻 Muallif
+## Muallif
 **Muhammadrasul Qosimov (MR07110)**
 * GitHub: [@MR07110](https://github.com/MR07110)
 * Maqsad: Onlayn ta'lim va jamoaviy masofaviy ishlashni yangi bosqichga olib chiqish.
 
 ---
-<p align="center">Yaratildi ❤️ Muhammadrasul tomonidan · Linux Muhiti</p>
+<p align="center">Yaratildi Muhammadrasul tomonidan · Linux Muhiti</p>

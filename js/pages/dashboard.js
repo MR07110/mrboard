@@ -209,7 +209,7 @@ export class DashboardPage {
                     <div class="room-card-header">
                         <span class="room-title">${Utils.sanitize(room.name || 'Nomsiz xona')}</span>
                         <span class="room-badge ${room.isPublic ? 'active' : 'private'}">
-                            ${room.isPublic ? '🌍 Ochiq' : '🔒 Maxfiy'}
+                            ${room.isPublic ? '<i data-lucide="globe" size="12"></i> Ochiq' : '<i data-lucide="lock" size="12"></i> Maxfiy'}
                         </span>
                     </div>
                     <div class="creator-info">

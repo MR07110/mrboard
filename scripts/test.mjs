@@ -7,18 +7,18 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
 
-console.log('🧪 Starting MR BOARD Production Verification Test...\n');
+console.log('[TEST] Starting MR BOARD Production Verification Test...\n');
 
 let failed = false;
 
 function checkFile(relPath) {
     const fullPath = path.join(rootDir, relPath);
     if (!fs.existsSync(fullPath)) {
-        console.error(`❌ Missing file: ${relPath}`);
+        console.error(`[FAIL] Missing file: ${relPath}`);
         failed = true;
     } else {
         const stats = fs.statSync(fullPath);
-        console.log(`✅ [OK] ${relPath} (${stats.size} bytes)`);
+        console.log(`[PASS] ${relPath} (${stats.size} bytes)`);
     }
 }
 
@@ -74,14 +74,14 @@ for (const relPath of jsFiles) {
     try {
         execSync(`node -c "${fullPath}"`, { stdio: 'pipe' });
     } catch (e) {
-        console.error(`❌ Syntax error in ${relPath}:\n`, e.stderr?.toString() || e.message);
+        console.error(`[FAIL] Syntax error in ${relPath}:\n`, e.stderr?.toString() || e.message);
         failed = true;
     }
 }
 
 if (failed) {
-    console.error('\n❌ Test failed with errors.');
+    console.error('\n[FAIL] Test failed with errors.');
     process.exit(1);
 } else {
-    console.log('\n🎉 ALL PRODUCTION CHECKS PASSED SUCCESSFULLY!');
+    console.log('\n[PASS] ALL PRODUCTION CHECKS PASSED SUCCESSFULLY!');
 }

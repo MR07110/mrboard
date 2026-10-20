@@ -28,10 +28,10 @@ export class DemoPlayerComponent {
                     </svg>
                 </div>
                 <div style="position:absolute; bottom:16px; left:20px; right:20px; display:flex; justify-content:space-between; align-items:center; z-index:20; background:var(--bg-panel); backdrop-filter:blur(16px); padding:8px 16px; border-radius:99px; border:1px solid var(--border-subtle); box-shadow:var(--shadow-sm);">
-                    <div id="demo-step-label" style="font-size:12px; font-weight:700; color:var(--text-main);">✨ MR BOARD Enterprise Demo</div>
+                    <div id="demo-step-label" style="font-size:12px; font-weight:700; color:var(--text-main); display:flex; align-items:center; gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg> MR BOARD Enterprise Demo</div>
                     <div style="display:flex; gap:6px;">
-                        <button id="demo-prev-btn" style="background:var(--bg-hover); border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700;">◀</button>
-                        <button id="demo-next-btn" style="background:var(--brand-primary); color:white; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700;">▶</button>
+                        <button id="demo-prev-btn" style="background:var(--bg-hover); border:none; padding:5px 8px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+                        <button id="demo-next-btn" style="background:var(--brand-primary); color:white; border:none; padding:5px 8px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
                     </div>
                 </div>
             </div>
@@ -195,7 +195,7 @@ export class DemoPlayerComponent {
         this.ctx.arc(w * 0.65, h * 0.6, 7, 0, Math.PI * 2);
         this.ctx.fill();
         this.ctx.fillStyle = "#0f172a";
-        this.ctx.fillText("Madina (Teacher 👑)", w * 0.65, h * 0.6 - 12);
+        this.ctx.fillText("Madina (Teacher)", w * 0.65, h * 0.6 - 12);
     }
 
     redrawCurrent() {
