@@ -18,17 +18,37 @@ export class AuthManager {
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
                     this.currentUser = user;
-                    this.userData = await this.fetchUserData(user.uid);
-                    Store.user = { uid: user.uid, email: user.email, ...this.userData };
-                    Store.name = this.getDisplayName();
-                    localStorage.setItem('mr_user', JSON.stringify(Store.user));
-                    resolve(Store.user);
+                    if (user.isAnonymous) {
+                        Store.uid = user.uid;
+                        Store.name = localStorage.getItem('guest_name') || 'Mehmon';
+                        Store.user = { uid: user.uid, isAnonymous: true, name: Store.name };
+                        resolve(Store.user);
+                    } else {
+                        this.userData = await this.fetchUserData(user.uid);
+                        Store.user = { uid: user.uid, email: user.email, isAnonymous: false, ...this.userData };
+                        Store.uid = user.uid;
+                        Store.name = this.getDisplayName();
+                        localStorage.setItem('mr_user', JSON.stringify(Store.user));
+                        resolve(Store.user);
+                    }
                 } else {
-                    this.currentUser = null;
-                    this.userData = null;
-                    Store.user = null;
-                    localStorage.removeItem('mr_user');
-                    resolve(null);
+                    // Sign in anonymously to satisfy RTDB auth != null rules
+                    try {
+                        const anonCred = await auth.signInAnonymously();
+                        const anonUser = anonCred.user;
+                        this.currentUser = anonUser;
+                        Store.uid = anonUser.uid;
+                        Store.name = localStorage.getItem('guest_name') || 'Mehmon';
+                        Store.user = { uid: anonUser.uid, isAnonymous: true, name: Store.name };
+                        resolve(Store.user);
+                    } catch (e) {
+                        console.warn('[AuthManager] Anonymous auth fallback:', e);
+                        this.currentUser = null;
+                        this.userData = null;
+                        Store.user = null;
+                        localStorage.removeItem('mr_user');
+                        resolve(null);
+                    }
                 }
             });
         });

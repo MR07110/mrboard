@@ -25,6 +25,8 @@ export class CanvasEngine {
         this.lastPos = null;
         this.activeId = null;
         this.shapeStart = null;
+        this.currentStroke = null;
+        this.currentShape = null;
         this.dirty = true;
         this.pinchDist = null;
 
@@ -109,30 +111,47 @@ export class CanvasEngine {
             const isLaser = Store.tool === 'laser' && Store.laserEnabled;
 
             if (['draw', 'erase', 'laser'].includes(Store.tool)) {
-                let strokeColor = Store.color;
+                let strokeColor = Store.color || '#007aff';
                 if (Store.tool === 'erase') {
                     strokeColor = this.getBackgroundColor();
                 } else if (isLaser) {
                     strokeColor = '#ff3b30';
                 }
 
-                const strokeWidth = (Store.tool === 'erase' ? 40 : Store.size) / Store.cam.z;
+                const strokeWidth = (Store.tool === 'erase' ? 40 : (Store.size || 4)) / Store.cam.z;
 
-                DB.addLive(this.activeId, {
+                this.currentStroke = {
+                    u: Store.uid || 'guest',
                     p: [worldP],
                     c: strokeColor,
                     s: strokeWidth,
                     tl: Store.tool
-                }, isLaser);
+                };
+
+                // Optimistically render locally immediately for 0ms latency
+                if (isLaser) {
+                    Store.laserPaths[this.activeId] = this.currentStroke;
+                } else {
+                    Store.livePaths[this.activeId] = this.currentStroke;
+                }
+                this.dirty = true;
+
+                DB.addLive(this.activeId, this.currentStroke, isLaser);
             } else if (['rect', 'circle', 'line', 'arrow'].includes(Store.tool)) {
                 this.shapeStart = worldP;
-                DB.addLive(this.activeId, {
+                this.currentShape = {
+                    u: Store.uid || 'guest',
                     tl: Store.tool,
                     p1: worldP,
                     p2: worldP,
-                    c: Store.color,
-                    s: Store.size / Store.cam.z
-                });
+                    c: Store.color || '#007aff',
+                    s: (Store.size || 4) / Store.cam.z
+                };
+
+                Store.livePaths[this.activeId] = this.currentShape;
+                this.dirty = true;
+
+                DB.addLive(this.activeId, this.currentShape);
             }
         });
 
@@ -152,23 +171,36 @@ export class CanvasEngine {
 
             const worldP = camera.toWorld(e.clientX, e.clientY);
             const isLaser = Store.tool === 'laser' && Store.laserEnabled;
-            const targetMap = isLaser ? Store.laserPaths : Store.livePaths;
-            const active = targetMap?.[this.activeId];
 
-            if (['draw', 'erase', 'laser'].includes(Store.tool) && active?.p) {
-                const lastPoint = active.p[active.p.length - 1];
-                if (Math.hypot(worldP.x - lastPoint.x, worldP.y - lastPoint.y) > 3 / Store.cam.z) {
-                    active.p.push(worldP);
-                    DB.updateLive(this.activeId, active.p, isLaser);
+            if (['draw', 'erase', 'laser'].includes(Store.tool)) {
+                if (!this.currentStroke) {
+                    const targetMap = isLaser ? Store.laserPaths : Store.livePaths;
+                    this.currentStroke = targetMap?.[this.activeId];
+                }
+
+                if (this.currentStroke && Array.isArray(this.currentStroke.p)) {
+                    const lastPoint = this.currentStroke.p[this.currentStroke.p.length - 1];
+                    if (!lastPoint || Math.hypot(worldP.x - lastPoint.x, worldP.y - lastPoint.y) > 3 / Store.cam.z) {
+                        this.currentStroke.p.push(worldP);
+                        this.dirty = true;
+                        DB.updateLive(this.activeId, this.currentStroke.p, isLaser);
+                    }
                 }
             } else if (['rect', 'circle', 'line', 'arrow'].includes(Store.tool) && this.shapeStart) {
-                DB.addLive(this.activeId, {
-                    tl: Store.tool,
-                    p1: this.shapeStart,
-                    p2: worldP,
-                    c: Store.color,
-                    s: Store.size / Store.cam.z
-                });
+                if (!this.currentShape) {
+                    this.currentShape = Store.livePaths?.[this.activeId] || {
+                        u: Store.uid || 'guest',
+                        tl: Store.tool,
+                        p1: this.shapeStart,
+                        p2: worldP,
+                        c: Store.color || '#007aff',
+                        s: (Store.size || 4) / Store.cam.z
+                    };
+                }
+                this.currentShape.p2 = worldP;
+                Store.livePaths[this.activeId] = this.currentShape;
+                this.dirty = true;
+                DB.addLive(this.activeId, this.currentShape);
             }
 
             this.lastPos = { x: e.clientX, y: e.clientY };
@@ -179,36 +211,48 @@ export class CanvasEngine {
             if (!this.isDrawing) return;
             this.isDrawing = false;
 
-            if (['draw', 'erase'].includes(Store.tool) && Store.livePaths?.[this.activeId]) {
-                const path = Store.livePaths[this.activeId];
-                if (path?.p?.length > 1) {
+            if (['draw', 'erase'].includes(Store.tool)) {
+                const stroke = this.currentStroke || Store.livePaths?.[this.activeId];
+                if (stroke && stroke.p && stroke.p.length > 1) {
                     DB.addElement({
                         type: 'path',
-                        p: path.p,
-                        c: path.c,
-                        s: path.s
+                        p: stroke.p,
+                        c: stroke.c || Store.color || '#007aff',
+                        s: typeof stroke.s === 'number' ? stroke.s : (Store.size || 4)
                     });
                 }
-                DB.removeLive(this.activeId);
-            } else if (['rect', 'circle', 'line', 'arrow'].includes(Store.tool) && Store.livePaths?.[this.activeId]) {
-                const shape = Store.livePaths[this.activeId];
-                if (shape?.p1 && shape?.p2 && Math.hypot(shape.p1.x - shape.p2.x, shape.p1.y - shape.p2.y) > 4) {
+                if (this.activeId) {
+                    delete Store.livePaths[this.activeId];
+                    DB.removeLive(this.activeId);
+                }
+            } else if (['rect', 'circle', 'line', 'arrow'].includes(Store.tool)) {
+                const shape = this.currentShape || Store.livePaths?.[this.activeId];
+                if (shape && shape.p1 && shape.p2 && Math.hypot(shape.p1.x - shape.p2.x, shape.p1.y - shape.p2.y) > 4) {
                     DB.addElement({
                         type: 'shape',
-                        tl: shape.tl,
+                        tl: shape.tl || Store.tool,
                         p1: shape.p1,
                         p2: shape.p2,
-                        c: shape.c,
-                        s: shape.s
+                        c: shape.c || Store.color || '#007aff',
+                        s: typeof shape.s === 'number' ? shape.s : (Store.size || 4)
                     });
                 }
-                DB.removeLive(this.activeId);
-                this.shapeStart = null;
+                if (this.activeId) {
+                    delete Store.livePaths[this.activeId];
+                    DB.removeLive(this.activeId);
+                }
             } else if (Store.tool === 'laser') {
-                DB.removeLive(this.activeId);
+                if (this.activeId) {
+                    delete Store.laserPaths[this.activeId];
+                    DB.removeLive(this.activeId);
+                }
             }
 
+            this.currentStroke = null;
+            this.currentShape = null;
+            this.shapeStart = null;
             this.activeId = null;
+            this.dirty = true;
         });
 
         // Touch Pinch-to-Zoom

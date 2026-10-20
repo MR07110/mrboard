@@ -34,19 +34,24 @@ export const DB = {
 
         // Presence & disconnect
         const meRef = currentRoomRef.child(`users/${Store.uid}`);
-        meRef.onDisconnect().remove();
+        try {
+            meRef.onDisconnect().remove();
+        } catch (_) {}
+
         meRef.set({
             id: Store.uid,
-            n: Store.name,
-            t: Store.isTeacher,
-            d: Store.perms.draw,
-            s: Store.perms.speak
+            n: Store.name || 'Mehmon',
+            t: !!Store.isTeacher,
+            d: !!Store.perms.draw,
+            s: !!Store.perms.speak
+        }).catch(err => {
+            console.warn('[Firebase] presence set warning:', err.message);
         });
 
         if (Store.isTeacher && teacherSecret) {
-            currentRoomRef.child('meta/teacherSecret').set(teacherSecret);
-            currentRoomRef.child('meta/studentCode').set(roomId);
-            currentRoomRef.child('meta/laserEnabled').set(true);
+            currentRoomRef.child('meta/teacherSecret').set(teacherSecret).catch(() => {});
+            currentRoomRef.child('meta/studentCode').set(roomId).catch(() => {});
+            currentRoomRef.child('meta/laserEnabled').set(true).catch(() => {});
         }
 
         this.attachListeners();
@@ -118,56 +123,98 @@ export const DB = {
 
     addElement(el) {
         if (!currentRoomRef) return;
-        el.u = Store.uid;
-        el.t = Date.now();
-        currentRoomRef.child('elements').push(el);
+        const cleanEl = {
+            type: el.type || 'path',
+            u: Store.uid || 'guest',
+            t: Date.now(),
+            c: el.c || Store.color || '#007aff',
+            s: typeof el.s === 'number' ? el.s : (Store.size || 4)
+        };
+        if (el.p && Array.isArray(el.p)) cleanEl.p = el.p;
+        if (el.p1) cleanEl.p1 = el.p1;
+        if (el.p2) cleanEl.p2 = el.p2;
+        if (el.tl) cleanEl.tl = el.tl;
+        if (el.text) cleanEl.text = el.text;
+        if (typeof el.x === 'number') cleanEl.x = el.x;
+        if (typeof el.y === 'number') cleanEl.y = el.y;
+        if (el.data) {
+            cleanEl.data = el.data;
+            cleanEl.width = el.width || 200;
+            cleanEl.height = el.height || 150;
+        }
+
+        currentRoomRef.child('elements').push(cleanEl).catch(err => {
+            console.warn('[Firebase] elements.push warning:', err.message);
+        });
     },
 
     addLive(id, data, isLaser) {
-        if (!currentRoomRef) return;
+        if (!currentRoomRef || !id || !data) return;
         if (isLaser && !Store.laserEnabled && !Store.isTeacher) return;
-        currentRoomRef.child(`${isLaser ? 'laser' : 'live'}/${id}`).set(data);
+
+        const cleanData = {
+            u: Store.uid || 'guest',
+            tl: data.tl || 'draw',
+            c: data.c || Store.color || '#007aff',
+            s: typeof data.s === 'number' ? data.s : (Store.size || 4)
+        };
+        if (data.p && Array.isArray(data.p)) cleanData.p = data.p;
+        if (data.p1) cleanData.p1 = data.p1;
+        if (data.p2) cleanData.p2 = data.p2;
+
+        const target = isLaser ? 'laser' : 'live';
+        currentRoomRef.child(`${target}/${id}`).set(cleanData).catch(err => {
+            console.warn('[Firebase] addLive warning:', err.message);
+        });
+
         if (isLaser) {
             setTimeout(() => {
-                if (currentRoomRef) currentRoomRef.child(`laser/${id}`).remove();
+                if (currentRoomRef) {
+                    currentRoomRef.child(`laser/${id}`).remove().catch(() => {});
+                }
             }, 1000);
         }
     },
 
     updateLive(id, points, isLaser) {
-        if (!currentRoomRef) return;
+        if (!currentRoomRef || !id) return;
         const target = isLaser ? 'laser' : 'live';
-        if (points) {
-            currentRoomRef.child(`${target}/${id}`).update({ p: points });
+        if (points && points.length) {
+            currentRoomRef.child(`${target}/${id}`).update({
+                u: Store.uid || 'guest',
+                p: points
+            }).catch(err => {
+                console.warn('[Firebase] updateLive warning:', err.message);
+            });
         } else {
-            currentRoomRef.child(`${target}/${id}`).remove();
+            currentRoomRef.child(`${target}/${id}`).remove().catch(() => {});
         }
     },
 
     removeLive(id) {
-        if (!currentRoomRef) return;
-        currentRoomRef.child(`live/${id}`).remove();
+        if (!currentRoomRef || !id) return;
+        currentRoomRef.child(`live/${id}`).remove().catch(() => {});
     },
 
     updateCursor: Utils.throttle((pos) => {
-        if (!currentRoomRef) return;
+        if (!currentRoomRef || !pos) return;
         currentRoomRef.child(`cursors/${Store.uid}`).set({
             x: pos.x,
             y: pos.y,
-            n: Store.name,
-            t: Store.isTeacher
-        });
+            n: Store.name || 'Mehmon',
+            t: !!Store.isTeacher
+        }).catch(() => {});
     }, 50),
 
     syncCamera() {
         if (Store.isTeacher && currentRoomRef) {
-            currentRoomRef.child('camera').set(Store.cam);
+            currentRoomRef.child('camera').set(Store.cam).catch(() => {});
         }
     },
 
     undo() {
         if (!currentRoomRef) return;
-        currentRoomRef.child('elements').once('value', snap => {
+        currentRoomRef.child('elements').once('value').then(snap => {
             const val = snap.val();
             if (!val) return;
             const els = Object.entries(val)
@@ -176,63 +223,69 @@ export const DB = {
 
             if (els.length > 0) {
                 const last = els.sort((a, b) => b.t - a.t)[0];
-                currentRoomRef.child(`elements/${last.k}`).remove();
+                currentRoomRef.child(`elements/${last.k}`).remove().catch(() => {});
                 Utils.showToast("Bekor qilindi", "success");
             }
+        }).catch(err => {
+            console.warn('[Firebase] undo warning:', err.message);
         });
     },
 
     clearBoard() {
         if (Store.isTeacher && currentRoomRef) {
-            currentRoomRef.child('meta/teacherSecret').once('value', snap => {
+            currentRoomRef.child('meta/teacherSecret').once('value').then(snap => {
                 if (snap.val() === Store.teacherSecret) {
-                    currentRoomRef.child('elements').remove();
+                    currentRoomRef.child('elements').remove().catch(() => {});
                     Utils.showToast("Doska tozalandi", "success");
                 }
-            });
+            }).catch(() => {});
         }
     },
 
     toggleLaser() {
         if (Store.isTeacher && currentRoomRef) {
-            currentRoomRef.child('meta/teacherSecret').once('value', snap => {
+            currentRoomRef.child('meta/teacherSecret').once('value').then(snap => {
                 if (snap.val() === Store.teacherSecret) {
                     const next = !Store.laserEnabled;
-                    currentRoomRef.child('meta/laserEnabled').set(next);
+                    currentRoomRef.child('meta/laserEnabled').set(next).catch(() => {});
                     Utils.showToast(next ? "Lazer yoqildi" : "Lazer o'chirildi", "info");
                 }
-            });
+            }).catch(() => {});
         }
     },
 
     setPerm(userId, type, val) {
         if (Store.isTeacher && currentRoomRef) {
-            currentRoomRef.child(`users/${userId}`).update({ [type]: val });
+            currentRoomRef.child(`users/${userId}`).update({ [type]: val }).catch(() => {});
         }
     },
 
     kickUser(userId) {
         if (Store.isTeacher && currentRoomRef) {
-            currentRoomRef.child(`users/${userId}`).remove();
+            currentRoomRef.child(`users/${userId}`).remove().catch(() => {});
             Utils.showToast("Foydalanuvchi chiqarildi", "success");
         }
     },
 
     sendChat(msg) {
-        if (!currentRoomRef) return;
+        if (!currentRoomRef || !msg) return;
         currentRoomRef.child('chat').push({
-            u: Store.uid,
-            n: Store.name,
-            t: Store.isTeacher,
+            u: Store.uid || 'guest',
+            n: Store.name || 'Foydalanuvchi',
+            t: !!Store.isTeacher,
             m: msg,
             tm: Utils.getTime()
+        }).catch(err => {
+            console.warn('[Firebase] sendChat warning:', err.message);
         });
     },
 
     destroy() {
         if (currentRoomRef) {
             currentRoomRef.off();
-            currentRoomRef.child(`users/${Store.uid}`).remove();
+            if (Store.uid) {
+                currentRoomRef.child(`users/${Store.uid}`).remove().catch(() => {});
+            }
             currentRoomRef = null;
         }
     }

@@ -50,8 +50,9 @@ export class BoardPage {
             return;
         }
 
-        // Authenticated
-        Store.name = user.fullName || user.username || user.email?.split('@')[0];
+        // Authenticated (or Anonymous guest)
+        Store.uid = user.uid;
+        Store.name = user.fullName || user.username || user.name || user.email?.split('@')[0] || 'Mehmon';
 
         if (hash.startsWith('t-')) {
             // Teacher Link Entry
@@ -77,8 +78,15 @@ export class BoardPage {
             const roomData = await RoomAPI.getRoom(roomIdFromUrl);
 
             if (!roomData) {
-                Utils.showToast("Xona topilmadi!", "error");
-                setTimeout(() => window.location.href = 'dashboard.html', 1500);
+                // Allow ad-hoc or direct room joining without redirecting
+                const isOwner = !user.isAnonymous;
+                Store.isTeacher = isOwner;
+                Store.roomId = roomIdFromUrl;
+                Store.teacherSecret = isOwner ? roomIdFromUrl + "SECRET" : null;
+                Store.perms.draw = isOwner;
+                Store.perms.speak = isOwner;
+
+                this.startBoard(roomIdFromUrl, Store.teacherSecret);
                 return;
             }
 
@@ -90,6 +98,9 @@ export class BoardPage {
             Store.perms.speak = isOwner;
 
             this.startBoard(roomIdFromUrl, Store.teacherSecret);
+        } else if (user.isAnonymous) {
+            // Unauthenticated guest with no room link: prompt login / join
+            this.showAuthGateway();
         } else {
             // Default demo or redirect to dashboard
             const defaultRoom = "DEMO01";

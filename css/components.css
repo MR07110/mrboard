@@ -353,3 +353,59 @@
     justify-content: center;
     box-shadow: 0 2px 6px rgba(255, 59, 48, 0.4);
 }
+
+/* ---------- Auth Gateway Overlay ---------- */
+#auth-gateway {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-gateway-container {
+    display: flex;
+    max-width: 1100px;
+    width: 100%;
+    background: var(--bg-panel);
+    backdrop-filter: blur(40px);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: var(--shadow-float);
+    animation: slideUp 0.5s var(--ease-spring);
+}
+
+.auth-info {
+    flex: 1;
+    background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+}
+
+.auth-panel {
+    display: none;
+}
+
+.auth-panel.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@media (max-width: 860px) {
+    .auth-gateway-container {
+        flex-direction: column;
+        border-radius: 28px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    .auth-info {
+        padding: 32px 24px;
+    }
+}
+

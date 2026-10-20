@@ -21,9 +21,9 @@ export class DashboardPage {
     async init() {
         this.initTheme();
 
-        // Check authentication
+        // Check authentication (requires real account for dashboard)
         this.user = await authManager.init();
-        if (!this.user) {
+        if (!this.user || this.user.isAnonymous) {
             window.location.href = 'board.html';
             return;
         }
