@@ -9,6 +9,24 @@ const rootDir = path.resolve(__dirname, '..');
 
 console.log('[BUILD] Building and validating MR BOARD for Production...\n');
 
+// 1. Bundle Modular CSS into css/style.css
+const cssOrder = [
+    'css/base.css',
+    'css/components.css',
+    'css/board.css',
+    'css/dashboard.css',
+    'css/landing.css',
+    'css/docs.css',
+    'css/donate-modal.css'
+];
+
+let bundledCSS = '/* MR BOARD Production Bundled Stylesheet */\n';
+for (const file of cssOrder) {
+    bundledCSS += `\n/* --- ${file} --- */\n` + fs.readFileSync(path.join(rootDir, file), 'utf8');
+}
+fs.writeFileSync(path.join(rootDir, 'css/style.css'), bundledCSS);
+console.log(`[CSS BUNDLE] Bundled ${cssOrder.length} CSS modules into css/style.css (${(bundledCSS.length / 1024).toFixed(2)} KB)\n`);
+
 const htmlPages = ['index.html', 'board.html', 'dashboard.html', 'doc.html'];
 let totalBytes = 0;
 
