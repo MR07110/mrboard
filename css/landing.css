@@ -1,0 +1,275 @@
+/* ==========================================================================
+   MR BOARD · LANDING PAGE STYLES
+   Hero, Interactive Mockup, Features Grid, Glassmorphism Cards, Footer
+   ========================================================================== */
+
+/* Header */
+.landing-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--bg-glass);
+    backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 16px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all var(--transition-normal);
+}
+
+.brand {
+    font-size: 24px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.5px;
+    text-decoration: none;
+    color: var(--text-main);
+    transition: transform var(--transition-fast);
+}
+
+.brand:hover {
+    transform: scale(1.02);
+}
+
+.brand span {
+    color: var(--brand-primary);
+}
+
+.landing-nav {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.landing-nav a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 14px;
+    transition: color var(--transition-fast);
+}
+
+.landing-nav a:hover {
+    color: var(--brand-primary);
+}
+
+/* Hero Section */
+.hero-section {
+    padding: 140px 6% 80px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    background: radial-gradient(circle at 50% 20%, var(--brand-alpha) 0%, transparent 60%);
+}
+
+.hero-badge {
+    background: var(--brand-alpha);
+    color: var(--brand-primary);
+    padding: 8px 18px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px var(--brand-alpha);
+}
+
+.hero-title {
+    font-size: clamp(38px, 6vw, 68px);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -1.5px;
+    margin-bottom: 20px;
+    color: var(--text-main);
+}
+
+.hero-subtitle {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--text-muted);
+    max-width: 680px;
+    margin-bottom: 36px;
+    line-height: 1.6;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 60px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-hero {
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: var(--radius-full);
+}
+
+/* App Mockup Container */
+.mockup-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    background: var(--bg-panel);
+    backdrop-filter: blur(28px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-float);
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.mockup-bar {
+    padding: 12px 18px;
+    background: var(--bg-base);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mockup-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.mockup-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.mockup-dot.red { background: #ff5f56; }
+.mockup-dot.yellow { background: #ffbd2e; }
+.mockup-dot.green { background: #27c93f; }
+
+.mockup-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.mockup-viewport {
+    position: relative;
+    width: 100%;
+    height: 520px;
+    background: var(--bg-canvas);
+    overflow: hidden;
+}
+
+/* Features Grid */
+.features-section {
+    padding: 100px 6%;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.section-head {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-head h2 {
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+}
+
+.section-head p {
+    font-size: 18px;
+    color: var(--text-muted);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.feature-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    padding: 32px 28px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-normal);
+}
+
+.feature-box:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--brand-primary);
+}
+
+.feature-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    background: var(--brand-alpha);
+    color: var(--brand-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.feature-box h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.feature-box p {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* CTA Section */
+.cta-banner {
+    margin: 60px 6% 100px;
+    background: linear-gradient(135deg, var(--brand-primary) 0%, #5856d6 100%);
+    border-radius: 36px;
+    padding: 64px 32px;
+    text-align: center;
+    color: #ffffff;
+    box-shadow: var(--shadow-glow);
+}
+
+.cta-banner h2 {
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 900;
+    margin-bottom: 16px;
+}
+
+.cta-banner p {
+    font-size: 18px;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto 32px;
+}
+
+/* Footer */
+.landing-footer {
+    border-top: 1px solid var(--border-subtle);
+    padding: 40px 6%;
+    background: var(--bg-base);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+}

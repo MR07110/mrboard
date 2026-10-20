@@ -5,620 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>MR BOARD AI · Do'stona Yordamchi</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    
+    <!-- Modular Styles -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        :root {
-            --bg-base: #ffffff;
-            --bg-alt: #f8fafc;
-            --bg-glass: rgba(255,255,255,0.72);
-            --bg-panel: rgba(255,255,255,0.94);
-            --text-main: #0a0c10;
-            --text-muted: #5b6e8c;
-            --border-strong: #e2e8f0;
-            --brand-primary: #007aff;
-            --brand-primary-dark: #0056b3;
-            --brand-alpha: rgba(0,122,255,0.08);
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.02);
-            --shadow-md: 0 8px 24px rgba(0,0,0,0.04);
-            --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.08);
-            --shadow-xl: 0 32px 64px -16px rgba(0,0,0,0.1);
-            --ease-smooth: cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
-            --transition-fast: 0.2s;
-            --transition-normal: 0.35s;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui;
-            background: transparent;
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Modal ichida header ko'rinishi */
-        .modal-header-bar {
-            padding: 12px 20px;
-            background: var(--bg-glass);
-            backdrop-filter: blur(24px);
-            border-bottom: 1px solid var(--border-strong);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo-small {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 18px;
-            font-weight: 700;
-            text-decoration: none;
-            color: var(--text-main);
-        }
-        .logo-small span { color: var(--brand-primary); }
-
-        .modal-close-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--bg-base);
-            border: 1px solid var(--border-strong);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-        .modal-close-btn:hover {
-            background: var(--brand-alpha);
-            transform: rotate(90deg);
-        }
-
-        .chat-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            background: var(--bg-panel);
-        }
-
-        .chat-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-strong);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .ai-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .ai-avatar svg { width: 22px; height: 22px; color: white; }
-
-        .chat-header-info h3 { font-size: 16px; font-weight: 700; }
-        .chat-header-info p { font-size: 11px; color: var(--text-muted); }
-
-        .messages-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .messages-area::-webkit-scrollbar { width: 4px; }
-        .messages-area::-webkit-scrollbar-track { background: var(--border-strong); border-radius: 10px; }
-        .messages-area::-webkit-scrollbar-thumb { background: var(--brand-primary); border-radius: 10px; }
-
-        .message {
-            display: flex;
-            gap: 10px;
-            max-width: 90%;
-            animation: fadeSlideUp 0.3s var(--ease-smooth);
-        }
-        @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .message.ai { align-self: flex-start; }
-        .message.user { align-self: flex-end; flex-direction: row-reverse; }
-
-        .message-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--brand-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .message-avatar.ai { background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-dark)); }
-        .message-avatar.user { background: var(--text-muted); }
-        .message-avatar svg { width: 14px; height: 14px; color: white; }
-
-        .message-content {
-            background: var(--bg-base);
-            padding: 10px 14px;
-            border-radius: 18px;
-            font-size: 13px;
-            line-height: 1.45;
-            border: 1px solid var(--border-strong);
-            max-width: 100%;
-        }
-        .message.ai .message-content {
-            background: var(--brand-alpha);
-            border-color: transparent;
-            border-bottom-left-radius: 4px;
-        }
-        .message.user .message-content {
-            background: var(--brand-primary);
-            color: white;
-            border-bottom-right-radius: 4px;
-            border: none;
-        }
-        .message-time { font-size: 9px; color: var(--text-muted); margin-top: 4px; }
-
-        .typing-indicator { display: flex; gap: 4px; padding: 6px 0; }
-        .typing-indicator span {
-            width: 6px; height: 6px; background: var(--text-muted);
-            border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both;
-        }
-        @keyframes typingBounce { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }
-
-        .input-area {
-            padding: 12px 16px;
-            border-top: 1px solid var(--border-strong);
-            display: flex;
-            gap: 10px;
-            background: var(--bg-panel);
-        }
-        .chat-input {
-            flex: 1;
-            padding: 10px 16px;
-            border-radius: 40px;
-            border: 1px solid var(--border-strong);
-            background: var(--bg-base);
-            font-size: 13px;
-            outline: none;
-        }
-        .chat-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 2px var(--brand-alpha); }
-
-        .send-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--brand-primary);
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--transition-fast);
-        }
-        .send-btn:hover { background: var(--brand-primary-dark); transform: scale(1.03); }
-
-        .quick-questions {
-            padding: 10px 16px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            border-top: 1px solid var(--border-strong);
-        }
-        .quick-q {
-            background: var(--brand-alpha);
-            border: none;
-            border-radius: 30px;
-            padding: 6px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--brand-primary);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-        .quick-q:hover { background: var(--brand-primary); color: white; }
-
-        .new-chat-btn-sm {
-            background: var(--brand-alpha);
-            border: none;
-            border-radius: 30px;
-            padding: 6px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--brand-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        @media (max-width: 768px) {
-            .message { max-width: 95%; }
-            .quick-questions { gap: 6px; }
-            .quick-q { font-size: 10px; padding: 5px 10px; }
-        }
-    </style>
 </head>
-<body>
+<body style="display:flex; flex-direction:column; height:100vh; overflow:hidden; background:var(--bg-base);">
 
-    <div class="modal-header-bar">
-        <div class="logo-small">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="1.8">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            MR <span>BOARD AI</span>
+    <!-- Header Bar -->
+    <header class="ai-header-bar">
+        <div class="ai-header-title">
+            <div class="ai-status-dot"></div>
+            <span>MR BOARD AI Studio</span>
         </div>
-        <button class="modal-close-btn" id="closeModalBtn">
-            <i data-lucide="x" size="16"></i>
-        </button>
-    </div>
+        <a href="dashboard.html" class="btn btn-ghost" style="padding:4px 10px; font-size:12px;">
+            <i data-lucide="arrow-left" size="14"></i> Dashboard
+        </a>
+    </header>
 
-    <div class="chat-container">
-        <div class="chat-header">
-            <div class="ai-avatar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                    <path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/>
-                </svg>
-            </div>
-            <div class="chat-header-info">
-                <h3>AI Yordamchi</h3>
-                <p>💬 Do'stona · Xona yaratish · Savol-javob</p>
-            </div>
-            <div style="margin-left: auto;">
-                <button class="new-chat-btn-sm" id="newChatBtnSm">
-                    <i data-lucide="plus" size="12"></i> Yangi
-                </button>
-            </div>
+    <!-- Chat Messages Body -->
+    <main class="ai-messages-body" id="standalone-ai-messages">
+        <div class="ai-bubble assistant">
+            👋 Assalomu alaykum! Men MR BOARD sun'iy intellekt yordamchisiman. Doska bo'yicha qanday yordam bera olaman?
         </div>
+    </main>
 
-        <div class="messages-area" id="messagesArea"></div>
+    <!-- Composer -->
+    <footer class="ai-composer">
+        <input type="text" id="standalone-ai-input" class="ai-input" placeholder="Savolingizni yozing..." maxlength="400">
+        <button id="standalone-ai-send" class="ai-send-btn"><i data-lucide="send" size="18"></i></button>
+    </footer>
 
-        <div class="quick-questions">
-            <button class="quick-q" data-question="xona yarat">🏠 Xona yarat</button>
-            <button class="quick-q" data-question="mening xonalarim">📋 Xonalarim</button>
-            <button class="quick-q" data-question="qisqa yo'llar">⌨️ Qisqa yo'llar</button>
-            <button class="quick-q" data-question="MR BOARD haqida">📚 Haqida</button>
-        </div>
+    <script type="module">
+        import { aiAssistant } from './js/api/ai.js';
+        import { Utils } from './js/utils.js';
 
-        <div class="input-area">
-            <input type="text" id="chatInput" class="chat-input" placeholder="Salom! Xona yaratmoqchiman...">
-            <button class="send-btn" id="sendBtn"><i data-lucide="send" size="16"></i></button>
-        </div>
-    </div>
+        const body = document.getElementById('standalone-ai-messages');
+        const input = document.getElementById('standalone-ai-input');
+        const sendBtn = document.getElementById('standalone-ai-send');
 
-    <script>
-        lucide.createIcons();
+        let history = [];
+        let processing = false;
 
-        // ========== CONFIG ==========
-        const GROQ_API_KEY = "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";
-        const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+        async function handleSend() {
+            const text = input.value.trim();
+            if (!text || processing) return;
 
-        let currentUser = null;
-        let chatHistory = [];
-        let pendingAction = null;
-        let waitingFor = null;
-
-        function loadChat() {
-            const saved = localStorage.getItem(`mrboard_ai_chat_${currentUser?.uid || 'guest'}`);
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    chatHistory = data.history || [];
-                    renderMessages();
-                } catch(e) { startNewChat(); }
-            } else {
-                startNewChat();
-            }
-        }
-
-        function startNewChat() {
-            chatHistory = [];
-            pendingAction = null;
-            waitingFor = null;
-            
-            const welcomeMsg = {
-                role: 'assistant',
-                content: `👋 **Salom!** Men MR BOARD AI yordamchisiman.\n\n🤗 "xona yarat" deb yozing, men sizga nomini, turini so'rayman.\n🔹 "random" desangiz, o'zim chiroyli nom tanlayman.\n🔹 Barcha suhbatlar avtomatik saqlanadi.\n\n✨ Nima qilamiz? Xona yaratmoqchimisiz?`
-            };
-            chatHistory.push(welcomeMsg);
-            saveChat();
-            renderMessages();
-        }
-
-        function saveChat() {
-            if (!currentUser) return;
-            localStorage.setItem(`mrboard_ai_chat_${currentUser.uid}`, JSON.stringify({
-                history: chatHistory,
-                updatedAt: Date.now()
-            }));
-        }
-
-        function renderMessages() {
-            const container = document.getElementById('messagesArea');
-            if (!container) return;
-            container.innerHTML = '';
-            
-            for (const msg of chatHistory) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${msg.role}`;
-                
-                const avatar = msg.role === 'assistant' 
-                    ? `<div class="message-avatar ai"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 8V4H8"/><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></div>`
-                    : `<div class="message-avatar user"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
-                
-                messageDiv.innerHTML = `${avatar}<div class="message-content">${msg.content.replace(/\n/g, '<br>')}<div class="message-time">${msg.time || 'hozir'}</div></div>`;
-                container.appendChild(messageDiv);
-            }
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function addMessage(role, content) {
-            chatHistory.push({
-                role: role,
-                content: content,
-                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
-            });
-            saveChat();
-            renderMessages();
-        }
-
-        // ========== FIREBASE ACTIONS ==========
-        async function createRoomFinal(name, isPublic, password = null) {
-            if (!currentUser) throw new Error('Login qilmagan');
-            const roomCode = Math.random().toString(36).substr(2, 6).toUpperCase();
-            const teacherSecret = Math.random().toString(36).substr(2, 16);
-            
-            const userSnap = await firebase.database().ref(`users/${currentUser.uid}`).once('value');
-            const userData = userSnap.val() || {};
-            
-            await firebase.database().ref(`rooms/${roomCode}`).set({
-                name: name,
-                createdBy: currentUser.uid,
-                createdByName: userData.fullName || userData.username || currentUser.email?.split('@')[0],
-                createdAt: Date.now(),
-                isPublic: isPublic,
-                hasPassword: password ? true : false,
-                password: password || null,
-                isActive: true,
-                teacherSecret: teacherSecret,
-                elements: {}
-            });
-            return { roomCode, name };
-        }
-
-        async function getMyRooms() {
-            if (!currentUser) return [];
-            const snap = await firebase.database().ref('rooms').once('value');
-            const rooms = snap.val() || {};
-            const myRooms = [];
-            for (const [id, r] of Object.entries(rooms)) {
-                if (r.isActive !== false && r.createdBy === currentUser.uid) {
-                    myRooms.push({ id, name: r.name, userCount: r.users ? Object.keys(r.users).length : 0 });
-                }
-            }
-            return myRooms.sort((a,b) => b.createdAt - a.createdAt);
-        }
-
-        // ========== SAVOL-JAVOB USLUBIDA ISHLASH ==========
-        async function handleUserMessage(message) {
-            const lower = message.toLowerCase();
-            
-            // 1. Agar kutayotgan bo'lsak (xona yaratish jarayoni)
-            if (waitingFor === 'room_name') {
-                let roomName = message.trim();
-                if (roomName.toLowerCase().includes('random') || roomName === '?' || roomName === 'ixtiyoriy' || roomName === 'o\'zing tanla') {
-                    const randomNames = ['Dasturlash', 'Matematika', 'Fizika', 'Kimyo', 'Biologiya', 'Tarix', 'Ingliz tili', 'San\'at', 'Musiqa', 'Geografiya', 'Adabiyot', 'Algoritmlar', 'Web Dasturlash', 'Mobil Dasturlash', 'Sun\'iy Intellekt'];
-                    roomName = randomNames[Math.floor(Math.random() * randomNames.length)];
-                    addMessage('assistant', `📝 **Qiziqarli tanlov!** Xona nomini "${roomName}" qilib belgiladim. Xona turi qanday bo'lsin? **Public** (hamma kirishi mumkin) yoki **Private** (parol bilan)?`);
-                    waitingFor = 'room_type';
-                    pendingAction = { name: roomName };
-                    return;
-                }
-                if (roomName.length < 2) {
-                    addMessage('assistant', `😊 Nom juda qisqa. Kamida 2 harfli nom yozing yoki "random" deb ayting, men o'zim tanlayman.`);
-                    return;
-                }
-                addMessage('assistant', `✅ **"${roomName}"** nomli xona bo'ladi. Endi xona turini tanlang:\n\n🔓 **Public** - hamma kirishi mumkin\n🔒 **Private** - parol bilan himoyalanadi\n\nQaysi birini tanlaysiz?`);
-                waitingFor = 'room_type';
-                pendingAction = { name: roomName };
-                return;
-            }
-            
-            if (waitingFor === 'room_type') {
-                const isPrivate = lower.includes('private') || lower.includes('maxfiy') || lower.includes('parol') || lower.includes('yopiq');
-                const isPublic = lower.includes('public') || lower.includes('ochiq') || lower.includes('hamma');
-                
-                if (!isPrivate && !isPublic) {
-                    addMessage('assistant', `🤔 Tushunmadim. Xona turi: **Public** (hamma kirishi mumkin) yoki **Private** (parol bilan)?`);
-                    return;
-                }
-                
-                const password = isPrivate ? Math.random().toString(36).substr(2, 6) : null;
-                
-                addMessage('assistant', `⏳ Xona yaratilmoqda, biroz sabr qiling...`);
-                
-                try {
-                    const { roomCode, name } = await createRoomFinal(pendingAction.name, !isPrivate, password);
-                    
-                    let response = `🎉 **Xona muvaffaqiyatli yaratildi!**\n\n`;
-                    response += `📌 **Xona nomi:** ${name}\n`;
-                    response += `🔑 **Xona kodi:** \`${roomCode}\`\n`;
-                    if (password) response += `🔒 **Parol:** \`${password}\`\n`;
-                    response += `\n💡 "${roomCode} kodli xonaga kir" deb yozing.`;
-                    
-                    addMessage('assistant', response);
-                    
-                    waitingFor = null;
-                    pendingAction = null;
-                    
-                    const rooms = await getMyRooms();
-                    if (rooms.length > 0) {
-                        addMessage('assistant', `📋 Hozir ${rooms.length} ta xonangiz bor. "xonalarim" deb ko'rishingiz mumkin.`);
-                    }
-                } catch(e) {
-                    addMessage('assistant', `❌ Xatolik: ${e.message}. Qaytadan urinib ko'ring.`);
-                    waitingFor = null;
-                    pendingAction = null;
-                }
-                return;
-            }
-            
-            // 2. Xona yaratishni boshlash
-            if (lower.includes('xona yarat') || lower.includes('yangi xona') || lower.includes('create room')) {
-                addMessage('assistant', `🎯 **Yangi xona yaratish uchun:**\n\n📝 **Xona nomi** nima bo'lsin?\n\n💡 "random" desangiz, o'zim chiroyli nom tanlayman.`);
-                waitingFor = 'room_name';
-                return;
-            }
-            
-            // 3. Mening xonalarim
-            if (lower.includes('mening xonalarim') || lower.includes('xonalarim') || lower.includes('my rooms')) {
-                const rooms = await getMyRooms();
-                if (rooms.length === 0) {
-                    addMessage('assistant', `📭 **Hozircha xonangiz yo'q.**\n\n🔹 "xona yarat" deb yozing, men yordam beraman!`);
-                } else {
-                    let response = `📋 **Sizning xonalaringiz (${rooms.length} ta):**\n\n`;
-                    for (const r of rooms) {
-                        response += `• **${r.name}**\n  🔑 Kod: \`${r.id}\` | 👥 ${r.userCount} kishi\n`;
-                    }
-                    response += `\n💡 Xonaga kirish: \`${rooms[0]?.id} kodli xonaga kir\` deb yozing.`;
-                    addMessage('assistant', response);
-                }
-                return;
-            }
-            
-            // 4. Qisqa yo'llar
-            if (lower.includes('qisqa yo\'l') || lower.includes('shortcut') || lower.includes('klaviatura')) {
-                addMessage('assistant', `⌨️ **Qisqa yo'llar:**\n\n• B → Qalam\n• E → O'chirgich\n• L → Lazer\n• H → Surish\n• Ctrl+Z → Bekor\n• M → Mikrofon\n• C → Chat\n• U → Foydalanuvchilar\n• F → Fullscreen`);
-                return;
-            }
-            
-            // 5. MR BOARD haqida
-            if (lower.includes('mr board haqida') || lower.includes('about') || lower.includes('nima bu')) {
-                addMessage('assistant', `📚 **MR BOARD** - Muhammadrasul Qosimov yaratgan real vaqtli whiteboard.\n\n✨ **Xususiyatlar:** Cheksiz doska, qalam, o'chirgich, lazer, ovoz, chat, xonalar, minimap, JSON/PNG, dark mode.\n\n👨‍💻 Muallif: Muhammadrasul Qosimov\n📦 Versiya: Enterprise 2.0`);
-                return;
-            }
-            
-            // 6. Groq AI ga yuborish
-            addMessage('assistant', `🤔 **O'ylayapman...**`);
-            
-            try {
-                const response = await fetch(GROQ_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_API_KEY}` },
-                    body: JSON.stringify({
-                        model: "llama-3.3-70b-versatile",
-                        messages: [
-                            { role: "system", content: "Siz MR BOARD AI yordamchisisiz. Do'stona, iliq, qisqa va foydali javob bering. O'zbek tilida." },
-                            { role: "user", content: message }
-                        ],
-                        max_tokens: 300,
-                        temperature: 0.8
-                    })
-                });
-                const data = await response.json();
-                const aiResponse = data.choices[0].message.content;
-                
-                chatHistory.pop();
-                saveChat();
-                renderMessages();
-                addMessage('assistant', aiResponse);
-                
-            } catch(e) {
-                chatHistory.pop();
-                saveChat();
-                renderMessages();
-                addMessage('assistant', `❌ Kechirasiz, xatolik yuz berdi. Qaytadan urinib ko'ring.`);
-            }
-        }
-        
-        // ========== SEND MESSAGE ==========
-        let isLoading = false;
-        
-        async function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            if (!message || isLoading) return;
-            
-            addMessage('user', message);
             input.value = '';
-            isLoading = true;
-            
-            await handleUserMessage(message);
-            
-            isLoading = false;
-            input.focus();
+            appendMsg('user', text);
+            history.push({ role: 'user', content: text });
+
+            processing = true;
+            const loading = appendMsg('assistant', '🤔 O\'ylayapman...');
+
+            try {
+                const answer = await aiAssistant.chat(history);
+                loading.innerHTML = Utils.sanitize(answer).replace(/\n/g, '<br>');
+                history.push({ role: 'assistant', content: answer });
+            } catch (err) {
+                loading.innerText = "Xatolik yuz berdi.";
+            } finally {
+                processing = false;
+            }
         }
-        
-        // ========== MODAL YOPISH ==========
-        function closeModal() {
-            window.parent.postMessage('closeAIModal', '*');
+
+        function appendMsg(role, text) {
+            const bubble = document.createElement('div');
+            bubble.className = `ai-bubble ${role}`;
+            bubble.innerHTML = Utils.sanitize(text).replace(/\n/g, '<br>');
+            body.appendChild(bubble);
+            body.scrollTop = body.scrollHeight;
+            return bubble;
         }
-        
-        // ========== AUTH ==========
-        const firebaseConfig = {
-            apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0",
-            authDomain: "basic-formula-484419-k8.firebaseapp.com",
-            databaseURL: "https://basic-formula-484419-k8-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "basic-formula-484419-k8",
-            storageBucket: "basic-formula-484419-k8.firebasestorage.app",
-            messagingSenderId: "629679926764",
-            appId: "1:629679926764:web:0cff483e9c4752fbd024c9"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                currentUser = user;
-                loadChat();
-                
-                const snap = await firebase.database().ref(`users/${user.uid}`).once('value');
-                const data = snap.val() || {};
-                const userName = data.fullName || data.username || user.email?.split('@')[0];
-                
-                if (chatHistory.length <= 1) {
-                    addMessage('assistant', `👋 **Salom ${userName}!**\n\n"xona yarat" deb yozing, men yordam beraman.`);
-                }
+
+        sendBtn.addEventListener('click', handleSend);
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSend();
             }
         });
-        
-        // ========== EVENT LISTENERS ==========
-        document.getElementById('sendBtn').addEventListener('click', sendMessage);
-        document.getElementById('chatInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-        });
-        document.getElementById('newChatBtnSm').addEventListener('click', () => {
-            if (confirm('Yangi suhbat boshlansin? Avvalgi suhbat saqlanmaydi.')) {
-                startNewChat();
-            }
-        });
-        document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-        
-        document.querySelectorAll('.quick-q').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById('chatInput').value = btn.dataset.question;
-                sendMessage();
-            });
-        });
+
+        if (window.lucide) window.lucide.createIcons();
     </script>
 </body>
 </html>

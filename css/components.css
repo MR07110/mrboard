@@ -1,0 +1,355 @@
+/* ==========================================================================
+   MR BOARD · COMMON UI COMPONENTS
+   Buttons, Form Inputs, Modals, Drawers, Cards, Toasts, Badges
+   ========================================================================== */
+
+/* ---------- Buttons ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    user-select: none;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn-primary {
+    background: var(--brand-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 14px var(--brand-alpha);
+}
+
+.btn-primary:hover {
+    background: var(--brand-hover);
+    box-shadow: 0 6px 20px var(--brand-alpha);
+    transform: translateY(-1px);
+}
+
+.btn-ghost {
+    background: var(--bg-hover);
+    color: var(--text-main);
+    border: 1px solid var(--border-subtle);
+}
+
+.btn-ghost:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: var(--border-strong);
+}
+
+.btn-danger {
+    background: var(--state-danger);
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background: #d32f2f;
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+    background: var(--bg-hover);
+    transform: scale(1.05);
+}
+
+/* ---------- Form Inputs ---------- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-base);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    color: var(--text-main);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: all var(--transition-fast);
+}
+
+.form-input:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 4px var(--brand-alpha);
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* Error & Success Messages */
+.error-message {
+    font-size: 13px;
+    color: var(--state-danger);
+    margin-top: 4px;
+    display: none;
+}
+
+.error-message.show,
+.error-message:not(:empty) {
+    display: block;
+}
+
+.success-message {
+    font-size: 13px;
+    color: var(--state-success);
+    margin-top: 4px;
+    display: none;
+}
+
+.success-message.show,
+.success-message:not(:empty) {
+    display: block;
+}
+
+/* ---------- Backdrop & Modals ---------- */
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(8px);
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-normal);
+}
+
+.backdrop.is-visible,
+.backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    background: var(--bg-panel);
+    backdrop-filter: blur(28px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    width: 90%;
+    max-width: 480px;
+    z-index: 101;
+    box-shadow: var(--shadow-float);
+    opacity: 0;
+    pointer-events: none;
+    transition: all var(--transition-normal);
+}
+
+.modal-box.is-visible,
+.modal-box.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* ---------- Drawers ---------- */
+.drawer {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 340px;
+    max-height: calc(100vh - 40px);
+    background: var(--bg-panel);
+    backdrop-filter: blur(32px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-float);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateX(-400px);
+    transition: transform var(--transition-normal);
+}
+
+.drawer.right {
+    left: auto;
+    right: 20px;
+    transform: translateX(400px);
+}
+
+.drawer.is-open {
+    transform: translateX(0);
+}
+
+.drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.drawer-title {
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drawer-content {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+}
+
+.btn-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-hover);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: all var(--transition-fast);
+}
+
+.btn-close:hover {
+    color: var(--text-main);
+    transform: rotate(90deg);
+}
+
+/* ---------- Toast Notifications ---------- */
+.toast-wrapper {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: auto;
+    background: var(--bg-panel);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-subtle);
+    padding: 12px 22px;
+    border-radius: var(--radius-full);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: toastPop 0.35s var(--ease-spring);
+    transition: all 0.25s ease;
+}
+
+.toast.success { border-left: 4px solid var(--state-success); }
+.toast.error { border-left: 4px solid var(--state-danger); }
+.toast.warning { border-left: 4px solid var(--state-warning); }
+.toast.info { border-left: 4px solid var(--brand-primary); }
+
+@keyframes toastPop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ---------- User Avatar & Badges ---------- */
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--brand-primary);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.badge-counter {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--state-danger);
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 99px;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(255, 59, 48, 0.4);
+}

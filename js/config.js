@@ -1,4 +1,4 @@
-// js/config.js - O'zingizning Firebase kalitlaringiz
+// js/config.js - MR BOARD Configuration
 
 export const firebaseConfig = {
     apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0",
@@ -11,12 +11,27 @@ export const firebaseConfig = {
     measurementId: "G-WR9D0BWR86"
 };
 
+export const groqConfig = {
+    apiKey: "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",
+    apiUrl: "https://api.groq.com/openai/v1/chat/completions",
+    model: "llama-3.3-70b-versatile"
+};
+
 export const appConfig = {
+    appName: "MR BOARD",
+    version: "2.0.0",
     maxFileSize: 5 * 1024 * 1024,
     maxMessageLength: 250,
     defaultZoom: 1,
     minZoom: 0.2,
-    maxZoom: 5
+    maxZoom: 5,
+    defaultStrokeSize: 4,
+    defaultStrokeColor: "#007aff",
+    defaultLaserColor: "#ff3b30"
 };
 
-export default firebaseConfig;
+export default {
+    firebase: firebaseConfig,
+    groq: groqConfig,
+    app: appConfig
+};

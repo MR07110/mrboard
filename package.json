@@ -1,0 +1,25 @@
+{
+  "name": "mrboard",
+  "version": "2.0.0",
+  "description": "MR BOARD · Enterprise Online Interactive Whiteboard Platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npx -y serve . -l 3000",
+    "dev": "npx -y serve . -l 3000",
+    "test": "node scripts/test.mjs",
+    "build": "node scripts/build.mjs",
+    "deploy": "npx vercel --prod"
+  },
+  "keywords": [
+    "whiteboard",
+    "canvas",
+    "realtime",
+    "collaboration",
+    "firebase",
+    "webrtc",
+    "education"
+  ],
+  "author": "Muhammadrasul Qosimov",
+  "license": "MIT"
+}

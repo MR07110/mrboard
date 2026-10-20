@@ -1,0 +1,119 @@
+/* ==========================================================================
+   MR BOARD · DOCUMENTATION STYLES
+   Sidebar Navigation, Content, Tables, Code Blocks
+   ========================================================================== */
+
+.docs-layout {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-alt);
+}
+
+.docs-sidebar {
+    width: 280px;
+    background: var(--bg-base);
+    border-right: 1px solid var(--border-subtle);
+    padding: 32px 20px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.docs-nav-group h4 {
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    padding-left: 12px;
+}
+
+.docs-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.docs-nav-link:hover,
+.docs-nav-link.active {
+    color: var(--brand-primary);
+    background: var(--brand-alpha);
+}
+
+.docs-content {
+    flex: 1;
+    max-width: 900px;
+    padding: 48px 60px 100px;
+}
+
+.docs-section {
+    margin-bottom: 56px;
+    scroll-margin-top: 40px;
+}
+
+.docs-section h1 {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+}
+
+.docs-section h2 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 28px 0 12px;
+}
+
+.docs-section p {
+    font-size: 16px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.shortcuts-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.shortcuts-table th,
+.shortcuts-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 14px;
+}
+
+.shortcuts-table th {
+    background: var(--bg-panel);
+    font-weight: 700;
+}
+
+kbd {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 12px;
+    box-shadow: 0 2px 0 var(--border-strong);
+}
