@@ -51,7 +51,7 @@ export class DashboardPage {
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('mrboard_theme', next);
         this.updateThemeUI(next);
-        Utils.showToast(next === 'dark' ? 'Qorong'u rejim yoqildi' : 'Yorug' rejim yoqildi', 'info');
+        Utils.showToast(next === 'dark' ? "Qorong'u rejim yoqildi" : "Yorug' rejim yoqildi", 'info');
     }
 
     updateThemeUI(theme) {

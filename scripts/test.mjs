@@ -69,26 +69,15 @@ const jsFiles = [
 ];
 jsFiles.forEach(checkFile);
 
-// 4. Test Syntax of JS modules
-console.log('\n--- 4. Validating JS Module Syntax ---');
+// 4. Test Syntax of JS modules using V8 Engine (node -c)
+console.log('\n--- 4. Validating JS Module Syntax (V8 check) ---');
+import { execSync } from 'node:child_process';
 for (const relPath of jsFiles) {
     const fullPath = path.join(rootDir, relPath);
-    const content = fs.readFileSync(fullPath, 'utf8');
     try {
-        // Simple regex check for unbalanced brackets/parentheses
-        let braces = 0;
-        let parens = 0;
-        for (let char of content) {
-            if (char === '{') braces++;
-            if (char === '}') braces--;
-            if (char === '(') parens++;
-            if (char === ')') parens--;
-        }
-        if (braces !== 0 || parens !== 0) {
-            console.error(`⚠️ Possible syntax imbalance in ${relPath} (braces: ${braces}, parens: ${parens})`);
-        }
+        execSync(`node -c "${fullPath}"`, { stdio: 'pipe' });
     } catch (e) {
-        console.error(`❌ Syntax error parsing ${relPath}:`, e.message);
+        console.error(`❌ Syntax error in ${relPath}:\n`, e.stderr?.toString() || e.message);
         failed = true;
     }
 }
