@@ -30,85 +30,165 @@
         <i data-lucide="maximize-2"></i>
     </button>
 
-    <!-- ==================== AUTH GATEWAY (LOGIN / REGISTER) ==================== -->
-    <div id="auth-gateway">
-        <div class="auth-gateway-container">
-            <div class="auth-info">
-                <div class="auth-info-content">
-                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                        <h2 style="font-size:26px; font-weight:900;">MR <span style="opacity:0.85;">BOARD</span></h2>
+    <!-- ==================== AUTH GATEWAY (LOGIN / REGISTER / GUEST) ==================== -->
+    <div id="auth-gateway" class="auth-gateway-overlay">
+        <div class="auth-card">
+            <!-- Left Branding Showcase -->
+            <div class="auth-showcase">
+                <div class="auth-showcase-top">
+                    <div class="auth-brand">
+                        <div class="auth-brand-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <span class="auth-brand-name">MR <strong>BOARD</strong></span>
+                        <span class="auth-badge">v2.0</span>
                     </div>
-                    <h1 style="font-size:36px; font-weight:900; line-height:1.2; margin-bottom:16px;">Jamoaviy ishlashning<br>yangi davri</h1>
-                    <p style="font-size:16px; opacity:0.9; margin-bottom:32px;">Real-time whiteboard. Ovozli aloqa. Cheksiz doska. Barchasi bir joyda.</p>
-                    
-                    <div style="display:flex; gap:24px;">
-                        <div><div style="font-size:24px; font-weight:900;">0ms</div><div style="font-size:12px; opacity:0.8;">Kechikish</div></div>
-                        <div><div style="font-size:24px; font-weight:900;">∞</div><div style="font-size:12px; opacity:0.8;">Cheksiz doska</div></div>
-                        <div><div style="font-size:24px; font-weight:900;">🎤</div><div style="font-size:12px; opacity:0.8;">Audio chat</div></div>
+
+                    <h1 class="auth-showcase-title">Jamoaviy ishlashning yangi davri</h1>
+                    <p class="auth-showcase-desc">
+                        Cheksiz doska, kristaldek tiniq audio aloqa va nol kechikish bilan g'oyalaringizni birga yarating.
+                    </p>
+
+                    <div class="auth-showcase-features">
+                        <div class="auth-feature-item">
+                            <i data-lucide="zap" size="18"></i>
+                            <span>0ms kechikish bilan real-time doska</span>
+                        </div>
+                        <div class="auth-feature-item">
+                            <i data-lucide="infinity" size="18"></i>
+                            <span>Cheksiz zoom va koordinata tizimi</span>
+                        </div>
+                        <div class="auth-feature-item">
+                            <i data-lucide="mic" size="18"></i>
+                            <span>Jonli audio muloqot va real-time chat</span>
+                        </div>
                     </div>
+                </div>
+
+                <div class="auth-showcase-bottom">
+                    <a href="index.html" class="auth-back-link">
+                        <i data-lucide="arrow-left" size="16"></i> Bosh sahifaga qaytish
+                    </a>
                 </div>
             </div>
 
-            <div style="flex:1; padding:40px; background:var(--bg-panel); display:flex; flex-direction:column; justify-content:center;">
-                <div style="display:flex; gap:12px; margin-bottom:24px; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
-                    <button class="auth-tab active tab-btn" data-tab="login">Kirish</button>
-                    <button class="auth-tab tab-btn" data-tab="register">Ro'yxatdan o'tish</button>
+            <!-- Right Interactive Form Panel -->
+            <div class="auth-form-panel">
+                <!-- Navigation Tabs -->
+                <div class="auth-tabs-nav">
+                    <button type="button" class="auth-tab-btn active" data-tab="login">Kirish</button>
+                    <button type="button" class="auth-tab-btn" data-tab="register">Ro'yxatdan o'tish</button>
+                    <button type="button" class="auth-tab-btn" data-tab="guest">Mehmon / Xona</button>
                 </div>
 
-                <!-- Login Panel -->
-                <div class="auth-panel active" id="login-panel">
-                    <div class="form-group">
-                        <label><i data-lucide="mail" size="14"></i> Email</label>
-                        <input type="email" id="login-email" class="form-input" placeholder="email@example.com">
+                <!-- 1. LOGIN PANEL -->
+                <div class="auth-panel-body active" id="login-panel">
+                    <div class="auth-panel-header">
+                        <h2>Xush kelibsiz!</h2>
+                        <p>Profilingizga kirish uchun ma'lumotlarni kiriting.</p>
                     </div>
-                    <div class="form-group">
-                        <label><i data-lucide="lock" size="14"></i> Parol</label>
-                        <input type="password" id="login-password" class="form-input" placeholder="••••••••">
-                    </div>
-                    <div class="error-message" id="login-error"></div>
-                    <button class="btn btn-primary" id="btn-login" style="width:100%; padding:14px; margin-top:12px;">
-                        <i data-lucide="log-in" size="16"></i> Kirish
-                    </button>
+
+                    <form class="auth-form" onsubmit="return false;">
+                        <div class="auth-input-group">
+                            <label><i data-lucide="mail" size="14"></i> Email</label>
+                            <input type="email" id="login-email" class="auth-input" placeholder="email@example.com" autocomplete="email">
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label><i data-lucide="lock" size="14"></i> Parol</label>
+                            <input type="password" id="login-password" class="auth-input" placeholder="••••••••" autocomplete="current-password">
+                        </div>
+
+                        <div class="auth-error-box" id="login-error"></div>
+
+                        <button type="button" class="auth-submit-btn btn-primary" id="btn-login">
+                            <i data-lucide="log-in" size="18"></i> Tizimga kirish
+                        </button>
+                    </form>
                 </div>
 
-                <!-- Register Panel -->
-                <div class="auth-panel" id="register-panel" style="display:none;">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i data-lucide="user" size="14"></i> Ism</label>
-                            <input type="text" id="reg-firstname" class="form-input" placeholder="Ismingiz">
+                <!-- 2. REGISTER PANEL -->
+                <div class="auth-panel-body" id="register-panel" style="display:none;">
+                    <div class="auth-panel-header">
+                        <h2>Ro'yxatdan o'tish</h2>
+                        <p>Akkauntingizni yarating va barcha imkoniyatlardan foydalaning.</p>
+                    </div>
+
+                    <form class="auth-form" onsubmit="return false;">
+                        <div class="auth-input-row">
+                            <div class="auth-input-group">
+                                <label><i data-lucide="user" size="14"></i> Ism</label>
+                                <input type="text" id="reg-firstname" class="auth-input" placeholder="Ismingiz">
+                            </div>
+                            <div class="auth-input-group">
+                                <label><i data-lucide="user" size="14"></i> Familiya</label>
+                                <input type="text" id="reg-lastname" class="auth-input" placeholder="Familiyangiz">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label><i data-lucide="user" size="14"></i> Familiya</label>
-                            <input type="text" id="reg-lastname" class="form-input" placeholder="Familiyangiz">
+
+                        <div class="auth-input-group">
+                            <label><i data-lucide="at-sign" size="14"></i> Username</label>
+                            <input type="text" id="reg-username" class="auth-input" placeholder="username">
                         </div>
+
+                        <div class="auth-input-group">
+                            <label><i data-lucide="mail" size="14"></i> Email</label>
+                            <input type="email" id="reg-email" class="auth-input" placeholder="email@example.com" autocomplete="email">
+                        </div>
+
+                        <div class="auth-input-row">
+                            <div class="auth-input-group">
+                                <label><i data-lucide="lock" size="14"></i> Parol</label>
+                                <input type="password" id="reg-password" class="auth-input" placeholder="••••••••" autocomplete="new-password">
+                            </div>
+                            <div class="auth-input-group">
+                                <label><i data-lucide="lock" size="14"></i> Tasdiqlash</label>
+                                <input type="password" id="reg-confirm" class="auth-input" placeholder="••••••••" autocomplete="new-password">
+                            </div>
+                        </div>
+
+                        <div class="auth-error-box" id="register-error"></div>
+
+                        <button type="button" class="auth-submit-btn btn-primary" id="btn-register">
+                            <i data-lucide="user-plus" size="18"></i> Akkaunt yaratish
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 3. GUEST / QUICK ROOM JOIN PANEL -->
+                <div class="auth-panel-body" id="guest-panel" style="display:none;">
+                    <div class="auth-panel-header">
+                        <h2>Tezkor kirish</h2>
+                        <p>Akkauntsiz, to'g'ridan-to'g'ri dars yoki xonaga ulaning.</p>
                     </div>
-                    <div class="form-group">
-                        <label><i data-lucide="at-sign" size="14"></i> Username</label>
-                        <input type="text" id="reg-username" class="form-input" placeholder="username">
-                    </div>
-                    <div class="form-group">
-                        <label><i data-lucide="mail" size="14"></i> Email</label>
-                        <input type="email" id="reg-email" class="form-input" placeholder="email@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label><i data-lucide="lock" size="14"></i> Parol</label>
-                        <input type="password" id="reg-password" class="form-input" placeholder="••••••••">
-                    </div>
-                    <div class="form-group">
-                        <label><i data-lucide="lock" size="14"></i> Parolni tasdiqlang</label>
-                        <input type="password" id="reg-confirm" class="form-input" placeholder="••••••••">
-                    </div>
-                    <div class="error-message" id="register-error"></div>
-                    <button class="btn btn-primary" id="btn-register" style="width:100%; padding:14px; margin-top:12px;">
-                        <i data-lucide="user-plus" size="16"></i> Ro'yxatdan o'tish
-                    </button>
+
+                    <form class="auth-form" onsubmit="return false;">
+                        <div class="auth-input-group">
+                            <label><i data-lucide="user" size="14"></i> Sizning ismingiz</label>
+                            <input type="text" id="guest-name" class="auth-input" placeholder="Masalan: Azizbek" maxlength="30">
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label><i data-lucide="hash" size="14"></i> Xona kodi (mavjud bo'lsa)</label>
+                            <input type="text" id="guest-room-code" class="auth-input" placeholder="XXXXXX" maxlength="6" style="text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">
+                        </div>
+
+                        <div class="auth-error-box" id="guest-error"></div>
+
+                        <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+                            <button type="button" class="auth-submit-btn btn-primary" id="btn-guest-join">
+                                <i data-lucide="arrow-right-circle" size="18"></i> Xonaga ulanish
+                            </button>
+                            <button type="button" class="auth-submit-btn btn-secondary" id="btn-guest-create">
+                                <i data-lucide="plus-circle" size="18"></i> Yangi xona ochish
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

@@ -24,7 +24,7 @@ function checkFile(relPath) {
 
 // 1. Check HTML Pages
 console.log('--- 1. Checking Core HTML Files ---');
-['index.html', 'board.html', 'dashboard.html', 'doc.html', 'ai.html'].forEach(checkFile);
+['index.html', 'board.html', 'dashboard.html', 'doc.html'].forEach(checkFile);
 
 // 2. Check Modular CSS Files
 console.log('\n--- 2. Checking CSS Architecture ---');
@@ -36,7 +36,6 @@ console.log('\n--- 2. Checking CSS Architecture ---');
     'css/dashboard.css',
     'css/landing.css',
     'css/docs.css',
-    'css/ai-modal.css',
     'css/donate-modal.css'
 ].forEach(checkFile);
 
@@ -48,7 +47,6 @@ const jsFiles = [
     'js/events.js',
     'js/utils.js',
     'js/api/firebase.js',
-    'js/api/ai.js',
     'js/auth/auth-manager.js',
     'js/engine/camera.js',
     'js/engine/renderer.js',
@@ -59,7 +57,6 @@ const jsFiles = [
     'js/components/users.js',
     'js/components/audio.js',
     'js/components/shortcuts.js',
-    'js/components/ai-assistant.js',
     'js/components/donate-modal.js',
     'js/components/demo-player.js',
     'js/pages/landing.js',

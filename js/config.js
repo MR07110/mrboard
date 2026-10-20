@@ -11,12 +11,6 @@ export const firebaseConfig = {
     measurementId: "G-WR9D0BWR86"
 };
 
-export const groqConfig = {
-    apiKey: "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",
-    apiUrl: "https://api.groq.com/openai/v1/chat/completions",
-    model: "llama-3.3-70b-versatile"
-};
-
 export const appConfig = {
     appName: "MR BOARD",
     version: "2.0.0",
@@ -32,6 +26,5 @@ export const appConfig = {
 
 export default {
     firebase: firebaseConfig,
-    groq: groqConfig,
     app: appConfig
 };

@@ -3,7 +3,6 @@
 import { authManager } from '../auth/auth-manager.js';
 import { RoomAPI, getFirebase } from '../api/firebase.js';
 import { Utils } from '../utils.js';
-import { initAIAssistant } from '../components/ai-assistant.js';
 import { initDonateModal } from '../components/donate-modal.js';
 
 export class DashboardPage {
@@ -33,7 +32,6 @@ export class DashboardPage {
         await this.loadPublicRooms();
         await this.loadMyRooms();
 
-        initAIAssistant();
         initDonateModal();
 
         if (window.lucide) window.lucide.createIcons();

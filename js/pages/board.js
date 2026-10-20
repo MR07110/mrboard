@@ -13,7 +13,6 @@ import { ChatComponent } from '../components/chat.js';
 import { UsersComponent } from '../components/users.js';
 import { AudioSystem } from '../components/audio.js';
 import { initShortcuts } from '../components/shortcuts.js';
-import { initAIAssistant } from '../components/ai-assistant.js';
 
 export class BoardPage {
     constructor() {
@@ -33,7 +32,6 @@ export class BoardPage {
         this.bindAuthGateway();
         this.bindUIControls();
         initShortcuts(this);
-        initAIAssistant();
 
         // Check pending or active room
         await this.handleRoomRouting(user);
@@ -200,17 +198,27 @@ export class BoardPage {
     }
 
     bindAuthGateway() {
-        // Tab switching (Login vs Register)
-        document.querySelectorAll('.auth-tab').forEach(tab => {
+        // Tab switching (Login vs Register vs Guest)
+        document.querySelectorAll('.auth-tab-btn').forEach(tab => {
             tab.addEventListener('click', () => {
-                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+                document.querySelectorAll('.auth-tab-btn').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.auth-panel-body').forEach(p => {
+                    p.classList.remove('active');
+                    p.style.display = 'none';
+                });
 
                 tab.classList.add('active');
-                const target = tab.dataset.tab === 'register' ? 'register-panel' : 'login-panel';
-                document.getElementById(target)?.classList.add('active');
+                const targetId = `${tab.dataset.tab}-panel`;
+                const targetPanel = document.getElementById(targetId);
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+                    targetPanel.style.display = 'block';
+                }
+                if (window.lucide) window.lucide.createIcons();
             });
         });
+
+        if (window.lucide) window.lucide.createIcons();
 
         // Login Handler
         document.getElementById('btn-login')?.addEventListener('click', async () => {
@@ -259,6 +267,35 @@ export class BoardPage {
             } catch (err) {
                 if (errEl) errEl.innerText = err.message || "Ro'yxatdan o'tishda xatolik";
             }
+        });
+
+        // Guest Join Room Handler
+        document.getElementById('btn-guest-join')?.addEventListener('click', () => {
+            const name = document.getElementById('guest-name')?.value.trim() || 'Mehmon';
+            const roomCode = document.getElementById('guest-room-code')?.value.trim().toUpperCase();
+            const errEl = document.getElementById('guest-error');
+
+            if (!roomCode || roomCode.length < 4) {
+                if (errEl) errEl.innerText = "Xona kodini to'g'ri kiriting";
+                return;
+            }
+
+            localStorage.setItem('guest_name', name);
+            Store.name = name;
+            window.location.hash = `#s-${roomCode}`;
+            window.location.reload();
+        });
+
+        // Guest Create Room Handler
+        document.getElementById('btn-guest-create')?.addEventListener('click', () => {
+            const name = document.getElementById('guest-name')?.value.trim() || 'O\'qituvchi';
+            const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const teacherSecret = newCode + Math.random().toString(36).substring(2, 10);
+
+            localStorage.setItem('guest_name', name);
+            Store.name = name;
+            window.location.hash = `#t-${teacherSecret}`;
+            window.location.reload();
         });
     }
 

@@ -41,18 +41,16 @@ mrboard/
 │   ├── dashboard.css        # Dashboard grid, xona kartalari, profil
 │   ├── landing.css          # Landing hero, mockup, feature kartalari
 │   ├── docs.css             # Dokumentatsiya sahifasi stili
-│   ├── ai-modal.css         # AI yordamchi popup & suzuvchi tugma
 │   ├── donate-modal.css     # 3D interaktiv Visa kartasi
 │   └── style.css            # Barcha modullarni birlashtiruvchi markaziy import
 │
 ├── js/                      # Modulli JavaScript Tizimi
-│   ├── config.js            # Firebase va Groq AI konfiguratsiyasi
+│   ├── config.js            # Firebase va tizim konfiguratsiyasi
 │   ├── store.js             # Reaktiv holat (Single Source of Truth)
 │   ├── events.js            # Voqealar shinalari (EventEmitter Pub/Sub)
 │   ├── utils.js             # Xavfsiz sanitize, throttle, vibratsiya, toastlar
 │   ├── api/
-│   │   ├── firebase.js      # RTDB, sinxronizatsiya, ruxsatlar boshqaruvi
-│   │   └── ai.js            # Groq Llama-3.3 sun'iy intellekt integratsiyasi
+│   │   └── firebase.js      # RTDB, sinxronizatsiya, ruxsatlar boshqaruvi
 │   ├── auth/
 │   │   └── auth-manager.js  # Foydalanuvchi hisobi, login, register, profil
 │   ├── engine/
@@ -66,7 +64,6 @@ mrboard/
 │   │   ├── users.js         # Qatnashchilar ro'yxati va o'qituvchi boshqaruvi
 │   │   ├── audio.js         # Web Audio chastota ekvalayzeri & mikrofon
 │   │   ├── shortcuts.js     # Global klaviatura qisqartmalari
-│   │   ├── ai-assistant.js  # MR AI sun'iy intellekt suzuvchi moduli
 │   │   ├── donate-modal.js  # 3D holo-kartali qo'llab-quvvatlash oynasi
 │   │   └── demo-player.js   # 60FPS interaktiv namoyish pleyeri
 │   └── pages/
@@ -101,9 +98,6 @@ mrboard/
 
 ### 🎙 Web Audio & Ekvalayzer
 * Web Audio API orqali mikrofon chastotasini tahlil qiluvchi va quyi dockda jonli to'lqinlanuvchi audio vizualizator.
-
-### 🤖 MR BOARD AI
-* O'rnatilgan Groq `llama-3.3-70b-versatile` sun'iy intellekti orqali platformadan foydalanish va savollarga do'stona o'zbek tilida javob berish.
 
 ---
 

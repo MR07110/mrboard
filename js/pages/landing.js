@@ -1,7 +1,6 @@
 // js/pages/landing.js - Landing Page Controller
 
 import { DemoPlayerComponent } from '../components/demo-player.js';
-import { initAIAssistant } from '../components/ai-assistant.js';
 import { initDonateModal } from '../components/donate-modal.js';
 
 export class LandingPage {
@@ -13,8 +12,7 @@ export class LandingPage {
         // Mount interactive simulation inside mockup
         new DemoPlayerComponent('mockup-viewport');
 
-        // Mount floating AI and Donate triggers
-        initAIAssistant();
+        // Mount floating Donate trigger
         initDonateModal();
 
         // Smooth scroll for anchors

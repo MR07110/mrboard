@@ -9,7 +9,7 @@ const rootDir = path.resolve(__dirname, '..');
 
 console.log('🚀 Building and validating MR BOARD for Production...\n');
 
-const htmlPages = ['index.html', 'board.html', 'dashboard.html', 'doc.html', 'ai.html'];
+const htmlPages = ['index.html', 'board.html', 'dashboard.html', 'doc.html'];
 let totalBytes = 0;
 
 console.log('📦 Core Pages & Assets:');

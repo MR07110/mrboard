@@ -1,6 +1,5 @@
 // js/pages/docs.js - Documentation Page Controller
 
-import { initAIAssistant } from '../components/ai-assistant.js';
 import { initDonateModal } from '../components/donate-modal.js';
 
 export class DocsPage {
@@ -9,7 +8,6 @@ export class DocsPage {
     }
 
     init() {
-        initAIAssistant();
         initDonateModal();
 
         // Active link tracking
