@@ -362,7 +362,9 @@
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0a0f1d 100%);
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -375,10 +377,10 @@
     width: 100%;
     max-width: 960px;
     min-height: 560px;
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 28px;
-    box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.75);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.25), 0 0 1px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     animation: authModalSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -397,7 +399,7 @@
 /* Left Showcase Panel */
 .auth-showcase {
     flex: 1.05;
-    background: linear-gradient(145deg, #1d4ed8 0%, #2563eb 55%, #4f46e5 100%);
+    background: linear-gradient(145deg, #007aff 0%, #0062cc 55%, #4338ca 100%);
     padding: 44px 38px;
     color: #ffffff;
     display: flex;
@@ -414,7 +416,7 @@
     right: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
     pointer-events: none;
 }
 
@@ -434,7 +436,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .auth-brand-name {
@@ -464,7 +466,7 @@
 .auth-showcase-desc {
     font-size: 15px;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(255, 255, 255, 0.9);
     margin-bottom: 32px;
 }
 
@@ -481,11 +483,11 @@
     gap: 12px;
     font-size: 14px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.95);
-    background: rgba(0, 0, 0, 0.12);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.15);
     padding: 10px 14px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .auth-showcase-bottom {
@@ -496,7 +498,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.85);
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
@@ -510,23 +512,23 @@
 /* Right Form Panel */
 .auth-form-panel {
     flex: 1.15;
-    background: #0b1120;
+    background: #ffffff;
     padding: 40px 36px;
     display: flex;
     flex-direction: column;
-    color: #f8fafc;
+    color: #0f172a;
     position: relative;
 }
 
 /* Tabs Navigation */
 .auth-tabs-nav {
     display: flex;
-    background: rgba(255, 255, 255, 0.05);
+    background: #f1f5f9;
     padding: 4px;
     border-radius: 12px;
     gap: 4px;
     margin-bottom: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid #e2e8f0;
 }
 
 .auth-tab-btn {
@@ -534,7 +536,7 @@
     padding: 9px 8px;
     background: transparent;
     border: none;
-    color: #94a3b8;
+    color: #64748b;
     font-size: 13px;
     font-weight: 600;
     border-radius: 9px;
@@ -544,13 +546,14 @@
 }
 
 .auth-tab-btn:hover {
-    color: #e2e8f0;
+    color: #0f172a;
 }
 
 .auth-tab-btn.active {
-    background: #2563eb;
-    color: #ffffff;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+    background: #ffffff;
+    color: #007aff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Panel Bodies */
@@ -577,12 +580,12 @@
     font-weight: 800;
     letter-spacing: -0.5px;
     margin-bottom: 6px;
-    color: #ffffff;
+    color: #0f172a;
 }
 
 .auth-panel-header p {
     font-size: 13px;
-    color: #94a3b8;
+    color: #64748b;
     line-height: 1.4;
 }
 
@@ -603,7 +606,7 @@
 .auth-input-group label {
     font-size: 12.5px;
     font-weight: 600;
-    color: #cbd5e1;
+    color: #334155;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -612,10 +615,10 @@
 .auth-input {
     width: 100%;
     padding: 11px 14px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
     border-radius: 12px;
-    color: #ffffff;
+    color: #0f172a;
     font-size: 14px;
     font-family: inherit;
     outline: none;
@@ -624,13 +627,13 @@
 }
 
 .auth-input:focus {
-    border-color: #3b82f6;
-    background: rgba(255, 255, 255, 0.07);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    border-color: #007aff;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
 }
 
 .auth-input::placeholder {
-    color: #64748b;
+    color: #94a3b8;
 }
 
 .auth-input-row {
@@ -660,25 +663,26 @@
 }
 
 .auth-submit-btn.btn-primary {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #007aff, #0056b3);
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    box-shadow: 0 4px 14px rgba(0, 122, 255, 0.28);
 }
 
 .auth-submit-btn.btn-primary:hover {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: linear-gradient(135deg, #0066d6, #004b9c);
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+    box-shadow: 0 6px 18px rgba(0, 122, 255, 0.35);
 }
 
 .auth-submit-btn.btn-secondary {
-    background: rgba(255, 255, 255, 0.07);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: #f1f5f9;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
 }
 
 .auth-submit-btn.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: #e2e8f0;
+    color: #0f172a;
 }
 
 .auth-submit-btn:active {
@@ -688,11 +692,11 @@
 /* Error Box */
 .auth-error-box {
     font-size: 12.5px;
-    color: #f87171;
-    background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
     border-radius: 10px;
-    padding: 8px 12px;
+    padding: 9px 13px;
     margin-bottom: 12px;
     display: none;
 }

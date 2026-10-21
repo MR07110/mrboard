@@ -38,30 +38,8 @@ export class DashboardPage {
     }
 
     initTheme() {
-        const savedTheme = localStorage.getItem('mrboard_theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        this.updateThemeUI(savedTheme);
-    }
-
-    toggleTheme() {
-        const cur = document.documentElement.getAttribute('data-theme');
-        const next = cur === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('mrboard_theme', next);
-        this.updateThemeUI(next);
-        Utils.showToast(next === 'dark' ? "Qorong'u rejim yoqildi" : "Yorug' rejim yoqildi", 'info');
-    }
-
-    updateThemeUI(theme) {
-        const icon = document.getElementById('themeIcon');
-        const text = document.getElementById('themeText');
-        if (icon) {
-            icon.setAttribute('data-lucide', theme === 'dark' ? 'moon' : 'sun');
-        }
-        if (text) {
-            text.textContent = theme === 'dark' ? 'Dark' : 'Light';
-        }
-        if (window.lucide) window.lucide.createIcons();
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.removeItem('mrboard_theme');
     }
 
     updateHeaderProfile() {
@@ -78,9 +56,6 @@ export class DashboardPage {
     }
 
     bindEvents() {
-        // Theme Toggle
-        document.getElementById('themeToggle')?.addEventListener('click', () => this.toggleTheme());
-
         // Search Input
         document.getElementById('search-input')?.addEventListener('input', e => {
             this.searchQuery = e.target.value.toLowerCase().trim();
