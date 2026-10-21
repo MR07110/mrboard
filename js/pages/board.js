@@ -20,19 +20,16 @@ function formatAuthError(err) {
     const code = (err.code || '').toLowerCase();
 
     if (code.includes('invalid-credential') || msg.includes('invalid_login_credentials') || code.includes('wrong-password')) {
-        return "Email yoki parol noto'g'ri kiritildi!";
+        return "Foydalanuvchi nomi yoki parol noto'g'ri kiritildi!";
     }
     if (code.includes('user-not-found') || msg.includes('user_not_found')) {
-        return "Ushbu email bilan ro'yxatdan o'tilmagan. Avval ro'yxatdan o'ting!";
+        return "Ushbu foydalanuvchi topilmadi. Avval ro'yxatdan o'ting!";
     }
     if (code.includes('email-already-in-use') || msg.includes('email_exists')) {
-        return "Bu email allaqachon ro'yxatdan o'tgan! Tizimga kiring.";
+        return "Bu foydalanuvchi nomi allaqachon band! Boshqa nom tanlang.";
     }
     if (code.includes('weak-password') || msg.includes('weak_password')) {
         return "Parol juda oddiy. Kamida 6 ta belgi kiriting!";
-    }
-    if (code.includes('invalid-email') || msg.includes('invalid_email')) {
-        return "Email manzili noto'g'ri kiritildi!";
     }
     if (code.includes('too-many-requests') || msg.includes('too_many_attempts')) {
         return "Ko'p marta xato urinish bo'ldi. Biroz kuting va qayta urinib ko'ring.";
@@ -47,10 +44,10 @@ function formatAuthError(err) {
             const parsed = JSON.parse(jsonMatch[0]);
             const subMsg = (parsed.error?.message || '').toUpperCase();
             if (subMsg.includes('INVALID_LOGIN_CREDENTIALS')) {
-                return "Email yoki parol noto'g'ri kiritildi!";
+                return "Foydalanuvchi nomi yoki parol noto'g'ri kiritildi!";
             }
             if (subMsg.includes('EMAIL_EXISTS')) {
-                return "Bu email allaqachon ro'yxatdan o'tgan! Tizimga kiring.";
+                return "Bu foydalanuvchi nomi allaqachon band! Boshqa nom tanlang.";
             }
         }
     } catch (_) {}
@@ -327,36 +324,41 @@ export class BoardPage {
 
         // Login Handler
         document.getElementById('btn-login')?.addEventListener('click', async () => {
-            const email = document.getElementById('login-email')?.value.trim();
+            const usernameInput = document.getElementById('login-username') || document.getElementById('login-email');
+            const username = usernameInput?.value.trim();
             const password = document.getElementById('login-password')?.value;
             const errEl = document.getElementById('login-error');
 
-            if (!email || !password) {
-                if (errEl) errEl.innerText = "Email va parolni kiriting";
+            if (!username || !password) {
+                if (errEl) errEl.innerText = "Foydalanuvchi nomi va parolni kiriting";
                 return;
             }
 
             try {
                 if (errEl) errEl.innerText = "";
-                await authManager.login(email, password);
+                await authManager.login(username, password);
                 window.location.reload();
             } catch (err) {
                 if (errEl) errEl.innerText = formatAuthError(err);
             }
         });
 
-        // Register Handler
+        // Register Handler (NO EMAIL REQUIRED)
         document.getElementById('btn-register')?.addEventListener('click', async () => {
             const firstName = document.getElementById('reg-firstname')?.value.trim();
             const lastName = document.getElementById('reg-lastname')?.value.trim();
             const username = document.getElementById('reg-username')?.value.trim();
-            const email = document.getElementById('reg-email')?.value.trim();
             const password = document.getElementById('reg-password')?.value;
             const confirm = document.getElementById('reg-confirm')?.value;
             const errEl = document.getElementById('register-error');
 
-            if (!email || !password || !username) {
-                if (errEl) errEl.innerText = "Barcha majburiy maydonlarni to'ldiring";
+            if (!username || !password) {
+                if (errEl) errEl.innerText = "Foydalanuvchi nomi va parolni kiriting";
+                return;
+            }
+
+            if (username.length < 3) {
+                if (errEl) errEl.innerText = "Foydalanuvchi nomi kamida 3 ta belgidan iborat bo'lishi kerak";
                 return;
             }
 
@@ -372,7 +374,7 @@ export class BoardPage {
 
             try {
                 if (errEl) errEl.innerText = "";
-                await authManager.register(email, password, { firstName, lastName, username });
+                await authManager.register(password, { firstName, lastName, username });
                 window.location.reload();
             } catch (err) {
                 if (errEl) errEl.innerText = formatAuthError(err);

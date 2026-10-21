@@ -113,27 +113,41 @@ export class AuthManager {
                'Foydalanuvchi';
     }
 
-    async login(email, password) {
+    toAuthEmail(identifier) {
+        const clean = (identifier || '').trim().toLowerCase();
+        if (clean.includes('@')) {
+            return clean;
+        }
+        const safe = clean.replace(/[^a-z0-9._-]/g, '');
+        return `${safe || 'user'}@mrboard.internal`;
+    }
+
+    async login(identifier, password) {
         const { auth } = getFirebase();
         if (!auth) throw new Error("Firebase Auth topilmadi");
+        const email = this.toAuthEmail(identifier);
         const cred = await auth.signInWithEmailAndPassword(email, password);
         return cred.user;
     }
 
-    async register(email, password, { firstName, lastName, username }) {
+    async register(password, { firstName, lastName, username }) {
         const { auth, db } = getFirebase();
         if (!auth || !db) throw new Error("Firebase Auth topilmadi");
 
-        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        const cleanUsername = (username || '').trim().toLowerCase().replace(/[^a-z0-9._-]/g, '');
+        if (!cleanUsername) throw new Error("Foydalanuvchi nomini kiriting!");
+
+        const authEmail = `${cleanUsername}@mrboard.internal`;
+
+        const cred = await auth.createUserWithEmailAndPassword(authEmail, password);
         const user = cred.user;
 
         const profileData = {
             uid: user.uid,
-            email: email,
             firstName: firstName || '',
             lastName: lastName || '',
-            fullName: `${firstName || ''} ${lastName || ''}`.trim() || username,
-            username: username || email.split('@')[0],
+            fullName: `${firstName || ''} ${lastName || ''}`.trim() || cleanUsername,
+            username: cleanUsername,
             createdAt: Date.now()
         };
 
@@ -158,19 +172,16 @@ export function formatAuthError(err) {
     const code = (err.code || '').toLowerCase();
 
     if (code.includes('invalid-credential') || msg.includes('invalid_login_credentials') || code.includes('wrong-password')) {
-        return "Email yoki parol noto'g'ri kiritildi!";
+        return "Foydalanuvchi nomi yoki parol noto'g'ri kiritildi!";
     }
     if (code.includes('user-not-found') || msg.includes('user_not_found')) {
-        return "Ushbu email bilan ro'yxatdan o'tilmagan. Avval ro'yxatdan o'ting!";
+        return "Ushbu foydalanuvchi topilmadi. Avval ro'yxatdan o'ting!";
     }
     if (code.includes('email-already-in-use') || msg.includes('email_exists')) {
-        return "Bu email allaqachon ro'yxatdan o'tgan! Tizimga kiring.";
+        return "Bu foydalanuvchi nomi allaqachon band! Boshqa nom tanlang.";
     }
     if (code.includes('weak-password') || msg.includes('weak_password')) {
         return "Parol juda oddiy. Kamida 6 ta belgi kiriting!";
-    }
-    if (code.includes('invalid-email') || msg.includes('invalid_email')) {
-        return "Email manzili noto'g'ri kiritildi!";
     }
     if (code.includes('too-many-requests') || msg.includes('too_many_attempts')) {
         return "Ko'p marta xato urinish bo'ldi. Biroz kuting va qayta urinib ko'ring.";
