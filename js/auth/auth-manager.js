@@ -14,7 +14,34 @@ export class AuthManager {
         const { auth, db } = getFirebase();
         if (!auth) return null;
 
+        // 1. Immediately hydrate from cache to eliminate 1s delay
+        let cachedUser = null;
+        try {
+            cachedUser = JSON.parse(localStorage.getItem('mr_user') || 'null');
+            if (cachedUser && cachedUser.uid) {
+                this.userData = cachedUser;
+                Store.user = cachedUser;
+                Store.uid = cachedUser.uid;
+                Store.name = cachedUser.fullName || cachedUser.username || cachedUser.name || cachedUser.email?.split('@')[0] || 'Foydalanuvchi';
+            }
+        } catch (_) {}
+
         return new Promise((resolve) => {
+            let resolved = false;
+            const complete = (user) => {
+                if (!resolved) {
+                    resolved = true;
+                    resolve(user);
+                }
+            };
+
+            // Safety timeout: resolve cached or guest user if network is slow
+            setTimeout(() => {
+                if (!resolved) {
+                    complete(Store.user || cachedUser || null);
+                }
+            }, 1200);
+
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
                     this.currentUser = user;
@@ -22,14 +49,14 @@ export class AuthManager {
                         Store.uid = user.uid;
                         Store.name = localStorage.getItem('guest_name') || 'Mehmon';
                         Store.user = { uid: user.uid, isAnonymous: true, name: Store.name };
-                        resolve(Store.user);
+                        complete(Store.user);
                     } else {
                         this.userData = await this.fetchUserData(user.uid);
                         Store.user = { uid: user.uid, email: user.email, isAnonymous: false, ...this.userData };
                         Store.uid = user.uid;
                         Store.name = this.getDisplayName();
                         localStorage.setItem('mr_user', JSON.stringify(Store.user));
-                        resolve(Store.user);
+                        complete(Store.user);
                     }
                 } else {
                     // Sign in anonymously to satisfy RTDB auth != null rules
@@ -40,14 +67,24 @@ export class AuthManager {
                         Store.uid = anonUser.uid;
                         Store.name = localStorage.getItem('guest_name') || 'Mehmon';
                         Store.user = { uid: anonUser.uid, isAnonymous: true, name: Store.name };
-                        resolve(Store.user);
+                        complete(Store.user);
                     } catch (e) {
                         console.warn('[AuthManager] Anonymous auth fallback:', e);
-                        this.currentUser = null;
-                        this.userData = null;
-                        Store.user = null;
-                        localStorage.removeItem('mr_user');
-                        resolve(null);
+                        if (cachedUser && cachedUser.uid) {
+                            complete(cachedUser);
+                        } else {
+                            const fallbackUid = localStorage.getItem('guest_uid') || ('guest_' + Math.random().toString(36).substring(2, 9));
+                            localStorage.setItem('guest_uid', fallbackUid);
+                            const guestUser = {
+                                uid: fallbackUid,
+                                isAnonymous: true,
+                                name: localStorage.getItem('guest_name') || 'Mehmon'
+                            };
+                            Store.uid = fallbackUid;
+                            Store.name = guestUser.name;
+                            Store.user = guestUser;
+                            complete(guestUser);
+                        }
                     }
                 }
             });

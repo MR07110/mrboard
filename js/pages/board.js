@@ -86,72 +86,75 @@ export class BoardPage {
         const roomIdFromUrl = urlParams.get('room') || localStorage.getItem('pendingRoomId');
         const hash = window.location.hash.slice(1);
 
-        if (!user) {
-            // Unauthenticated: Show auth gateway
-            this.showAuthGateway();
-            return;
-        }
-
-        // Authenticated (or Anonymous guest)
-        Store.uid = user.uid;
-        Store.name = user.fullName || user.username || user.name || user.email?.split('@')[0] || 'Mehmon';
-
+        // 1. Teacher Link Entry (#t-...)
         if (hash.startsWith('t-')) {
-            // Teacher Link Entry
             const teacherSecret = hash.slice(2);
             Store.isTeacher = true;
             Store.teacherSecret = teacherSecret;
             Store.roomId = teacherSecret.substring(0, 6);
             Store.perms.draw = true;
             Store.perms.speak = true;
+            if (!Store.uid) {
+                Store.uid = user?.uid || localStorage.getItem('guest_uid') || ('teacher_' + Math.random().toString(36).substring(2, 9));
+            }
+            Store.name = user?.fullName || user?.username || user?.name || user?.email?.split('@')[0] || "O'qituvchi";
 
             this.startBoard(Store.roomId, teacherSecret);
-        } else if (hash.startsWith('s-')) {
-            // Student Link Entry
+            return;
+        }
+
+        // 2. Student Link Entry (#s-...)
+        if (hash.startsWith('s-')) {
             const studentCode = hash.slice(2);
             Store.isTeacher = false;
             Store.roomId = studentCode;
             Store.perms.draw = false;
             Store.perms.speak = false;
+            if (!Store.uid) {
+                Store.uid = user?.uid || localStorage.getItem('guest_uid') || ('student_' + Math.random().toString(36).substring(2, 9));
+            }
+            Store.name = user?.fullName || user?.username || user?.name || localStorage.getItem('guest_name') || "O'quvchi";
 
             this.startBoard(studentCode, null);
-        } else if (roomIdFromUrl) {
+            return;
+        }
+
+        // 3. Room ID from Query Parameter (?room=...)
+        if (roomIdFromUrl) {
             localStorage.removeItem('pendingRoomId');
-            const roomData = await RoomAPI.getRoom(roomIdFromUrl);
+            let roomData = null;
+            try {
+                roomData = await RoomAPI.getRoom(roomIdFromUrl);
+            } catch (_) {}
 
-            if (!roomData) {
-                // Allow ad-hoc or direct room joining without redirecting
-                const isOwner = !user.isAnonymous;
-                Store.isTeacher = isOwner;
-                Store.roomId = roomIdFromUrl;
-                Store.teacherSecret = isOwner ? roomIdFromUrl + "SECRET" : null;
-                Store.perms.draw = isOwner;
-                Store.perms.speak = isOwner;
-
-                this.startBoard(roomIdFromUrl, Store.teacherSecret);
-                return;
-            }
-
-            const isOwner = roomData.createdBy === user.uid;
-            Store.isTeacher = isOwner;
+            const isOwner = user && roomData && roomData.createdBy === user.uid;
+            Store.isTeacher = !!isOwner;
             Store.roomId = roomIdFromUrl;
-            Store.teacherSecret = isOwner ? roomData.teacherSecret : null;
-            Store.perms.draw = isOwner;
-            Store.perms.speak = isOwner;
+            Store.teacherSecret = isOwner ? roomData?.teacherSecret : null;
+            Store.perms.draw = !!isOwner;
+            Store.perms.speak = !!isOwner;
+            if (!Store.uid) {
+                Store.uid = user?.uid || localStorage.getItem('guest_uid') || ('guest_' + Math.random().toString(36).substring(2, 9));
+            }
+            Store.name = user?.fullName || user?.username || user?.name || 'Mehmon';
 
             this.startBoard(roomIdFromUrl, Store.teacherSecret);
-        } else if (user.isAnonymous) {
-            // Unauthenticated guest with no room link: prompt login / join
-            this.showAuthGateway();
-        } else {
-            // Default demo or redirect to dashboard
+            return;
+        }
+
+        // 4. Authenticated user without specific room link
+        if (user && !user.isAnonymous) {
             const defaultRoom = "DEMO01";
             Store.roomId = defaultRoom;
             Store.isTeacher = true;
             Store.perms.draw = true;
             Store.perms.speak = true;
             this.startBoard(defaultRoom, defaultRoom + "SECRET");
+            return;
         }
+
+        // 5. Unauthenticated visitor with no room link: Show Auth Gateway
+        this.showAuthGateway();
     }
 
     showAuthGateway() {
