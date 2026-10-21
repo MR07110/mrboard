@@ -1,0 +1,35 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "rooms": {
+      ".read": true,
+      ".indexOn": ["isPublic", "createdBy", "createdAt", "isActive"],
+      "$roomId": {
+        ".write": "auth != null && (!data.exists() || data.child('createdBy').val() === auth.uid || newData.child('createdBy').val() === auth.uid)"
+      }
+    },
+    "mrboard": {
+      "$roomId": {
+        ".read": true,
+        ".write": true,
+        "elements": {
+          ".indexOn": ["t", "u"]
+        },
+        "chat": {
+          ".indexOn": ["tm", "u"]
+        }
+      }
+    },
+    "mrboard_final": {
+      "$roomId": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  }
+}
