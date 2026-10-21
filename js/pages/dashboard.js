@@ -24,7 +24,7 @@ export class DashboardPage {
         this.user = await authManager.init();
         if (!this.user || this.user.isAnonymous) {
             localStorage.removeItem('mr_user');
-            window.location.replace('board.html');
+            window.location.replace('/board/');
             return;
         }
 
@@ -101,7 +101,7 @@ export class DashboardPage {
         document.getElementById('btn-dash-logout')?.addEventListener('click', async () => {
             if (confirm("Chiqishni xohlaysizmi?")) {
                 await authManager.logout();
-                window.location.href = 'board.html';
+                window.location.href = '/board/';
             }
         });
     }
@@ -184,7 +184,7 @@ export class DashboardPage {
             const initial = (room.createdByName || 'U').charAt(0).toUpperCase();
 
             return `
-                <div class="room-card" onclick="window.location.href='board.html?room=${room.id}'">
+                <div class="room-card" onclick="window.location.href='/board/?room=${room.id}'">
                     <div class="room-card-header">
                         <span class="room-title">${Utils.sanitize(room.name || 'Nomsiz xona')}</span>
                         <span class="room-badge ${room.isPublic ? 'active' : 'private'}">
@@ -200,7 +200,7 @@ export class DashboardPage {
                         <span><i data-lucide="calendar" size="12"></i> ${Utils.formatDate(room.createdAt)}</span>
                     </div>
                     <div style="display:flex; gap:8px; margin-top:8px;">
-                        <button class="btn btn-primary" style="flex:1;" onclick="event.stopPropagation(); window.location.href='board.html?room=${room.id}'">
+                        <button class="btn btn-primary" style="flex:1;" onclick="event.stopPropagation(); window.location.href='/board/?room=${room.id}'">
                             <i data-lucide="log-in" size="14"></i> Kirish
                         </button>
                         ${isOwner ? `
@@ -244,7 +244,7 @@ export class DashboardPage {
             const room = await RoomAPI.createRoom(name, isPublic, password);
             Utils.showToast("Xona muvaffaqiyatli yaratildi!", "success");
             this.closeCreateModal();
-            window.location.href = `board.html#t-${room.teacherSecret}`;
+            window.location.href = `/board/#t-${room.teacherSecret}`;
         } catch (err) {
             Utils.showToast(err.message || "Xona yaratishda xatolik", "error");
         }
@@ -283,7 +283,7 @@ export class DashboardPage {
             }
 
             this.closeJoinModal();
-            window.location.href = `board.html?room=${code}`;
+            window.location.href = `/board/?room=${code}`;
         } catch (err) {
             Utils.showToast("Xonaga ulanishda xatolik", "error");
         }

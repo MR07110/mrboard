@@ -3,6 +3,28 @@
   "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/board.html",
+      "destination": "/board",
+      "permanent": true
+    },
+    {
+      "source": "/dashboard.html",
+      "destination": "/dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/doc.html",
+      "destination": "/doc",
+      "permanent": true
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

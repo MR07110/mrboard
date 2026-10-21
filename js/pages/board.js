@@ -454,7 +454,7 @@ export class BoardPage {
         document.getElementById('btn-logout')?.addEventListener('click', async () => {
             if (confirm("Chiqishni xohlaysizmi?")) {
                 await authManager.logout();
-                window.location.href = 'dashboard.html';
+                window.location.href = '/dashboard/';
             }
         });
     }

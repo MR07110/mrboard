@@ -25,10 +25,10 @@
                 var raw = localStorage.getItem('mr_user');
                 var u = raw ? JSON.parse(raw) : null;
                 if (!u || u.isAnonymous || !u.uid) {
-                    window.location.replace('board.html');
+                    window.location.replace('/board/');
                 }
             } catch (_) {
-                window.location.replace('board.html');
+                window.location.replace('/board/');
             }
         })();
     </script>
@@ -45,7 +45,7 @@
 
     <!-- Dashboard Header -->
     <header class="dash-header">
-        <a href="index.html" class="dash-brand">
+        <a href="/" class="dash-brand">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
