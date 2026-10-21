@@ -30,7 +30,7 @@ export const DB = {
             return;
         }
 
-        currentRoomRef = db.ref(`mrboard_final/${roomId}`);
+        currentRoomRef = db.ref(`mrboard/${roomId}`);
 
         // Presence & disconnect
         const meRef = currentRoomRef.child(`users/${Store.uid}`);
