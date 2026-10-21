@@ -130,12 +130,37 @@ export class AuthManager {
         return cred.user;
     }
 
-    async register(password, { firstName, lastName, username }) {
+    async register(arg1, arg2, arg3 = {}) {
         const { auth, db } = getFirebase();
         if (!auth || !db) throw new Error("Firebase Auth topilmadi");
 
+        let username = '';
+        let password = '';
+        let firstName = '';
+        let lastName = '';
+
+        if (typeof arg1 === 'object' && arg1 !== null) {
+            username = arg1.username || '';
+            password = arg1.password || '';
+            firstName = arg1.firstName || '';
+            lastName = arg1.lastName || '';
+        } else if (typeof arg2 === 'object' && arg2 !== null) {
+            password = arg1 || '';
+            const opts = arg2 || {};
+            username = opts.username || '';
+            firstName = opts.firstName || '';
+            lastName = opts.lastName || '';
+        } else {
+            const opts = arg3 || {};
+            password = arg2 || '';
+            username = opts.username || (typeof arg1 === 'string' ? arg1 : '');
+            firstName = opts.firstName || '';
+            lastName = opts.lastName || '';
+        }
+
         const cleanUsername = (username || '').trim().toLowerCase().replace(/[^a-z0-9._-]/g, '');
         if (!cleanUsername) throw new Error("Foydalanuvchi nomini kiriting!");
+        if (!password) throw new Error("Parolni kiriting!");
 
         const authEmail = `${cleanUsername}@mrboard.internal`;
 
@@ -152,7 +177,14 @@ export class AuthManager {
         };
 
         await db.ref(`users/${user.uid}`).set(profileData);
-        await user.updateProfile({ displayName: profileData.fullName });
+        if (user.updateProfile) {
+            await user.updateProfile({ displayName: profileData.fullName }).catch(() => {});
+        }
+
+        Store.user = { uid: user.uid, ...profileData };
+        Store.uid = user.uid;
+        Store.name = profileData.fullName;
+        localStorage.setItem('mr_user', JSON.stringify(Store.user));
 
         return user;
     }
