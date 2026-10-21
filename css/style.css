@@ -136,10 +136,18 @@ body {
     transform: scale(0.97);
 }
 
-.btn-primary {
+.btn-primary,
+a.btn-primary,
+button.btn-primary {
     background: var(--brand-primary);
-    color: #ffffff;
+    color: #ffffff !important;
     box-shadow: 0 4px 14px var(--brand-alpha);
+}
+
+.btn-primary i,
+.btn-primary svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }
 
 .btn-primary:hover {
@@ -1820,7 +1828,7 @@ body.zen-mode .user-info-bar {
     gap: 32px;
 }
 
-.landing-nav a {
+.landing-nav a:not(.btn) {
     text-decoration: none;
     color: var(--text-muted);
     font-weight: 600;
@@ -1828,8 +1836,19 @@ body.zen-mode .user-info-bar {
     transition: color var(--transition-fast);
 }
 
-.landing-nav a:hover {
+.landing-nav a:not(.btn):hover {
     color: var(--brand-primary);
+}
+
+.landing-nav a.btn-primary,
+.landing-nav .btn-primary {
+    color: #ffffff !important;
+}
+
+.landing-nav a.btn-primary i,
+.landing-nav a.btn-primary svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }
 
 /* Hero Section */

@@ -46,7 +46,7 @@
     gap: 32px;
 }
 
-.landing-nav a {
+.landing-nav a:not(.btn) {
     text-decoration: none;
     color: var(--text-muted);
     font-weight: 600;
@@ -54,8 +54,19 @@
     transition: color var(--transition-fast);
 }
 
-.landing-nav a:hover {
+.landing-nav a:not(.btn):hover {
     color: var(--brand-primary);
+}
+
+.landing-nav a.btn-primary,
+.landing-nav .btn-primary {
+    color: #ffffff !important;
+}
+
+.landing-nav a.btn-primary i,
+.landing-nav a.btn-primary svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }
 
 /* Hero Section */

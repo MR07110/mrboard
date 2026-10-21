@@ -24,10 +24,18 @@
     transform: scale(0.97);
 }
 
-.btn-primary {
+.btn-primary,
+a.btn-primary,
+button.btn-primary {
     background: var(--brand-primary);
-    color: #ffffff;
+    color: #ffffff !important;
     box-shadow: 0 4px 14px var(--brand-alpha);
+}
+
+.btn-primary i,
+.btn-primary svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }
 
 .btn-primary:hover {
