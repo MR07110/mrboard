@@ -8,6 +8,8 @@ import { Utils } from '../utils.js';
 let initialized = false;
 let db = null;
 let auth = null;
+let firestore = null;
+let analytics = null;
 let currentRoomRef = null;
 
 export function getFirebase() {
@@ -17,9 +19,24 @@ export function getFirebase() {
         }
         db = window.firebase.database();
         auth = window.firebase.auth();
+        if (typeof window.firebase.firestore === 'function') {
+            try {
+                firestore = window.firebase.firestore();
+            } catch (_) {}
+        }
+        if (typeof window.firebase.analytics === 'function') {
+            try {
+                analytics = window.firebase.analytics();
+            } catch (_) {}
+        }
         initialized = true;
     }
-    return { db, auth, firebase: window.firebase };
+    return { db, auth, firestore, analytics, firebase: window.firebase };
+}
+
+export function getFirestore() {
+    const { firestore } = getFirebase();
+    return firestore;
 }
 
 export const DB = {
