@@ -23,9 +23,13 @@ export class DashboardPage {
         // Check authentication (requires real account for dashboard)
         this.user = await authManager.init();
         if (!this.user || this.user.isAnonymous) {
-            window.location.href = 'board.html';
+            localStorage.removeItem('mr_user');
+            window.location.replace('board.html');
             return;
         }
+
+        // Authenticated verified: reveal dashboard layout
+        document.body.style.setProperty('display', 'flex', 'important');
 
         this.updateHeaderProfile();
         this.bindEvents();

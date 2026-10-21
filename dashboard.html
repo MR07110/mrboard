@@ -17,6 +17,26 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <!-- Immediate Pre-Render Auth Guard: Prevent Dashboard from flashing if not logged in -->
+    <script>
+        (function() {
+            try {
+                var raw = localStorage.getItem('mr_user');
+                var u = raw ? JSON.parse(raw) : null;
+                if (!u || u.isAnonymous || !u.uid) {
+                    window.location.replace('board.html');
+                }
+            } catch (_) {
+                window.location.replace('board.html');
+            }
+        })();
+    </script>
+    <style>
+        body.dashboard-layout {
+            display: none !important;
+        }
+    </style>
 </head>
 <body class="dashboard-layout">
 
