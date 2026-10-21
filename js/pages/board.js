@@ -94,17 +94,6 @@ export class BoardPage {
             const teacherSecret = hash.slice(2).trim();
             const cleanRoomId = teacherSecret.substring(0, 6).toUpperCase();
 
-            let roomData = null;
-            try {
-                roomData = await RoomAPI.getRoom(cleanRoomId);
-            } catch (_) {}
-
-            if (!roomData || roomData.isActive === false) {
-                Utils.showToast("Xona topilmadi!", "error");
-                setTimeout(() => window.location.replace('/dashboard/'), 1600);
-                return;
-            }
-
             localStorage.setItem('mr_teacher_' + cleanRoomId, teacherSecret);
             Store.isTeacher = true;
             Store.teacherSecret = teacherSecret;
@@ -124,26 +113,10 @@ export class BoardPage {
         if (hash.startsWith('s-')) {
             const studentCode = hash.slice(2).trim().replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase();
 
-            let roomData = null;
-            try {
-                roomData = await RoomAPI.getRoom(studentCode);
-            } catch (_) {}
-
-            if (!roomData || roomData.isActive === false) {
-                Utils.showToast("Xona topilmadi!", "error");
-                setTimeout(() => window.location.replace('/dashboard/'), 1600);
-                return;
-            }
-
             const cachedSecret = localStorage.getItem('mr_teacher_' + studentCode);
-            const isOwner = (user && roomData.createdBy && user.uid === roomData.createdBy) ||
-                            (cachedSecret && roomData.teacherSecret && cachedSecret === roomData.teacherSecret);
-
-            if (isOwner) {
-                const teacherSecret = roomData.teacherSecret || cachedSecret || (studentCode + 'SECRET');
-                localStorage.setItem('mr_teacher_' + studentCode, teacherSecret);
+            if (cachedSecret) {
                 Store.isTeacher = true;
-                Store.teacherSecret = teacherSecret;
+                Store.teacherSecret = cachedSecret;
                 Store.roomId = studentCode;
                 Store.perms.draw = true;
                 Store.perms.speak = true;
@@ -151,8 +124,18 @@ export class BoardPage {
                     Store.uid = user?.uid || localStorage.getItem('guest_uid') || ('teacher_' + Math.random().toString(36).substring(2, 9));
                 }
                 Store.name = user?.fullName || user?.username || user?.name || user?.email?.split('@')[0] || "O'qituvchi";
+                this.startBoard(studentCode, cachedSecret);
+                return;
+            }
 
-                this.startBoard(studentCode, teacherSecret);
+            let roomData = null;
+            try {
+                roomData = await RoomAPI.getRoom(studentCode);
+            } catch (_) {}
+
+            if (roomData && roomData.isActive === false) {
+                Utils.showToast("Bu xona yakunlangan!", "warning");
+                setTimeout(() => window.location.replace('/dashboard/'), 1600);
                 return;
             }
 
@@ -172,26 +155,22 @@ export class BoardPage {
         // 3. Room ID from Query Parameter (?room=...)
         if (roomIdFromUrl) {
             localStorage.removeItem('pendingRoomId');
+            const cleanRoomId = roomIdFromUrl.trim().replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase();
+
             let roomData = null;
             try {
-                roomData = await RoomAPI.getRoom(roomIdFromUrl);
+                roomData = await RoomAPI.getRoom(cleanRoomId);
             } catch (_) {}
 
-            if (!roomData || roomData.isActive === false) {
-                Utils.showToast("Xona topilmadi!", "error");
-                setTimeout(() => window.location.replace('/dashboard/'), 1600);
-                return;
-            }
-
-            const cachedSecret = localStorage.getItem('mr_teacher_' + roomIdFromUrl);
-            const isOwner = (user && roomData.createdBy && user.uid === roomData.createdBy) ||
-                            (cachedSecret && roomData.teacherSecret && cachedSecret === roomData.teacherSecret);
+            const cachedSecret = localStorage.getItem('mr_teacher_' + cleanRoomId);
+            const isOwner = (user && roomData && roomData.createdBy && user.uid === roomData.createdBy) ||
+                            (cachedSecret && (!roomData || !roomData.teacherSecret || cachedSecret === roomData.teacherSecret));
 
             if (isOwner) {
-                const teacherSecret = roomData.teacherSecret || cachedSecret || (roomIdFromUrl + 'SECRET');
-                localStorage.setItem('mr_teacher_' + roomIdFromUrl, teacherSecret);
+                const teacherSecret = (roomData && roomData.teacherSecret) || cachedSecret || (cleanRoomId + 'SECRET');
+                localStorage.setItem('mr_teacher_' + cleanRoomId, teacherSecret);
                 Store.isTeacher = true;
-                Store.roomId = roomIdFromUrl;
+                Store.roomId = cleanRoomId;
                 Store.teacherSecret = teacherSecret;
                 Store.perms.draw = true;
                 Store.perms.speak = true;
@@ -200,13 +179,20 @@ export class BoardPage {
                 }
                 Store.name = user?.fullName || user?.username || user?.name || user?.email?.split('@')[0] || "O'qituvchi";
 
-                this.startBoard(roomIdFromUrl, teacherSecret);
+                this.startBoard(cleanRoomId, teacherSecret);
+                return;
+            }
+
+            // Inactive room check
+            if (roomData && roomData.isActive === false) {
+                Utils.showToast("Bu xona yakunlangan!", "warning");
+                setTimeout(() => window.location.replace('/dashboard/'), 1600);
                 return;
             }
 
             // Student/Guest visitor
             Store.isTeacher = false;
-            Store.roomId = roomIdFromUrl;
+            Store.roomId = cleanRoomId;
             Store.teacherSecret = null;
             Store.perms.draw = false;
             Store.perms.speak = false;
@@ -215,7 +201,7 @@ export class BoardPage {
             }
             Store.name = user?.fullName || user?.username || user?.name || localStorage.getItem('guest_name') || 'Mehmon';
 
-            this.startBoard(roomIdFromUrl, null);
+            this.startBoard(cleanRoomId, null);
             return;
         }
 

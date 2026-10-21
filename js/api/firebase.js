@@ -316,13 +316,39 @@ export const RoomAPI = {
         };
 
         await db.ref(`rooms/${roomCode}`).set(roomData);
+        await db.ref(`mrboard/${roomCode}/meta`).set({
+            teacherSecret,
+            studentCode: roomCode,
+            laserEnabled: true,
+            createdAt: now
+        }).catch(() => {});
+
         return { roomCode, teacherSecret, ...roomData };
     },
 
     async getRoom(roomId) {
         const { db } = getFirebase();
-        const snap = await db.ref(`rooms/${roomId}`).once('value');
-        return snap.val();
+        if (!db || !roomId) return null;
+        try {
+            const snap = await db.ref(`rooms/${roomId}`).once('value');
+            const val = snap.val();
+            if (val) return val;
+
+            const metaSnap = await db.ref(`mrboard/${roomId}/meta`).once('value');
+            const meta = metaSnap.val();
+            if (meta) {
+                return {
+                    id: roomId,
+                    name: `Xona ${roomId}`,
+                    isActive: true,
+                    isPublic: true,
+                    teacherSecret: meta.teacherSecret
+                };
+            }
+        } catch (e) {
+            console.warn('[RoomAPI] getRoom fallback:', e);
+        }
+        return null;
     },
 
     async getPublicRooms() {
