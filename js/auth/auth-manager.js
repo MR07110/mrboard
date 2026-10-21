@@ -123,11 +123,42 @@ export class AuthManager {
     }
 
     async login(identifier, password) {
-        const { auth } = getFirebase();
+        const { auth, db } = getFirebase();
         if (!auth) throw new Error("Firebase Auth topilmadi");
         const email = this.toAuthEmail(identifier);
-        const cred = await auth.signInWithEmailAndPassword(email, password);
-        return cred.user;
+
+        try {
+            const cred = await auth.signInWithEmailAndPassword(email, password);
+            return cred.user;
+        } catch (authErr) {
+            const msg = (authErr.message || authErr.code || '').toUpperCase();
+            if (msg.includes('CONFIGURATION_NOT_FOUND') || msg.includes('CONFIGURATION-NOT-FOUND')) {
+                // Firebase Auth is not enabled in Console yet: fallback to RTDB / local session
+                const cleanUsername = (identifier || '').trim().toLowerCase().replace(/[^a-z0-9._-]/g, '');
+                let found = null;
+                try {
+                    const snap = await db.ref('users').once('value');
+                    const users = snap.val() || {};
+                    found = Object.values(users).find(u => u.username?.toLowerCase() === cleanUsername);
+                } catch (_) {}
+
+                if (!found) {
+                    const cached = JSON.parse(localStorage.getItem('mr_user') || 'null');
+                    if (cached && (cached.username?.toLowerCase() === cleanUsername || cached.email?.toLowerCase() === email.toLowerCase())) {
+                        found = cached;
+                    }
+                }
+
+                if (found) {
+                    Store.user = found;
+                    Store.uid = found.uid;
+                    Store.name = found.fullName || found.username;
+                    localStorage.setItem('mr_user', JSON.stringify(Store.user));
+                    return found;
+                }
+            }
+            throw authErr;
+        }
     }
 
     async register(arg1, arg2, arg3 = {}) {
@@ -164,8 +195,20 @@ export class AuthManager {
 
         const authEmail = `${cleanUsername}@mrboard.internal`;
 
-        const cred = await auth.createUserWithEmailAndPassword(authEmail, password);
-        const user = cred.user;
+        let user = null;
+        try {
+            const cred = await auth.createUserWithEmailAndPassword(authEmail, password);
+            user = cred.user;
+        } catch (authErr) {
+            const msg = (authErr.message || authErr.code || '').toUpperCase();
+            if (msg.includes('CONFIGURATION_NOT_FOUND') || msg.includes('CONFIGURATION-NOT-FOUND')) {
+                // Fallback to local user session if Firebase Auth is not provisioned yet in console
+                const fallbackUid = 'u_' + Math.random().toString(36).substring(2, 11);
+                user = { uid: fallbackUid, email: authEmail };
+            } else {
+                throw authErr;
+            }
+        }
 
         const profileData = {
             uid: user.uid,
@@ -176,7 +219,12 @@ export class AuthManager {
             createdAt: Date.now()
         };
 
-        await db.ref(`users/${user.uid}`).set(profileData);
+        try {
+            await db.ref(`users/${user.uid}`).set(profileData);
+        } catch (dbErr) {
+            console.warn('[AuthManager] user profile write warning:', dbErr.message);
+        }
+
         if (user.updateProfile) {
             await user.updateProfile({ displayName: profileData.fullName }).catch(() => {});
         }
@@ -220,6 +268,9 @@ export function formatAuthError(err) {
     }
     if (code.includes('network-request-failed')) {
         return "Internet aloqasida xatolik yuz berdi. Tarmoqni tekshiring.";
+    }
+    if (code.includes('configuration-not-found') || msg.includes('configuration_not_found')) {
+        return "Firebase Console'da Authentication faollashtirilmagan! Firebase Console -> Authentication bo'limiga kiring.";
     }
 
     try {

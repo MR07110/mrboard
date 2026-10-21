@@ -37,6 +37,9 @@ function formatAuthError(err) {
     if (code.includes('network-request-failed')) {
         return "Internet aloqasida xatolik yuz berdi. Tarmoqni tekshiring.";
     }
+    if (code.includes('configuration-not-found') || msg.includes('configuration_not_found')) {
+        return "Firebase Console'da Authentication faollashtirilmagan! Firebase Console -> Authentication bo'limiga kiring.";
+    }
 
     try {
         const jsonMatch = err.message?.match(/\{[\s\S]*\}/);

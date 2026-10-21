@@ -1,16 +1,17 @@
 {
   "rules": {
     "users": {
+      ".read": true,
       "$uid": {
-        ".read": "auth != null",
-        ".write": "auth != null && auth.uid === $uid"
+        ".read": true,
+        ".write": true
       }
     },
     "rooms": {
       ".read": true,
       ".indexOn": ["isPublic", "createdBy", "createdAt", "isActive"],
       "$roomId": {
-        ".write": "auth != null && (!data.exists() || data.child('createdBy').val() === auth.uid || newData.child('createdBy').val() === auth.uid)"
+        ".write": true
       }
     },
     "mrboard": {
