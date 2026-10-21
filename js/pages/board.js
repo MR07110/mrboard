@@ -6,13 +6,57 @@ import { DB, RoomAPI } from '../api/firebase.js';
 import { Utils } from '../utils.js';
 import { CanvasEngine } from '../engine/canvas-engine.js';
 import { camera } from '../engine/camera.js';
-import { authManager, formatAuthError } from '../auth/auth-manager.js';
+import { authManager } from '../auth/auth-manager.js';
 import { ColorPickerComponent } from '../components/color-picker.js';
 import { MinimapComponent } from '../components/minimap.js';
 import { ChatComponent } from '../components/chat.js';
 import { UsersComponent } from '../components/users.js';
 import { AudioSystem } from '../components/audio.js';
 import { initShortcuts } from '../components/shortcuts.js';
+
+function formatAuthError(err) {
+    if (!err) return "Noma'lum xatolik yuz berdi";
+    const msg = (typeof err === 'string' ? err : (err.message || '')).toLowerCase();
+    const code = (err.code || '').toLowerCase();
+
+    if (code.includes('invalid-credential') || msg.includes('invalid_login_credentials') || code.includes('wrong-password')) {
+        return "Email yoki parol noto'g'ri kiritildi!";
+    }
+    if (code.includes('user-not-found') || msg.includes('user_not_found')) {
+        return "Ushbu email bilan ro'yxatdan o'tilmagan. Avval ro'yxatdan o'ting!";
+    }
+    if (code.includes('email-already-in-use') || msg.includes('email_exists')) {
+        return "Bu email allaqachon ro'yxatdan o'tgan! Tizimga kiring.";
+    }
+    if (code.includes('weak-password') || msg.includes('weak_password')) {
+        return "Parol juda oddiy. Kamida 6 ta belgi kiriting!";
+    }
+    if (code.includes('invalid-email') || msg.includes('invalid_email')) {
+        return "Email manzili noto'g'ri kiritildi!";
+    }
+    if (code.includes('too-many-requests') || msg.includes('too_many_attempts')) {
+        return "Ko'p marta xato urinish bo'ldi. Biroz kuting va qayta urinib ko'ring.";
+    }
+    if (code.includes('network-request-failed')) {
+        return "Internet aloqasida xatolik yuz berdi. Tarmoqni tekshiring.";
+    }
+
+    try {
+        const jsonMatch = err.message?.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            const subMsg = (parsed.error?.message || '').toUpperCase();
+            if (subMsg.includes('INVALID_LOGIN_CREDENTIALS')) {
+                return "Email yoki parol noto'g'ri kiritildi!";
+            }
+            if (subMsg.includes('EMAIL_EXISTS')) {
+                return "Bu email allaqachon ro'yxatdan o'tgan! Tizimga kiring.";
+            }
+        }
+    } catch (_) {}
+
+    return err.message || "Xatolik yuz berdi. Qayta urinib ko'ring.";
+}
 
 export class BoardPage {
     constructor() {
