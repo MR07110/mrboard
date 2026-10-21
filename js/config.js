@@ -1,14 +1,14 @@
 // js/config.js - MR BOARD Configuration
 
 export const firebaseConfig = {
-    apiKey: "AIzaSyDAsbqgXxl69P-yhOn3L2puTBmLxG70Ao0",
-    authDomain: "basic-formula-484419-k8.firebaseapp.com",
-    databaseURL: "https://basic-formula-484419-k8-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "basic-formula-484419-k8",
-    storageBucket: "basic-formula-484419-k8.firebasestorage.app",
-    messagingSenderId: "629679926764",
-    appId: "1:629679926764:web:0cff483e9c4752fbd024c9",
-    measurementId: "G-WR9D0BWR86"
+    apiKey: "AIzaSyB1I15bWEAO8rYc3THB_kbPqLzshVQ-9Tc",
+    authDomain: "mrboard-1cc5a.firebaseapp.com",
+    databaseURL: "https://mrboard-1cc5a-default-rtdb.firebaseio.com",
+    projectId: "mrboard-1cc5a",
+    storageBucket: "mrboard-1cc5a.firebasestorage.app",
+    messagingSenderId: "540950972360",
+    appId: "1:540950972360:web:0460b399bc6e6ea0fbe2fd",
+    measurementId: "G-N4QLMJMQFY"
 };
 
 export const appConfig = {
