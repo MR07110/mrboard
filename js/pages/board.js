@@ -83,15 +83,32 @@ export class BoardPage {
 
     async handleRoomRouting(user) {
         const urlParams = new URLSearchParams(window.location.search);
-        const roomIdFromUrl = urlParams.get('room') || localStorage.getItem('pendingRoomId');
+        let roomIdFromUrl = urlParams.get('room') || localStorage.getItem('pendingRoomId');
+        if (roomIdFromUrl) {
+            roomIdFromUrl = roomIdFromUrl.trim().replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase();
+        }
         const hash = window.location.hash.slice(1);
 
         // 1. Teacher Link Entry (#t-...)
         if (hash.startsWith('t-')) {
-            const teacherSecret = hash.slice(2);
+            const teacherSecret = hash.slice(2).trim();
+            const cleanRoomId = teacherSecret.substring(0, 6).toUpperCase();
+
+            let roomData = null;
+            try {
+                roomData = await RoomAPI.getRoom(cleanRoomId);
+            } catch (_) {}
+
+            if (!roomData || roomData.isActive === false) {
+                Utils.showToast("Xona topilmadi!", "error");
+                setTimeout(() => window.location.replace('/dashboard/'), 1600);
+                return;
+            }
+
+            localStorage.setItem('mr_teacher_' + cleanRoomId, teacherSecret);
             Store.isTeacher = true;
             Store.teacherSecret = teacherSecret;
-            Store.roomId = teacherSecret.substring(0, 6);
+            Store.roomId = cleanRoomId;
             Store.perms.draw = true;
             Store.perms.speak = true;
             if (!Store.uid) {
@@ -99,13 +116,46 @@ export class BoardPage {
             }
             Store.name = user?.fullName || user?.username || user?.name || user?.email?.split('@')[0] || "O'qituvchi";
 
-            this.startBoard(Store.roomId, teacherSecret);
+            this.startBoard(cleanRoomId, teacherSecret);
             return;
         }
 
         // 2. Student Link Entry (#s-...)
         if (hash.startsWith('s-')) {
-            const studentCode = hash.slice(2);
+            const studentCode = hash.slice(2).trim().replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase();
+
+            let roomData = null;
+            try {
+                roomData = await RoomAPI.getRoom(studentCode);
+            } catch (_) {}
+
+            if (!roomData || roomData.isActive === false) {
+                Utils.showToast("Xona topilmadi!", "error");
+                setTimeout(() => window.location.replace('/dashboard/'), 1600);
+                return;
+            }
+
+            const cachedSecret = localStorage.getItem('mr_teacher_' + studentCode);
+            const isOwner = (user && roomData.createdBy && user.uid === roomData.createdBy) ||
+                            (cachedSecret && roomData.teacherSecret && cachedSecret === roomData.teacherSecret);
+
+            if (isOwner) {
+                const teacherSecret = roomData.teacherSecret || cachedSecret || (studentCode + 'SECRET');
+                localStorage.setItem('mr_teacher_' + studentCode, teacherSecret);
+                Store.isTeacher = true;
+                Store.teacherSecret = teacherSecret;
+                Store.roomId = studentCode;
+                Store.perms.draw = true;
+                Store.perms.speak = true;
+                if (!Store.uid) {
+                    Store.uid = user?.uid || localStorage.getItem('guest_uid') || ('teacher_' + Math.random().toString(36).substring(2, 9));
+                }
+                Store.name = user?.fullName || user?.username || user?.name || user?.email?.split('@')[0] || "O'qituvchi";
+
+                this.startBoard(studentCode, teacherSecret);
+                return;
+            }
+
             Store.isTeacher = false;
             Store.roomId = studentCode;
             Store.perms.draw = false;
@@ -127,29 +177,51 @@ export class BoardPage {
                 roomData = await RoomAPI.getRoom(roomIdFromUrl);
             } catch (_) {}
 
-            const isOwner = user && roomData && roomData.createdBy === user.uid;
-            Store.isTeacher = !!isOwner;
+            if (!roomData || roomData.isActive === false) {
+                Utils.showToast("Xona topilmadi!", "error");
+                setTimeout(() => window.location.replace('/dashboard/'), 1600);
+                return;
+            }
+
+            const cachedSecret = localStorage.getItem('mr_teacher_' + roomIdFromUrl);
+            const isOwner = (user && roomData.createdBy && user.uid === roomData.createdBy) ||
+                            (cachedSecret && roomData.teacherSecret && cachedSecret === roomData.teacherSecret);
+
+            if (isOwner) {
+                const teacherSecret = roomData.teacherSecret || cachedSecret || (roomIdFromUrl + 'SECRET');
+                localStorage.setItem('mr_teacher_' + roomIdFromUrl, teacherSecret);
+                Store.isTeacher = true;
+                Store.roomId = roomIdFromUrl;
+                Store.teacherSecret = teacherSecret;
+                Store.perms.draw = true;
+                Store.perms.speak = true;
+                if (!Store.uid) {
+                    Store.uid = user?.uid || localStorage.getItem('guest_uid') || ('teacher_' + Math.random().toString(36).substring(2, 9));
+                }
+                Store.name = user?.fullName || user?.username || user?.name || user?.email?.split('@')[0] || "O'qituvchi";
+
+                this.startBoard(roomIdFromUrl, teacherSecret);
+                return;
+            }
+
+            // Student/Guest visitor
+            Store.isTeacher = false;
             Store.roomId = roomIdFromUrl;
-            Store.teacherSecret = isOwner ? roomData?.teacherSecret : null;
-            Store.perms.draw = !!isOwner;
-            Store.perms.speak = !!isOwner;
+            Store.teacherSecret = null;
+            Store.perms.draw = false;
+            Store.perms.speak = false;
             if (!Store.uid) {
                 Store.uid = user?.uid || localStorage.getItem('guest_uid') || ('guest_' + Math.random().toString(36).substring(2, 9));
             }
-            Store.name = user?.fullName || user?.username || user?.name || 'Mehmon';
+            Store.name = user?.fullName || user?.username || user?.name || localStorage.getItem('guest_name') || 'Mehmon';
 
-            this.startBoard(roomIdFromUrl, Store.teacherSecret);
+            this.startBoard(roomIdFromUrl, null);
             return;
         }
 
-        // 4. Authenticated user without specific room link
+        // 4. Authenticated user without specific room link -> go to dashboard
         if (user && !user.isAnonymous) {
-            const defaultRoom = "DEMO01";
-            Store.roomId = defaultRoom;
-            Store.isTeacher = true;
-            Store.perms.draw = true;
-            Store.perms.speak = true;
-            this.startBoard(defaultRoom, defaultRoom + "SECRET");
+            window.location.replace('/dashboard/');
             return;
         }
 
@@ -362,13 +434,18 @@ export class BoardPage {
 
         // Drawers triggers
         document.getElementById('btn-open-settings')?.addEventListener('click', () => this.openDrawer('drawer-settings'));
-        document.getElementById('btn-open-colors')?.addEventListener('click', () => this.openDrawer('drawer-colors'));
+        document.getElementById('btn-open-colors')?.addEventListener('click', () => {
+            this.openDrawer('drawer-colors');
+            this.colorPicker?.drawWheel();
+        });
         document.getElementById('btn-open-chat')?.addEventListener('click', () => {
             this.openDrawer('drawer-chat');
             this.chat?.clearUnread();
         });
         document.getElementById('btn-open-users')?.addEventListener('click', () => this.openDrawer('drawer-users'));
         document.getElementById('btn-toggle-shapes')?.addEventListener('click', () => this.openDrawer('drawer-shapes'));
+
+        Events.on('select-tool', (tool) => this.setTool(tool));
 
         // Close triggers
         document.querySelectorAll('[data-close]').forEach(btn => {
@@ -472,6 +549,15 @@ export class BoardPage {
 
         document.querySelectorAll('[data-tool]').forEach(b => b.classList.remove('is-active'));
         document.querySelector(`[data-tool="${tool}"]`)?.classList.add('is-active');
+
+        const shapesBtn = document.getElementById('btn-toggle-shapes');
+        if (shapesBtn) {
+            if (['rect', 'circle', 'line', 'arrow'].includes(tool)) {
+                shapesBtn.classList.add('is-active');
+            } else {
+                shapesBtn.classList.remove('is-active');
+            }
+        }
 
         const app = document.getElementById('app-container');
         if (app) {

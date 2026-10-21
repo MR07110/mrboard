@@ -24,6 +24,7 @@ export class ColorPickerComponent {
     init() {
         if (!this.canvas || !this.ctx) return;
 
+        this.canvas.style.touchAction = 'none';
         this.drawWheel();
         this.renderPalette();
         this.bindEvents();
@@ -86,15 +87,18 @@ export class ColorPickerComponent {
 
     bindEvents() {
         const pick = (e) => {
+            if (!this.canvas || !this.ctx) return;
             const rect = this.canvas.getBoundingClientRect();
-            const x = (e.clientX - rect.left) * (this.canvas.width / rect.width);
-            const y = (e.clientY - rect.top) * (this.canvas.height / rect.height);
-            const pixel = this.ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
-
-            if (pixel[3] > 0) {
-                const hex = this.rgbToHex(pixel[0], pixel[1], pixel[2]);
-                this.setColor(hex);
-            }
+            if (rect.width === 0 || rect.height === 0) return;
+            const x = Math.min(Math.max(0, (e.clientX - rect.left) * (this.canvas.width / rect.width)), this.canvas.width - 1);
+            const y = Math.min(Math.max(0, (e.clientY - rect.top) * (this.canvas.height / rect.height)), this.canvas.height - 1);
+            try {
+                const pixel = this.ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
+                if (pixel[3] > 0) {
+                    const hex = this.rgbToHex(pixel[0], pixel[1], pixel[2]);
+                    this.setColor(hex);
+                }
+            } catch (_) {}
         };
 
         let dragging = false;
@@ -124,6 +128,7 @@ export class ColorPickerComponent {
         this.palette.forEach(color => {
             const swatch = document.createElement('div');
             swatch.className = 'palette-swatch';
+            swatch.dataset.color = color;
             swatch.style.backgroundColor = color;
             if (color.toLowerCase() === Store.color.toLowerCase()) {
                 swatch.classList.add('active');
@@ -131,8 +136,6 @@ export class ColorPickerComponent {
 
             swatch.addEventListener('click', () => {
                 this.setColor(color);
-                document.querySelectorAll('.palette-swatch').forEach(s => s.classList.remove('active'));
-                swatch.classList.add('active');
             });
 
             this.paletteContainer.appendChild(swatch);
@@ -143,11 +146,23 @@ export class ColorPickerComponent {
         Store.color = hex;
         this.updateIndicator(hex);
         Events.emit('color-changed', hex);
+        if (Store.tool === 'erase' || Store.tool === 'pan') {
+            Events.emit('select-tool', 'draw');
+        }
     }
 
     updateIndicator(hex) {
         if (this.indicator) {
             this.indicator.style.backgroundColor = hex;
+        }
+        if (this.paletteContainer) {
+            this.paletteContainer.querySelectorAll('.palette-swatch').forEach(swatch => {
+                if (swatch.dataset.color?.toLowerCase() === hex.toLowerCase()) {
+                    swatch.classList.add('active');
+                } else {
+                    swatch.classList.remove('active');
+                }
+            });
         }
     }
 }

@@ -399,6 +399,15 @@ body.zen-mode .user-info-bar {
     display: flex;
     justify-content: center;
     margin-bottom: 16px;
+    touch-action: none;
+}
+
+#cvs-color-picker {
+    cursor: crosshair;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    border-radius: 50%;
 }
 
 .palette-grid {

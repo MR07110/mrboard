@@ -138,6 +138,11 @@ export class DashboardPage {
         if (!this.user?.uid) return;
         try {
             this.myRooms = await RoomAPI.getUserRooms(this.user.uid);
+            this.myRooms.forEach(room => {
+                if (room.id && room.teacherSecret) {
+                    localStorage.setItem('mr_teacher_' + room.id, room.teacherSecret);
+                }
+            });
             this.updateStats();
         } catch (err) {
             console.error('[Dashboard] Error loading my rooms:', err);
@@ -180,11 +185,15 @@ export class DashboardPage {
         }
 
         container.innerHTML = filtered.map(room => {
-            const isOwner = room.createdBy === this.user?.uid;
+            const isOwner = this.user?.uid && (room.createdBy === this.user.uid || localStorage.getItem('mr_teacher_' + room.id));
             const initial = (room.createdByName || 'U').charAt(0).toUpperCase();
+            const teacherSecret = room.teacherSecret || localStorage.getItem('mr_teacher_' + room.id);
+            const targetUrl = (isOwner && teacherSecret) 
+                ? `/board/#t-${teacherSecret}` 
+                : `/board/?room=${room.id}`;
 
             return `
-                <div class="room-card" onclick="window.location.href='/board/?room=${room.id}'">
+                <div class="room-card" onclick="window.location.href='${targetUrl}'">
                     <div class="room-card-header">
                         <span class="room-title">${Utils.sanitize(room.name || 'Nomsiz xona')}</span>
                         <span class="room-badge ${room.isPublic ? 'active' : 'private'}">
@@ -200,7 +209,7 @@ export class DashboardPage {
                         <span><i data-lucide="calendar" size="12"></i> ${Utils.formatDate(room.createdAt)}</span>
                     </div>
                     <div style="display:flex; gap:8px; margin-top:8px;">
-                        <button class="btn btn-primary" style="flex:1;" onclick="event.stopPropagation(); window.location.href='/board/?room=${room.id}'">
+                        <button class="btn btn-primary" style="flex:1;" onclick="event.stopPropagation(); window.location.href='${targetUrl}'">
                             <i data-lucide="log-in" size="14"></i> Kirish
                         </button>
                         ${isOwner ? `
@@ -242,6 +251,12 @@ export class DashboardPage {
 
         try {
             const room = await RoomAPI.createRoom(name, isPublic, password);
+            if (room.roomCode && room.teacherSecret) {
+                localStorage.setItem('mr_teacher_' + room.roomCode, room.teacherSecret);
+            }
+            if (room.id && room.teacherSecret) {
+                localStorage.setItem('mr_teacher_' + room.id, room.teacherSecret);
+            }
             Utils.showToast("Xona muvaffaqiyatli yaratildi!", "success");
             this.closeCreateModal();
             window.location.href = `/board/#t-${room.teacherSecret}`;
@@ -262,7 +277,8 @@ export class DashboardPage {
     }
 
     async handleJoinRoomByCode() {
-        const code = document.getElementById('join-room-code')?.value.toUpperCase().trim();
+        const rawCode = document.getElementById('join-room-code')?.value || '';
+        const code = rawCode.trim().replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase();
         const password = document.getElementById('join-room-password')?.value.trim();
 
         if (!code) {
@@ -283,7 +299,13 @@ export class DashboardPage {
             }
 
             this.closeJoinModal();
-            window.location.href = `/board/?room=${code}`;
+            const isOwner = this.user?.uid && (room.createdBy === this.user.uid || localStorage.getItem('mr_teacher_' + code));
+            const teacherSecret = room.teacherSecret || localStorage.getItem('mr_teacher_' + code);
+            if (isOwner && teacherSecret) {
+                window.location.href = `/board/#t-${teacherSecret}`;
+            } else {
+                window.location.href = `/board/?room=${code}`;
+            }
         } catch (err) {
             Utils.showToast("Xonaga ulanishda xatolik", "error");
         }
