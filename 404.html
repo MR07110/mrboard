@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>404 — Sahifa topilmadi · MR BOARD</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="shortcut icon" href="/favicon.svg">
+    
+    <!-- Production Modular Styles -->
+    <link rel="stylesheet" href="/css/style.css?v=3.0.0">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .error-page-wrapper {
+            min-height: calc(100vh - 140px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .error-card {
+            max-width: 540px;
+            width: 100%;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 48px 36px;
+            box-shadow: var(--shadow-float);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .error-code-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(255, 59, 48, 0.08);
+            color: var(--state-danger);
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .error-title {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .error-desc {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .error-actions .btn {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .error-footer-links {
+            margin-top: 28px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .error-footer-links a {
+            color: var(--brand-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .error-footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="landing-header">
+        <a href="/" class="brand">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            MR <span>BOARD</span>
+        </a>
+
+        <nav class="landing-nav">
+            <a href="/doc/">Qo'llanma</a>
+            <a href="/dashboard/" class="btn btn-primary" style="padding: 8px 18px; border-radius: 99px; color: #ffffff;">
+                Dashboard <i data-lucide="arrow-right" size="14"></i>
+            </a>
+        </nav>
+    </header>
+
+    <!-- Error Content -->
+    <main class="error-page-wrapper">
+        <div class="error-card">
+            <div class="error-code-badge">
+                <i data-lucide="alert-triangle" size="16"></i> 404 Xatolik
+            </div>
+
+            <h1 class="error-title">Sahifa topilmadi</h1>
+            <p class="error-desc">
+                Siz qidirayotgan sahifa mavjud emas, manzili o'zgartirilgan yoki o'chirilgan bo'lishi mumkin.
+            </p>
+
+            <div class="error-actions">
+                <a href="/" class="btn btn-primary" style="color: #ffffff;">
+                    <i data-lucide="home" size="16"></i> Bosh sahifa
+                </a>
+                <a href="/dashboard/" class="btn btn-ghost">
+                    <i data-lucide="layout-dashboard" size="16"></i> Dashboard
+                </a>
+            </div>
+
+            <div class="error-footer-links">
+                Yordam kerakmi? <a href="/doc/">Foydalanish qo'llanmasi</a> bilan tanishing.
+            </div>
+        </div>
+    </main>
+
+    <!-- Simple Footer -->
+    <footer style="text-align:center; padding: 24px 20px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-subtle);">
+        © 2026 MR BOARD · Muhammadrasul Qosimov tomonidan ishlab chiqilgan
+    </footer>
+
+    <script>
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

@@ -27,7 +27,7 @@ for (const file of cssOrder) {
 fs.writeFileSync(path.join(rootDir, 'css/style.css'), bundledCSS);
 console.log(`[CSS BUNDLE] Bundled ${cssOrder.length} CSS modules into css/style.css (${(bundledCSS.length / 1024).toFixed(2)} KB)\n`);
 
-const htmlPages = ['index.html', 'board/index.html', 'dashboard/index.html', 'doc/index.html'];
+const htmlPages = ['index.html', '404.html', 'board/index.html', 'dashboard/index.html', 'doc/index.html'];
 let totalBytes = 0;
 
 console.log('[ASSETS] Core Pages & Assets:');

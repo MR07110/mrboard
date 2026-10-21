@@ -24,7 +24,7 @@ function checkFile(relPath) {
 
 // 1. Check HTML Pages
 console.log('--- 1. Checking Core HTML Files ---');
-['index.html', 'board/index.html', 'dashboard/index.html', 'doc/index.html'].forEach(checkFile);
+['index.html', '404.html', 'board/index.html', 'dashboard/index.html', 'doc/index.html'].forEach(checkFile);
 
 // 2. Check Modular CSS Files
 console.log('\n--- 2. Checking CSS Architecture ---');
